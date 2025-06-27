@@ -1,35 +1,82 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import { usePhaseContext } from "./usePhaseContext";
+import CombatScreen from "./screens/CombatScreen";
+import ShopScreen from "./screens/ShopScreen";
+import DeathScreen from "./screens/DeathScreen";
+import LabScreen from "./screens/LabScreen";
+import type { Character } from "./types";
+import cloneDeep from "lodash.clonedeep";
+import { createCharacter } from './utils/units/createCharacter';
+import GameLayout from './components/GameLayout';
 
-function App() {
-  const [count, setCount] = useState(0)
+const initialPlayerTeam: Character[] = [
+  createCharacter("A1", 3, 10, 5),
+  createCharacter("A2", 2, 8, 3),
+  createCharacter("A3", 4, 6, 7),
+];
+const initialEnemyTeam: Character[] = [
+  createCharacter("B1", 2, 12, 4),
+  createCharacter("B2", 3, 9, 6),
+  createCharacter("B3", 1, 6, 2),
+];
+
+const App: React.FC = () => {
+  const { currentPhase, transitionToCombat, transitionToLab } = usePhaseContext();
+  const [playerTeam, setPlayerTeam] = useState<Character[]>(cloneDeep(initialPlayerTeam));
+  const [enemyTeam, setEnemyTeam] = useState<Character[]>(cloneDeep(initialEnemyTeam));
+  const [round, setRound] = useState(1);
+  const [runNumber, setRunNumber] = useState(1);
+  // Local state for combat log
+  const [combatLog, setCombatLog] = useState<string[]>([]);
+
+  // Handler to start next combat (from shop)
+  const handleStartNextCombat = () => {
+    setEnemyTeam(cloneDeep(initialEnemyTeam));
+    setRound(r => r + 1);
+    transitionToCombat();
+  };
+
+  // Handler to start a new run from Lab
+  const handleStartNewRun = () => {
+    setPlayerTeam(cloneDeep(initialPlayerTeam));
+    setRound(1);
+    setRunNumber(n => n + 1);
+    transitionToCombat();
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <GameLayout runNumber={runNumber} roundNumber={round} logArea={currentPhase === 'combat' ? (
+      <div className="w-full">
+        <h2 className="font-semibold mb-2">Combat Log</h2>
+        <pre className="bg-gray-100 p-4 h-64 overflow-auto rounded-lg border">
+          {combatLog.join("\n")}
+        </pre>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    ) : null}>
+      {currentPhase === "combat" && (
+        <CombatScreen
+          playerTeam={playerTeam}
+          setPlayerTeam={setPlayerTeam}
+          enemyTeam={enemyTeam}
+          setEnemyTeam={setEnemyTeam}
+          round={round}
+          runNumber={runNumber}
+          combatLog={combatLog}
+          setCombatLog={setCombatLog}
+        />
+      )}
+      {currentPhase === "shop" && (
+        <ShopScreen
+          setEnemyTeam={setEnemyTeam}
+          onStartNextCombat={handleStartNextCombat}
+        />
+      )}
+      {currentPhase === "death" && <DeathScreen onGoToLab={transitionToLab} />}
+      {currentPhase === "lab" && (
+        <LabScreen onStartNewRun={handleStartNewRun} />
+      )}
+    </GameLayout>
+  );
+};
 
-export default App
+export default App;

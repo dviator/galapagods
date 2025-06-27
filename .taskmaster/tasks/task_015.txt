@@ -1,0 +1,75 @@
+# Task ID: 15
+# Title: Stepwise Layout Refactor for Improved Modularity and UI Consistency
+# Status: done
+# Dependencies: 14
+# Priority: medium
+# Description: Implement a 5-step gradual refactor to improve layout modularity and UI consistency by extracting components and reorganizing the layout structure while maintaining functionality.
+# Details:
+Execute a careful stepwise refactor to improve modularity without breaking existing functionality:
+
+**Step 1: Extract Phase Tracker to GameLayout**
+- Create GameLayout.tsx component that wraps all phase screens
+- Extract only the phase tracker (Run #, Round #) into persistent header
+- Keep all existing screen content and control panels unchanged in their current locations
+- Ensure GameLayout provides consistent wrapper structure
+
+**Step 2: Extract Combat Control Panel Component**
+- Create CombatControlPanel.tsx component from existing combat controls
+- Keep component rendered within CombatScreen initially
+- Maintain all state and event handlers as local to CombatScreen
+- Ensure no functionality changes, only code organization
+
+**Step 3: Gradually Move Control Panels to Layout**
+- Move combat control panel into GameLayout component
+- Pass necessary state and handlers as props from phase components
+- Repeat process for other phase control panels one at a time
+- Maintain prop drilling temporarily for state management
+
+**Step 4: Move Combat Log to Layout**
+- Extract combat log into shared layout area
+- Ensure combat log receives proper state updates from combat phase
+- Position log appropriately within GameLayout structure
+- Verify log persists correctly during phase transitions
+
+**Step 5: Center Non-Combat Screens and Polish**
+- Center shop, death, and lab screens within main content area
+- Apply consistent spacing and alignment across all phases
+- Polish layout responsiveness and visual consistency
+- Remove any temporary scaffolding code
+
+Each step should be completed and tested before proceeding to the next to avoid breaking changes.
+
+# Test Strategy:
+Verify each step independently before proceeding to next step. Test that phase tracker remains persistent and updates correctly across all phases. Confirm control panels maintain full functionality when extracted and moved. Verify combat log displays correctly and receives proper state updates. Test that non-combat screens are properly centered and responsive. Conduct full game loop testing after each step to ensure no regressions. Verify layout remains stable during all phase transitions and maintains visual consistency.
+
+# Subtasks:
+## 1. Extract Phase Tracker to GameLayout Component [done]
+### Dependencies: None
+### Description: Create a new GameLayout.tsx component that wraps all phase screens and extracts only the phase tracker (Run #, Round #) into a persistent header. Keep all existing screen content and control panels unchanged in their current locations.
+### Details:
+Create GameLayout.tsx in components folder. Move the phase tracker display logic from individual screens into the layout header. Wrap the main App component's phase rendering with GameLayout. Ensure the layout provides a consistent wrapper structure with header for phase tracker and main content area for screens. Pass current run and round data as props to GameLayout.
+
+## 2. Extract Combat Control Panel Component [done]
+### Dependencies: 15.1
+### Description: Create a separate CombatControlPanel.tsx component from the existing combat controls while keeping it rendered within CombatScreen. Maintain all state and event handlers as local to CombatScreen with no functionality changes.
+### Details:
+Extract combat control buttons (attack, defend, use item, etc.) into CombatControlPanel.tsx. Keep the component imported and rendered within CombatScreen.tsx. Pass all necessary state (player stats, available actions, etc.) and event handlers as props to the new component. Ensure no state management changes - all handlers remain in CombatScreen.
+
+## 3. Move Control Panels to GameLayout [done]
+### Dependencies: 15.2
+### Description: Gradually move the combat control panel into GameLayout component and pass necessary state and handlers as props from phase components. Repeat this process for other phase control panels one at a time while maintaining prop drilling temporarily.
+### Details:
+Move CombatControlPanel rendering from CombatScreen to GameLayout. Create a control panel area in GameLayout and conditionally render appropriate panels based on current phase. Pass combat state and handlers from CombatScreen through GameLayout props. Repeat for shop, lab, and other phase control panels. Maintain temporary prop drilling architecture.
+
+## 4. Move Combat Log to Shared Layout [done]
+### Dependencies: 15.3
+### Description: Extract the combat log into a shared layout area within GameLayout, ensuring it receives proper state updates from the combat phase and persists correctly during phase transitions.
+### Details:
+Move combat log rendering from CombatScreen to GameLayout. Create a dedicated log area in the layout (sidebar or bottom panel). Ensure combat log state is passed from CombatScreen to GameLayout and properly updates during combat. Verify log persists when transitioning between phases and maintains scroll position and history.
+
+## 5. Center Non-Combat Screens and Polish Layout [done]
+### Dependencies: 15.4
+### Description: Center shop, death, and lab screens within the main content area, apply consistent spacing and alignment across all phases, polish layout responsiveness, and remove any temporary scaffolding code.
+### Details:
+Apply CSS centering to shop, death, and lab screens within GameLayout's main content area. Standardize spacing, padding, and alignment across all phase screens. Ensure responsive design works on different screen sizes. Clean up any temporary prop drilling code and optimize the component structure. Apply consistent styling theme across all layout elements.
+

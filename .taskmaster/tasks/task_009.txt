@@ -1,0 +1,44 @@
+# Task ID: 9
+# Title: Implement Main App Router and Layout
+# Status: done
+# Dependencies: 3, 4, 5, 6, 7, 8
+# Priority: high
+# Description: Refactor main.tsx to focus on high-level app structure, routing between phases, and coordinating the overall game loop with the phase tracker and main content area.
+# Details:
+Refactor main.tsx to be the central coordinator:
+- Implement main layout with PhaseTracker on left, content area on right
+- Route between phase components based on current phase state
+- Handle automatic phase transitions based on game events
+- Integrate all context providers (Phase, GameState)
+- Maintain clean separation of concerns
+
+Main app structure:
+```tsx
+function App() {
+  return (
+    <GameStateProvider>
+      <PhaseProvider>
+        <div className="flex h-screen">
+          <PhaseTracker />
+          <main className="flex-1 ml-48">
+            <PhaseRouter />
+          </main>
+        </div>
+      </PhaseProvider>
+    </GameStateProvider>
+  );
+}
+
+const PhaseRouter = () => {
+  const { currentPhase } = usePhase();
+  switch(currentPhase) {
+    case 'combat': return <Combat />;
+    case 'shop': return <Shop />;
+    case 'death': return <Death />;
+    case 'lab': return <Lab />;
+  }
+};
+```
+
+# Test Strategy:
+Verify proper routing between all phases, layout renders correctly with phase tracker, and all context providers work together without conflicts.

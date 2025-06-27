@@ -1,0 +1,31 @@
+# Task ID: 5
+# Title: Implement Shop Phase Component
+# Status: done
+# Dependencies: 1, 2
+# Priority: medium
+# Description: Create a Shop component that displays placeholder upgrades for characters and the Lab, allowing players to simulate purchasing upgrades before continuing to the next combat.
+# Details:
+Create Shop.tsx component:
+- Display list of placeholder upgrades (character stat boosts, lab improvements)
+- Implement "buy" functionality (simulate purchase without real currency)
+- Add "Continue" button to proceed to next combat phase
+- Generate more difficult enemies for next combat round
+- Use Tailwind CSS for clean, modern shop interface
+
+Shop structure:
+```tsx
+interface ShopProps {
+  playerTeam: Character[];
+  onContinue: () => void;
+  onUpgradePurchased: (upgrade: Upgrade) => void;
+}
+
+const placeholderUpgrades = [
+  { id: '1', name: 'Health Boost', description: '+10 Health', cost: 100 },
+  { id: '2', name: 'Attack Upgrade', description: '+5 Attack', cost: 150 },
+  // more upgrades
+];
+```
+
+# Test Strategy:
+Verify shop displays correctly, upgrade purchase simulation works, Continue button transitions to combat phase, and enemy difficulty increases appropriately.

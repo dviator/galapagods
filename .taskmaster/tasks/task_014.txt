@@ -1,0 +1,53 @@
+# Task ID: 14
+# Title: Stepwise Layout Refactor for Improved Modularity
+# Status: done
+# Dependencies: 13
+# Priority: medium
+# Description: Implement a 5-step gradual refactor to improve layout modularity and UI consistency by extracting components and reorganizing the layout structure while maintaining functionality.
+# Details:
+Execute a careful stepwise refactor to improve modularity without breaking existing functionality:
+
+**Step 1: Extract Phase Tracker to GameLayout**
+- Create GameLayout.tsx component that wraps all phase screens
+- Extract only the phase tracker (Run #, Round #) into persistent header
+- Keep all existing screen content and control panels unchanged in their current locations
+- Ensure GameLayout provides consistent wrapper structure
+
+**Step 2: Extract Combat Control Panel Component**
+- Create CombatControlPanel.tsx component for combat phase controls
+- Move combat-specific controls (attack buttons, abilities) into separate component
+- Keep component rendered within CombatScreen to maintain current layout
+- Ensure all state management and event handlers remain local to combat screen
+
+**Step 3: Gradually Move Control Panels to Layout**
+- Modify GameLayout to include dedicated control panel area (bottom-left)
+- Move combat control panel into layout structure, passing state/handlers as props
+- Repeat process for shop and other phase control panels one at a time
+- Maintain backward compatibility during transition
+
+**Step 4: Move Combat Log to Layout**
+- Extract combat log into shared layout component
+- Ensure combat log receives proper state updates from combat system
+- Position log in consistent location across all phases
+- Maintain log persistence and proper state management
+
+**Step 5: Center Non-Combat Screens and Polish**
+- Center shop, death, and lab screens within main content area
+- Apply consistent spacing and alignment across all phases
+- Polish layout transitions and ensure responsive behavior
+- Add final styling touches for professional appearance
+
+Component structure:
+```tsx
+interface GameLayoutProps {
+  children: React.ReactNode;
+  currentPhase: GamePhase;
+  runNumber: number;
+  roundNumber: number;
+  controlPanel?: React.ReactNode;
+  combatLog?: CombatLogEntry[];
+}
+```
+
+# Test Strategy:
+Verify each step independently before proceeding to next step. Test that phase tracker remains persistent and updates correctly across all phases. Confirm control panels maintain full functionality when extracted and moved. Verify combat log displays correctly and receives proper state updates. Test that non-combat screens are properly centered and responsive. Conduct full game loop testing after each step to ensure no functionality is broken. Verify layout remains stable during phase transitions and maintains consistent appearance across all screen sizes.

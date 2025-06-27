@@ -1,0 +1,64 @@
+# Task ID: 2
+# Title: Implement Phase Management System
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create a centralized phase management system with state management for tracking and transitioning between game phases (combat, shop, death, lab).
+# Details:
+Create a phaseManager.ts utility file with:
+- Phase state management using React Context or useState
+- Functions for phase transitions: transitionToShop(), transitionToDeath(), transitionToLab(), startNewRun()
+- Phase validation logic to ensure valid transitions
+- Event handlers for automatic phase transitions based on game state
+
+Implement PhaseContext:
+```typescript
+interface PhaseContextType {
+  currentPhase: GamePhase;
+  transitionToPhase: (phase: GamePhase) => void;
+  canTransition: (from: GamePhase, to: GamePhase) => boolean;
+}
+
+export const PhaseProvider: React.FC<{children: ReactNode}> = ({children}) => {
+  const [currentPhase, setCurrentPhase] = useState<GamePhase>('combat');
+  // implementation
+};
+```
+
+# Test Strategy:
+Test all phase transitions work correctly, validate that invalid transitions are prevented, and ensure phase state persists correctly during component re-renders.
+
+# Subtasks:
+## 1. Set up phase state management (React Context/useState) [done]
+### Dependencies: None
+### Description: Create a centralized state management system for phase tracking using React Context API and useState hooks. Define the phase state structure, initial values, and context provider component.
+### Details:
+Implement PhaseContext with provider component, define phase state interface, set up initial phase values, create custom hooks for consuming phase state, and establish state update patterns.
+
+## 2. Implement phase transition functions [done]
+### Dependencies: 2.1
+### Description: Develop core functions to handle transitions between different phases, including forward and backward navigation, conditional transitions, and state updates.
+### Details:
+Create transition functions for each phase change, implement phase progression logic, handle edge cases for invalid transitions, ensure proper state updates, and maintain transition history.
+
+## 3. Add phase validation logic [done]
+### Dependencies: 2.1, 2.2
+### Description: Implement validation rules and checks to ensure phase transitions are valid and meet required conditions before allowing progression.
+### Details:
+Define validation schemas for each phase, implement validation functions, create error handling for invalid states, add pre-transition checks, and ensure data integrity across phases.
+
+## 4. Create event handlers for automatic transitions [pending]
+### Dependencies: 2.2, 2.3
+### Description: Develop event-driven mechanisms to automatically trigger phase transitions based on user actions, time-based events, or external conditions.
+### Details:
+Implement event listeners for automatic transitions, create timer-based phase changes, handle user interaction events, set up conditional auto-progression, and manage event cleanup.
+<info added on 2025-06-27T20:23:23.709Z>
+Combat to shop transition modified to be manual instead of automatic. User must click a button to proceed from combat screen to shop, allowing time to display rewards or combat summary. Future enhancement planned to add rewards indication before shop transition.
+</info added on 2025-06-27T20:23:23.709Z>
+
+## 5. Write tests for all transitions and persistence [pending]
+### Dependencies: 2.1, 2.2, 2.3, 2.4
+### Description: Create comprehensive test suites covering all phase transitions, validation logic, event handling, and state persistence scenarios.
+### Details:
+Write unit tests for phase transitions, test validation logic, create integration tests for event handlers, test state persistence, mock external dependencies, and ensure edge case coverage.
+

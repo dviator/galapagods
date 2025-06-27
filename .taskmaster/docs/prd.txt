@@ -1,0 +1,91 @@
+# PRD: Roguelike Adventure Game Loop & Structural Refactor
+
+## Overview
+
+Transform the current combat simulator into the foundation of a roguelike adventure game loop. The game will cycle through the following phases:
+
+1. Combat: Player's team fights enemies.
+2. Shop: Player buys upgrades for characters and the base ("The Lab").
+3. Death: When all player characters die, show a death screen.
+4. Lab: Placeholder for future evolution/breeding system.
+
+The UI should always display a phase tracker on the left, indicating the current phase. The main content area will switch between Combat, Shop, Death, and (eventually) Lab screens. Navigation between phases should be automatic based on game state.
+
+## Goals
+
+- Implement the full game loop: Combat → Shop → Combat → ... → Death → Lab → new run.
+- Refactor code to separate major functionality into different files/modules.
+- Provide a clear, extensible structure for future features (e.g., evolution, new enemy types, advanced combat).
+- Maintain a consistent layout with a persistent phase tracker.
+- Keep the Reset button for development, which restarts the current combat.
+
+---
+
+## Functional Requirements
+
+### 1. Game Loop & Phase Management
+- Implement a phase state with possible values: "combat", "shop", "death", "lab".
+- Add a phase tracker UI component, always visible on the left, showing the current phase and the overall loop.
+- The main content area should render the appropriate screen/component for the current phase.
+
+### 2. Combat Phase
+- Use the existing combat simulator as the Combat phase.
+- When all enemies are dead, automatically transition to the Shop phase.
+- The Reset button should only reset the current combat (for development/testing).
+
+### 3. Shop Phase
+- Create a Shop screen/component.
+- Display a list of placeholder upgrades for characters and the Lab.
+- Allow the player to "buy" upgrades (no need for real currency or inventory yet; just simulate the action).
+- After the player clicks a "Continue" button, transition to the next Combat phase with more difficult enemies.
+
+### 4. Death Phase
+- When all player characters are dead, transition to the Death phase.
+- Show a static image or message indicating the run is over.
+- After a short delay or button click, transition to the Lab phase.
+
+### 5. Lab Phase (Placeholder)
+- Show a placeholder Lab screen/component.
+- Display a message: "Lab/Evolution phase coming soon."
+- After a button click, start a new run (reset upgrades, generate a new team, etc.).
+
+### 6. Structural Refactor
+- Move major components (Combat, Shop, Death, Lab, PhaseTracker, etc.) into separate files/modules.
+- Move types/interfaces into a dedicated types file.
+- Move utility functions (e.g., combat logic, enemy generation) into a utils file.
+- Keep the main entry file (main.tsx) focused on high-level app structure and routing between phases.
+- Architect the app layout so that overlay UI elements (e.g., phase tracker, control panel, visual overlays) can be rendered above or alongside the main phase screens.
+- Use a layout/container (ideally in the ContextProvider) to host overlays and the main screen content, maintaining strict separation of concerns between phase screens.
+
+### 7. Extensibility
+- Design the structure so that new features (e.g., more complex shop, enemy types, evolution mechanics) can be added with minimal refactoring.
+- Use clear, documented interfaces and props for all components.
+- Ensure the overlay system and layout/container approach allows for easy addition of new persistent or floating UI elements (e.g., player info, notifications, global controls) without modifying individual phase screens.
+
+#### Future Technical Improvement: Efficient State Updates
+For future scalability, consider using shallow updates or the [Immer](https://immerjs.github.io/immer/) library for efficient immutable state updates. Shallow updates and Immer only copy the parts of the state that change, making updates much faster and more memory-efficient for large or deeply nested game states, compared to deep cloning the entire state. This approach is used in modern React/Redux apps and scales better as the game grows.
+
+---
+
+## Non-Functional Requirements
+- Use React and Tailwind CSS for all UI.
+- Maintain a clean, modern, and consistent UI.
+- Ensure all navigation between phases is automatic and robust.
+- Code should be easy to read, maintain, and extend.
+
+---
+
+## Out of Scope (for this phase)
+- Actual upgrade effects, currency, or inventory management.
+- Real enemy variety or advanced combat mechanics.
+- Lab/evolution mechanics (just a placeholder for now).
+- Persistent save/load.
+
+---
+
+## Acceptance Criteria
+- The game cycles through Combat → Shop → Combat → ... → Death → Lab → new run, with all transitions working automatically.
+- The phase tracker is always visible and accurately reflects the current phase.
+- The codebase is refactored into logical modules/files.
+- The UI is clean and consistent.
+- The Reset button resets only the current combat, not the whole run.

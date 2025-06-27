@@ -1,0 +1,38 @@
+# Task ID: 10
+# Title: Implement Automatic Phase Transitions
+# Status: pending
+# Dependencies: 9
+# Priority: high
+# Description: Create the logic for automatic transitions between phases based on game state changes (combat victory/defeat, shop completion, death screen timeout).
+# Details:
+Implement transition logic in each component and phase manager:
+- Combat → Shop: When all enemies defeated
+- Combat → Death: When all player characters die
+- Shop → Combat: When Continue button clicked
+- Death → Lab: After timeout or button click
+- Lab → Combat: When Start New Run clicked
+
+Transition handlers:
+```typescript
+const usePhaseTransitions = () => {
+  const { transitionToPhase } = usePhase();
+  const { gameState } = useGameState();
+  
+  const handleCombatEnd = (result: 'victory' | 'defeat') => {
+    if (result === 'victory') {
+      transitionToPhase('shop');
+    } else {
+      transitionToPhase('death');
+    }
+  };
+  
+  const handleShopContinue = () => {
+    transitionToPhase('combat');
+  };
+  
+  // other transition handlers
+};
+```
+
+# Test Strategy:
+Test all automatic transitions work correctly, verify transitions happen at appropriate times, and ensure no invalid or stuck states occur.

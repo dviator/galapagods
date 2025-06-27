@@ -1,0 +1,33 @@
+# Task ID: 12
+# Title: Polish UI and Add Final Integration Testing
+# Status: pending
+# Dependencies: 10, 11 (Not found)
+# Priority: medium
+# Description: Apply final UI polish with consistent Tailwind styling across all components, ensure responsive design, and conduct comprehensive integration testing of the complete game loop.
+# Details:
+Final polish and testing:
+- Apply consistent color scheme and typography across all components
+- Ensure responsive design works on different screen sizes
+- Add loading states and smooth transitions between phases
+- Implement proper error boundaries and error handling
+- Add accessibility features (ARIA labels, keyboard navigation)
+- Comprehensive testing of full game loop multiple times
+
+UI consistency checklist:
+- Consistent button styles and hover states
+- Unified color palette and spacing
+- Proper loading and disabled states
+- Smooth animations for phase transitions
+- Mobile-responsive layout adjustments
+
+Integration testing:
+```typescript
+// Test complete game loop
+const testGameLoop = async () => {
+  // Start combat → win → shop → continue → combat → lose → death → lab → new run
+  // Verify all transitions and state changes work correctly
+};
+```
+
+# Test Strategy:
+Conduct full end-to-end testing of multiple complete game loops, verify UI consistency across all components, test responsive behavior, and ensure no memory leaks or performance issues.

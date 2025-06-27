@@ -1,0 +1,35 @@
+# Task ID: 6
+# Title: Create Death Phase Component
+# Status: done
+# Dependencies: 1, 2
+# Priority: medium
+# Description: Implement a Death screen that displays when all player characters die, showing game over state and automatically transitioning to Lab phase after delay or user interaction.
+# Details:
+Create Death.tsx component:
+- Display game over message/image when all player characters are defeated
+- Show run statistics (rounds survived, enemies defeated, etc.)
+- Implement automatic transition to Lab phase after delay or button click
+- Use dramatic, appropriate styling for game over state
+
+Death component:
+```tsx
+interface DeathProps {
+  runStats: {
+    roundsSurvived: number;
+    enemiesDefeated: number;
+    upgradesPurchased: number;
+  };
+  onContinue: () => void;
+}
+
+export const Death: React.FC<DeathProps> = ({runStats, onContinue}) => {
+  useEffect(() => {
+    const timer = setTimeout(onContinue, 3000); // auto-advance after 3s
+    return () => clearTimeout(timer);
+  }, [onContinue]);
+  // render death screen
+};
+```
+
+# Test Strategy:
+Test that death screen appears when all characters die, displays correct statistics, and transitions to Lab phase automatically or on user input.
