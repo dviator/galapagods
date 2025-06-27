@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import type { ReactNode } from 'react';
-import { ControlPanelProvider, useControlPanel } from './ControlPanelContext';
+import { ControlPanelProvider, ControlPanelContext } from './ControlPanelContext';
 
 interface GameLayoutProps {
   children: ReactNode;
@@ -12,7 +12,8 @@ interface GameLayoutProps {
 const FOOTER_HEIGHT = 320;
 
 const ControlPanelArea: React.FC = () => {
-  const { controlPanel } = useControlPanel();
+  const ctx = useContext(ControlPanelContext);
+  const controlPanel = ctx?.controlPanel;
   return (
     <div className="flex flex-col justify-between items-stretch bg-gray-100 border-r border-gray-300 h-full w-[340px] max-w-[400px]">
       {controlPanel}

@@ -60,14 +60,12 @@ const App: React.FC = () => {
           enemyTeam={enemyTeam}
           setEnemyTeam={setEnemyTeam}
           round={round}
-          runNumber={runNumber}
           combatLog={combatLog}
           setCombatLog={setCombatLog}
         />
       )}
       {currentPhase === "shop" && (
         <ShopScreen
-          setEnemyTeam={setEnemyTeam}
           onStartNextCombat={handleStartNextCombat}
         />
       )}

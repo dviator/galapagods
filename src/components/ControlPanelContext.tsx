@@ -1,12 +1,11 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback, createContext } from 'react';
 
-type ControlPanelType = {
+// Internal context, not exported
+const ControlPanelContext = createContext<{
   controlPanel: React.ReactNode;
   setControlPanel: (content: React.ReactNode) => void;
   clearControlPanel: () => void;
-};
-
-const controlPanel = createContext<ControlPanelType | undefined>(undefined);
+} | undefined>(undefined);
 
 export const ControlPanelProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [controlPanelContent, setPanel] = useState<React.ReactNode>(null);
@@ -15,14 +14,12 @@ export const ControlPanelProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const clearControlPanel = useCallback(() => setPanel(null), []);
 
   return (
-    <controlPanel.Provider value={{ controlPanel: controlPanelContent, setControlPanel, clearControlPanel }}>
+    <ControlPanelContext.Provider value={{ controlPanel: controlPanelContent, setControlPanel, clearControlPanel }}>
       {children}
-    </controlPanel.Provider>
+    </ControlPanelContext.Provider>
   );
 };
 
-export function useControlPanel() {
-  const ctx = useContext(controlPanel);
-  if (!ctx) throw new Error('useControlPanel must be used within a ControlPanelProvider');
-  return ctx;
-}
+export { ControlPanelContext };
+
+// If you need to use the context, use React.useContext(ControlPanelContext) within a child of ControlPanelProvider.

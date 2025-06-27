@@ -1,27 +1,30 @@
-import React, { useEffect } from 'react';
-import { useControlPanel } from '../components/ControlPanelContext';
-import type { Character } from '../types';
-import { createCharacter } from '../utils/units/createCharacter';
+import React, { useEffect, useContext } from 'react';
+import { ControlPanelContext } from '../components/ControlPanelContext';
 
 type ShopScreenProps = {
-  setEnemyTeam: (enemies: Character[]) => void;
   onStartNextCombat: () => void;
 };
 
-const ShopScreen: React.FC<ShopScreenProps> = ({ setEnemyTeam, onStartNextCombat }) => {
-  const { setControlPanel, clearControlPanel } = useControlPanel();
+const ShopScreen: React.FC<ShopScreenProps> = ({ onStartNextCombat }) => {
+  const ctx = useContext(ControlPanelContext);
+  const setControlPanel = ctx?.setControlPanel;
+  const clearControlPanel = ctx?.clearControlPanel;
 
   useEffect(() => {
-    setControlPanel(
-      <button
-        className="flex-1 w-full text-2xl px-4 py-8 bg-green-600 text-white rounded-lg font-bold shadow hover:bg-green-700 transition-all duration-200"
-        onClick={onStartNextCombat}
-        style={{ minHeight: '4rem' }}
-      >
-        Continue to Next Combat
-      </button>
-    );
-    return () => clearControlPanel();
+    if (setControlPanel) {
+      setControlPanel(
+        <button
+          className="flex-1 w-full text-2xl px-4 py-8 bg-green-600 text-white rounded-lg font-bold shadow hover:bg-green-700 transition-all duration-200"
+          onClick={onStartNextCombat}
+          style={{ minHeight: '4rem' }}
+        >
+          Continue to Next Combat
+        </button>
+      );
+    }
+    return () => {
+      if (clearControlPanel) clearControlPanel();
+    };
   }, [setControlPanel, clearControlPanel, onStartNextCombat]);
 
   return (

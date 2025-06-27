@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import type { Character } from "../types";
 import { usePhaseContext } from "../usePhaseContext";
 import cloneDeep from 'lodash.clonedeep';
-import { useControlPanel } from '../components/ControlPanelContext';
+import { ControlPanelContext } from '../components/ControlPanelContext';
 
 type Team = Character[];
 
@@ -171,7 +171,9 @@ const CombatControlPanel: React.FC<{
 
 const CombatScreen: React.FC<CombatScreenProps> = ({ playerTeam, setPlayerTeam, enemyTeam, setEnemyTeam, round, combatLog, setCombatLog }) => {
   const { currentPhase, transitionToShop, transitionToDeath } = usePhaseContext();
-  const { setControlPanel, clearControlPanel } = useControlPanel();
+  const ctx = useContext(ControlPanelContext);
+  const setControlPanel = ctx?.setControlPanel;
+  const clearControlPanel = ctx?.clearControlPanel;
 
   const [state, setState] = useState<BattleState>({
     initiativeOrder: [],
@@ -314,16 +316,20 @@ const CombatScreen: React.FC<CombatScreenProps> = ({ playerTeam, setPlayerTeam, 
   }, [currentPhase, allPlayersDead, transitionToDeath]);
 
   React.useEffect(() => {
-    setControlPanel(
-      <CombatControlPanel
-        allEnemiesDead={allEnemiesDead}
-        onShop={transitionToShop}
-        onNextAttack={handleNextAttack}
-        onNextRound={handleNextRound}
-        onReset={handleReset}
-      />
-    );
-    return () => clearControlPanel();
+    if (setControlPanel) {
+      setControlPanel(
+        <CombatControlPanel
+          allEnemiesDead={allEnemiesDead}
+          onShop={transitionToShop}
+          onNextAttack={handleNextAttack}
+          onNextRound={handleNextRound}
+          onReset={handleReset}
+        />
+      );
+    }
+    return () => {
+      if (clearControlPanel) clearControlPanel();
+    };
   }, [allEnemiesDead, transitionToShop, handleNextAttack, handleNextRound, handleReset, setControlPanel, clearControlPanel]);
 
   return (

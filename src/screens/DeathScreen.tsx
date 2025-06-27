@@ -1,24 +1,30 @@
-import React, { useEffect } from 'react';
-import { useControlPanel } from '../components/ControlPanelContext';
+import React, { useEffect, useContext } from 'react';
+import { ControlPanelContext } from '../components/ControlPanelContext';
 
 type DeathScreenProps = {
   onGoToLab: () => void;
 };
 
 const DeathScreen: React.FC<DeathScreenProps> = ({ onGoToLab }) => {
-  const { setControlPanel, clearControlPanel } = useControlPanel();
+  const ctx = useContext(ControlPanelContext);
+  const setControlPanel = ctx?.setControlPanel;
+  const clearControlPanel = ctx?.clearControlPanel;
 
   useEffect(() => {
-    setControlPanel(
-      <button
-        className="flex-1 w-full text-2xl px-4 py-8 bg-blue-600 text-white rounded-lg font-bold shadow hover:bg-blue-700 transition-all duration-200"
-        onClick={onGoToLab}
-        style={{ minHeight: '4rem' }}
-      >
-        Go to Lab
-      </button>
-    );
-    return () => clearControlPanel();
+    if (setControlPanel) {
+      setControlPanel(
+        <button
+          className="flex-1 w-full text-2xl px-4 py-8 bg-blue-600 text-white rounded-lg font-bold shadow hover:bg-blue-700 transition-all duration-200"
+          onClick={onGoToLab}
+          style={{ minHeight: '4rem' }}
+        >
+          Go to Lab
+        </button>
+      );
+    }
+    return () => {
+      if (clearControlPanel) clearControlPanel();
+    };
   }, [setControlPanel, clearControlPanel, onGoToLab]);
 
   return (
