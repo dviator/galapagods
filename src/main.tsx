@@ -52,14 +52,15 @@ const createEntity = (
 const HealthBar: React.FC<{ hp: number; maxHp: number }> = ({ hp, maxHp }) => {
   const frac = Math.max(0, hp) / maxHp;
   const color = frac > 0.3 ? "bg-green-700" : "bg-red-500";
+  const barBg = frac === 0 ? "bg-gray-700" : "bg-gray-200";
   return (
-    <div className="w-full h-10 bg-gray-200 rounded flex items-center relative" style={{ minHeight: '2.5rem' }}>
+    <div className={`w-full h-10 ${barBg} rounded flex items-center relative`} style={{ minHeight: '2.5rem' }}>
       <div
         className={`h-10 rounded transition-all duration-300 ${color}`}
         style={{ width: `${Math.round(frac * 100)}%`, minWidth: frac > 0 ? '2.5rem' : 0 }}
       />
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className="w-full text-center font-bold text-black drop-shadow-sm">{hp} / {maxHp}</span>
+        <span className="w-full text-center font-bold text-white drop-shadow-sm">{hp} / {maxHp}</span>
       </div>
     </div>
   );
@@ -71,8 +72,10 @@ const CharacterCard: React.FC<{ entity: Entity; highlight?: boolean }> = ({
   highlight,
 }) => (
   <div
-    className={`w-64 h-32 border-2 ${
-      highlight ? "border-yellow-400" : "border-black"
+    className={`w-[32rem] h-32 ${
+      highlight
+        ? "border-8 border-yellow-400 shadow-xl"
+        : "border-2 border-black"
     } rounded-lg bg-white flex overflow-hidden relative`}
   >
     {/* Left: Name */}
@@ -82,7 +85,7 @@ const CharacterCard: React.FC<{ entity: Entity; highlight?: boolean }> = ({
     {/* Vertical border */}
     <div className="h-full w-1 bg-black" />
     {/* Right: Stats */}
-    <div className="flex-1 h-full flex flex-col items-center justify-center gap-2 bg-white relative">
+    <div className="flex-[3] h-full flex flex-col items-center justify-center gap-2 bg-white relative">
       <div className="absolute top-0 left-0 w-full" style={{ height: '33%' }}>
         <HealthBar hp={entity.hp} maxHp={entity.maxHp} />
       </div>
@@ -284,14 +287,19 @@ export const BattleSim: React.FC = () => {
   const initiativeDisplay = state.initiativeOrder.map((entry, i) => {
     const team = entry.team === "A" ? state.teamA : state.teamB;
     const char = team[entry.index];
+    const isActive = i === state.currentTurn;
     return (
       <div
         key={i}
-        className={`px-2 py-1 rounded ${
-          i === state.currentTurn ? "bg-yellow-200 font-bold" : "bg-gray-100"
+        className={`grid grid-cols-2 items-center px-2 py-1 rounded w-full ${
+          isActive
+            ? "bg-yellow-100 font-bold border-4 border-yellow-400 shadow-lg"
+            : "bg-gray-100 border border-transparent"
         }`}
+        style={{ minWidth: '10rem' }}
       >
-        {char.name} ({char.initiative})
+        <span className="text-left text-lg font-extrabold text-gray-800 pl-1">{char.name}</span>
+        <span className="text-right text-xl font-bold text-blue-700 pr-1">{char.initiative}</span>
       </div>
     );
   });
@@ -317,29 +325,11 @@ export const BattleSim: React.FC = () => {
           ))}
         </div>
         {/* Initiative Order and Round Indicator */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center w-64">
           <div className="text-lg font-bold mb-2">Round {state.round}</div>
           <div className="text-2xl font-bold mb-2">Initiative</div>
-          <div className="flex flex-col gap-1 mb-4">{initiativeDisplay}</div>
-          <div className="flex flex-col gap-2">
-            <button
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              onClick={handleNextAttack}
-            >
-              Next Attack
-            </button>
-            <button
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              onClick={handleNextRound}
-            >
-              Next Round
-            </button>
-            <button
-              className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
-              onClick={handleReset}
-            >
-              Reset
-            </button>
+          <div className="flex flex-col gap-1 mb-4 w-full border-2 border-blue-400 rounded-xl p-3 items-center bg-white shadow-sm">
+            {initiativeDisplay}
           </div>
         </div>
         {/* Team B */}
@@ -357,6 +347,30 @@ export const BattleSim: React.FC = () => {
               }
             />
           ))}
+        </div>
+      </div>
+      {/* Control Panel moved below combat zone */}
+      <div className="w-full flex flex-col items-center my-8">
+        <div className="flex flex-col gap-2 bg-gray-100 border border-gray-300 rounded-lg px-8 py-6 shadow-md w-full max-w-md items-center">
+          <div className="font-semibold mb-1 text-lg">Control Panel</div>
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+            onClick={handleNextAttack}
+          >
+            Next Attack
+          </button>
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 w-full"
+            onClick={handleNextRound}
+          >
+            Next Round
+          </button>
+          <button
+            className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 w-full"
+            onClick={handleReset}
+          >
+            Reset
+          </button>
         </div>
       </div>
       <div className="mt-6">
