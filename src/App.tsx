@@ -10,11 +10,12 @@ import { createCharacter } from './utils/units/createCharacter';
 import GameLayout from './components/GameLayout';
 import bearImg from './assets/units/bear.png';
 import eagleImg from './assets/units/eagle.png';
+import tigerImg from './assets/units/tiger.png';
 
 const initialPlayerTeam: Character[] = [
   createCharacter("A1", 3, 10, 5, eagleImg),
   createCharacter("A2", 2, 8, 3, bearImg),
-  createCharacter("A3", 4, 6, 7),
+  createCharacter("A3", 4, 6, 7, tigerImg),
 ];
 const initialEnemyTeam: Character[] = [
   createCharacter("B1", 2, 12, 4),
