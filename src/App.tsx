@@ -8,10 +8,12 @@ import type { Character } from "./types";
 import cloneDeep from "lodash.clonedeep";
 import { createCharacter } from './utils/units/createCharacter';
 import GameLayout from './components/GameLayout';
+import bearImg from './assets/units/bear.png';
+import eagleImg from './assets/units/eagle.png';
 
 const initialPlayerTeam: Character[] = [
-  createCharacter("A1", 3, 10, 5),
-  createCharacter("A2", 2, 8, 3),
+  createCharacter("A1", 3, 10, 5, eagleImg),
+  createCharacter("A2", 2, 8, 3, bearImg),
   createCharacter("A3", 4, 6, 7),
 ];
 const initialEnemyTeam: Character[] = [

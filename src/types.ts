@@ -14,6 +14,7 @@ export interface Character {
   baseInitiative: number;
   initiative: number;
   alive: boolean;
+  image?: string;
 }
 
 // Enemy interface (can extend Character for now, with optional AI/behavior fields)

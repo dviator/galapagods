@@ -905,5 +905,13 @@
         "date": "2025-06-27T22:05:11.814Z"
       }
     }
+  },
+  "art-epic": {
+    "tasks": [],
+    "metadata": {
+      "created": "2025-06-28T01:11:26.975Z",
+      "updated": "2025-06-28T01:11:26.975Z",
+      "description": "Epic for all art, asset, and animation work: character images, UI art, and future animation/visual upgrades."
+    }
   }
 }

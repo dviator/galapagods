@@ -44,7 +44,7 @@ const HealthBar: React.FC<{ hp: number; maxHp: number }> = ({ hp, maxHp }) => {
   );
 };
 
-const CharacterCard: React.FC<{ entity: Character & { baseInitiative?: number; initiative?: number; alive?: boolean }; highlight?: boolean }> = ({
+const CharacterCard: React.FC<{ entity: Character & { baseInitiative?: number; initiative?: number; alive?: boolean; image?: string }; highlight?: boolean }> = ({
   entity,
   highlight,
 }) => (
@@ -56,7 +56,11 @@ const CharacterCard: React.FC<{ entity: Character & { baseInitiative?: number; i
     } rounded-lg bg-white flex overflow-hidden relative`}
   >
     <div className="w-32 h-full flex items-center justify-center bg-gray-200">
-      <span className="text-4xl font-bold text-gray-700">{entity.name}</span>
+      {entity.image ? (
+        <img src={entity.image} alt={entity.name} className="object-cover w-full h-full" />
+      ) : (
+        <span className="text-4xl font-bold text-gray-700">{entity.name}</span>
+      )}
     </div>
     <div className="h-full w-1 bg-black" />
     <div className="flex-[3] h-full flex flex-col items-center justify-center gap-2 bg-white relative">

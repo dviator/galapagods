@@ -4,7 +4,8 @@ export function createCharacter(
   name: string,
   attack: number,
   health: number,
-  baseInitiative: number
+  baseInitiative: number,
+  image?: string
 ): Character {
   return {
     id: crypto.randomUUID(),
@@ -18,5 +19,6 @@ export function createCharacter(
     baseInitiative,
     initiative: 0,
     alive: true,
+    image,
   };
 }
