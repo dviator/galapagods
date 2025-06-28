@@ -31,6 +31,9 @@ node_modules/
 .vscode
 # OS specific
 
+# tasks/
+.cursor/mcp.json
+
 # Task files
 # tasks.json
-# tasks/ .cursor/mcp.json
+# tasks/
