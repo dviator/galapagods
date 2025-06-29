@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Implement Character Sheet System
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Build the character sheet system that stores base stats and derives active combat stats for all units
+# Details:
+Create CharacterSheet class with base stats (strength, agility, health, etc.). Implement stat derivation logic: attack = strength + weapon_bonus, initiative = agility + speed_bonus, etc. Each unit type should have predefined base stats. Create methods like getAttackStat(), getInitiativeStat(), getHealthStat(). Ensure the system is extensible for future stat additions and modifications.
+
+# Test Strategy:
+Unit tests for stat calculations, verify base stats are correctly set for each unit type, test stat derivation formulas, and ensure character sheet modifications properly update derived combat stats

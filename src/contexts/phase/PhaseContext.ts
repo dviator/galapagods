@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { GamePhase } from './types';
+import type { GamePhase } from '../../types';
 
 export interface PhaseContextType {
   currentPhase: GamePhase;

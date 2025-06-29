@@ -1,0 +1,46 @@
+# Task ID: 1
+# Title: Design and Document Core Data Models
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Define the foundational data structures for units, attacks, targeting rules, and character sheets with clear documentation
+# Details:
+Create TypeScript interfaces/classes for: Unit (base properties like id, name, type), Attack (name, damage calculation, targeting rule), TargetingRule (enum/interface for different targeting patterns), CharacterSheet (base stats like strength, agility), and CombatStats (derived stats like attack, initiative). Document the relationships between these models in code comments or markdown. Use composition over inheritance where possible for extensibility.
+
+# Test Strategy:
+Write unit tests to validate data model integrity, ensure proper inheritance/composition, and verify that combat stats are correctly derived from character sheet base stats
+
+# Subtasks:
+## 1. Design Unit Model Definition [pending]
+### Dependencies: None
+### Description: Create the foundational Unit model class with core properties, methods, and interfaces that will serve as the base for all game entities
+### Details:
+Define Unit class structure including unique identifiers, name, type classification, position/location properties, state management (active/inactive/destroyed), and base interface methods. Establish inheritance patterns and extensibility points for specialized unit types. Include validation rules and serialization support.
+<info added on 2025-06-29T03:39:23.401Z>
+Review current unit-related code including existing types, interfaces, and usage patterns in combat and UI systems. Plan comprehensive migration strategy from old to new Unit model by identifying all current usages across the codebase. Update all references throughout the application to utilize the new Unit class structure, ensuring seamless integration with existing combat logic and UI components. Conduct thorough testing and refactoring to maintain compatibility and functionality. Document all changes with detailed code comments and create migration notes outlining the transition process and any breaking changes.
+</info added on 2025-06-29T03:39:23.401Z>
+
+## 2. Implement Attack Model with Damage Calculation Logic [pending]
+### Dependencies: 1.1
+### Description: Design and implement the Attack model containing damage calculation algorithms, attack types, and combat mechanics
+### Details:
+Create Attack class with damage calculation methods, attack type enumeration (physical, magical, ranged, etc.), damage formulas incorporating base damage, modifiers, and random factors. Include critical hit logic, damage resistance calculations, and attack validation. Integrate with Unit model for attack execution.
+
+## 3. Design TargetingRule Interface System [pending]
+### Dependencies: 1.1
+### Description: Create a flexible TargetingRule interface system to handle various targeting mechanics and constraints
+### Details:
+Define TargetingRule interface with methods for target validation, range checking, line-of-sight calculations, and area-of-effect targeting. Implement concrete targeting rule classes for different scenarios (single target, multi-target, friendly fire, etc.). Include targeting priority algorithms and constraint validation.
+
+## 4. Implement CharacterSheet with Base Stats Structure [pending]
+### Dependencies: 1.1
+### Description: Design the CharacterSheet model containing all base character statistics and attribute management
+### Details:
+Create CharacterSheet class with core attributes (strength, dexterity, intelligence, etc.), health/mana pools, level progression system, and stat modification methods. Include stat validation, bounds checking, and persistence mechanisms. Design for extensibility to support different character classes and custom attributes.
+
+## 5. Develop CombatStats Derivation System with Relationships Documentation [pending]
+### Dependencies: 1.2, 1.4
+### Description: Create the CombatStats system that derives combat-relevant statistics from base stats and documents all model relationships
+### Details:
+Implement CombatStats class that calculates derived statistics (attack power, defense, accuracy, etc.) from CharacterSheet base stats. Create comprehensive documentation of relationships between Unit, Attack, CharacterSheet, and CombatStats models. Include dependency mapping, data flow diagrams, and integration patterns for the complete combat system.
+

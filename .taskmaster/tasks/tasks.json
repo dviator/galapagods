@@ -3,501 +3,458 @@
     "tasks": [
       {
         "id": 1,
-        "title": "Create Core Types and Interfaces",
-        "description": "Define TypeScript interfaces and types for the game state, phases, characters, enemies, and upgrades to establish a strong foundation for the refactored codebase.",
-        "details": "Create a types.ts file with interfaces for:\n- GamePhase type: 'combat' | 'shop' | 'death' | 'lab'\n- Character interface with stats, health, abilities\n- Enemy interface extending or similar to Character\n- Upgrade interface for shop items\n- GameState interface containing current phase, characters, enemies, run progress\n- Combat-related types for actions, results, etc.\n\nExample structure:\n```typescript\nexport type GamePhase = 'combat' | 'shop' | 'death' | 'lab';\n\nexport interface Character {\n  id: string;\n  name: string;\n  health: number;\n  maxHealth: number;\n  attack: number;\n  defense: number;\n  // other stats\n}\n\nexport interface GameState {\n  currentPhase: GamePhase;\n  playerTeam: Character[];\n  enemies: Enemy[];\n  runNumber: number;\n  // other state\n}\n```",
-        "testStrategy": "Verify all interfaces compile correctly and can be imported by other modules. Create sample objects for each interface to ensure they're properly structured.",
+        "title": "Design and Document Core Data Models",
+        "description": "Define the foundational data structures for units, attacks, targeting rules, and character sheets with clear documentation",
+        "details": "Create TypeScript interfaces/classes for: Unit (base properties like id, name, type), Attack (name, damage calculation, targeting rule), TargetingRule (enum/interface for different targeting patterns), CharacterSheet (base stats like strength, agility), and CombatStats (derived stats like attack, initiative). Document the relationships between these models in code comments or markdown. Use composition over inheritance where possible for extensibility.",
+        "testStrategy": "Write unit tests to validate data model integrity, ensure proper inheritance/composition, and verify that combat stats are correctly derived from character sheet base stats",
         "priority": "high",
         "dependencies": [],
-        "status": "done",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Define GamePhase type and enums",
-            "description": "Create TypeScript enums and types for game phases including menu, playing, paused, game over, and upgrade phases. Define phase transition logic and validation.",
+            "title": "Design Unit Model Definition",
+            "description": "Create the foundational Unit model class with core properties, methods, and interfaces that will serve as the base for all game entities",
             "dependencies": [],
-            "details": "Implement GamePhase enum with all possible game states, create type guards for phase validation, and establish phase transition rules with proper TypeScript typing.",
-            "status": "done",
+            "details": "Define Unit class structure including unique identifiers, name, type classification, position/location properties, state management (active/inactive/destroyed), and base interface methods. Establish inheritance patterns and extensibility points for specialized unit types. Include validation rules and serialization support.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Create Character and Enemy interfaces",
-            "description": "Design comprehensive interfaces for player character and enemy entities including stats, abilities, position, and behavior properties with proper TypeScript typing.",
+            "title": "Implement Attack Model with Damage Calculation Logic",
+            "description": "Design and implement the Attack model containing damage calculation algorithms, attack types, and combat mechanics",
             "dependencies": [
               1
             ],
-            "details": "Define Character interface with health, damage, position, abilities, and upgrade properties. Create Enemy interface extending base entity properties with AI behavior, spawn patterns, and difficulty scaling attributes.",
-            "status": "done",
+            "details": "Create Attack class with damage calculation methods, attack type enumeration (physical, magical, ranged, etc.), damage formulas incorporating base damage, modifiers, and random factors. Include critical hit logic, damage resistance calculations, and attack validation. Integrate with Unit model for attack execution.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Design Upgrade and GameState interfaces",
-            "description": "Create interfaces for upgrade system and overall game state management including player progress, unlocked upgrades, and persistent game data.",
+            "title": "Design TargetingRule Interface System",
+            "description": "Create a flexible TargetingRule interface system to handle various targeting mechanics and constraints",
             "dependencies": [
-              1,
-              2
+              1
             ],
-            "details": "Define Upgrade interface with type, rarity, effects, and prerequisites. Create GameState interface encompassing current phase, player stats, active upgrades, wave progress, and serializable game data.",
-            "status": "done",
+            "details": "Define TargetingRule interface with methods for target validation, range checking, line-of-sight calculations, and area-of-effect targeting. Implement concrete targeting rule classes for different scenarios (single target, multi-target, friendly fire, etc.). Include targeting priority algorithms and constraint validation.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 4,
-            "title": "Implement and test combat-related types and sample objects",
-            "description": "Create concrete implementations of combat types, damage calculations, and status effects. Generate sample objects and write unit tests to validate type correctness and extensibility.",
+            "title": "Implement CharacterSheet with Base Stats Structure",
+            "description": "Design the CharacterSheet model containing all base character statistics and attribute management",
             "dependencies": [
-              1,
-              2,
-              3
+              1
             ],
-            "details": "Implement damage types, status effects, combat calculations, and weapon interfaces. Create sample character, enemy, and upgrade objects. Write comprehensive unit tests to validate type safety, interface compliance, and extensibility requirements.",
-            "status": "done",
+            "details": "Create CharacterSheet class with core attributes (strength, dexterity, intelligence, etc.), health/mana pools, level progression system, and stat modification methods. Include stat validation, bounds checking, and persistence mechanisms. Design for extensibility to support different character classes and custom attributes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Develop CombatStats Derivation System with Relationships Documentation",
+            "description": "Create the CombatStats system that derives combat-relevant statistics from base stats and documents all model relationships",
+            "dependencies": [
+              2,
+              4
+            ],
+            "details": "Implement CombatStats class that calculates derived statistics (attack power, defense, accuracy, etc.) from CharacterSheet base stats. Create comprehensive documentation of relationships between Unit, Attack, CharacterSheet, and CombatStats models. Include dependency mapping, data flow diagrams, and integration patterns for the complete combat system.",
+            "status": "pending",
             "testStrategy": ""
           }
         ]
       },
       {
         "id": 2,
-        "title": "Implement Phase Management System",
-        "description": "Create a centralized phase management system with state management for tracking and transitioning between game phases (combat, shop, death, lab).",
-        "details": "Create a phaseManager.ts utility file with:\n- Phase state management using React Context or useState\n- Functions for phase transitions: transitionToShop(), transitionToDeath(), transitionToLab(), startNewRun()\n- Phase validation logic to ensure valid transitions\n- Event handlers for automatic phase transitions based on game state\n\nImplement PhaseContext:\n```typescript\ninterface PhaseContextType {\n  currentPhase: GamePhase;\n  transitionToPhase: (phase: GamePhase) => void;\n  canTransition: (from: GamePhase, to: GamePhase) => boolean;\n}\n\nexport const PhaseProvider: React.FC<{children: ReactNode}> = ({children}) => {\n  const [currentPhase, setCurrentPhase] = useState<GamePhase>('combat');\n  // implementation\n};\n```",
-        "testStrategy": "Test all phase transitions work correctly, validate that invalid transitions are prevented, and ensure phase state persists correctly during component re-renders.",
+        "title": "Implement Unit Factory and Registry System",
+        "description": "Create a factory pattern for unit creation and a registry system to manage available units and attacks",
+        "details": "Implement UnitFactory class with methods like createPlayerUnit(type) and createEnemyUnit(type). Create UnitRegistry to store unit templates and AttackRegistry for attack definitions. Use enum or constants for unit types (BEAR, TIGER, EAGLE, GOOBER). Factory should instantiate units with proper character sheets and attacks based on type. Registry should support easy addition of new unit types without modifying existing code.",
+        "testStrategy": "Test factory creation of all unit types, verify registry contains expected units/attacks, ensure factory throws appropriate errors for invalid types, and validate that created units have correct default stats and attacks",
         "priority": "high",
         "dependencies": [
           1
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Set up phase state management (React Context/useState)",
-            "description": "Create a centralized state management system for phase tracking using React Context API and useState hooks. Define the phase state structure, initial values, and context provider component.",
+            "title": "Implement unit type constants and enums with validation logic",
+            "description": "Create comprehensive enums and constants for unit types, attributes, and properties. Include validation methods to ensure data integrity and type safety across the unit system.",
             "dependencies": [],
-            "details": "Implement PhaseContext with provider component, define phase state interface, set up initial phase values, create custom hooks for consuming phase state, and establish state update patterns.",
-            "status": "done",
+            "details": "Define UnitType enum, AttributeType enum, unit property constants, and validation functions for unit parameters. Include error handling for invalid unit configurations and type checking utilities.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Implement phase transition functions",
-            "description": "Develop core functions to handle transitions between different phases, including forward and backward navigation, conditional transitions, and state updates.",
+            "title": "Develop AttackRegistry for attack definitions and management",
+            "description": "Create a registry system to store, retrieve, and manage attack definitions including damage types, effects, and attack patterns. Implement methods for attack registration and lookup.",
             "dependencies": [
               1
             ],
-            "details": "Create transition functions for each phase change, implement phase progression logic, handle edge cases for invalid transitions, ensure proper state updates, and maintain transition history.",
-            "status": "done",
+            "details": "Build AttackRegistry class with methods for registering attacks, retrieving attack data, validating attack definitions, and managing attack templates. Include support for different damage types and special effects.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Add phase validation logic",
-            "description": "Implement validation rules and checks to ensure phase transitions are valid and meet required conditions before allowing progression.",
+            "title": "Build UnitRegistry system for storing unit templates",
+            "description": "Implement a registry pattern to store and manage unit templates with efficient lookup and retrieval mechanisms. Include template validation and error handling for missing or invalid templates.",
             "dependencies": [
-              1,
-              2
+              1
             ],
-            "details": "Define validation schemas for each phase, implement validation functions, create error handling for invalid states, add pre-transition checks, and ensure data integrity across phases.",
-            "status": "done",
+            "details": "Create UnitRegistry class with template storage, retrieval methods, template validation, and caching mechanisms. Support for template inheritance and composition patterns.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 4,
-            "title": "Create event handlers for automatic transitions",
-            "description": "Develop event-driven mechanisms to automatically trigger phase transitions based on user actions, time-based events, or external conditions.",
+            "title": "Create UnitFactory class with unit creation methods",
+            "description": "Implement the factory pattern for unit creation using registered templates and attack definitions. Include methods for creating units with proper initialization and dependency injection.",
             "dependencies": [
               2,
               3
             ],
-            "details": "Implement event listeners for automatic transitions, create timer-based phase changes, handle user interaction events, set up conditional auto-progression, and manage event cleanup.\n<info added on 2025-06-27T20:23:23.709Z>\nCombat to shop transition modified to be manual instead of automatic. User must click a button to proceed from combat screen to shop, allowing time to display rewards or combat summary. Future enhancement planned to add rewards indication before shop transition.\n</info added on 2025-06-27T20:23:23.709Z>",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Write tests for all transitions and persistence",
-            "description": "Create comprehensive test suites covering all phase transitions, validation logic, event handling, and state persistence scenarios.",
-            "dependencies": [
-              1,
-              2,
-              3,
-              4
-            ],
-            "details": "Write unit tests for phase transitions, test validation logic, create integration tests for event handlers, test state persistence, mock external dependencies, and ensure edge case coverage.",
-            "status": "done",
+            "details": "Build UnitFactory class with createUnit methods, template-based instantiation, attack assignment, unit initialization, and error handling for creation failures. Integrate with both registries for complete unit assembly.",
+            "status": "pending",
             "testStrategy": ""
           }
         ]
       },
       {
         "id": 3,
-        "title": "Create Phase Tracker UI Component",
-        "description": "Build a persistent phase tracker component that displays on the left side of the screen, showing the current phase and overall game loop progress.",
-        "details": "Create PhaseTracker.tsx component:\n- Fixed position on the left side of the screen\n- Visual indicators for each phase (combat, shop, death, lab)\n- Highlight current active phase\n- Show progression through the game loop\n- Use Tailwind CSS for styling with modern, clean design\n\nComponent structure:\n```tsx\ninterface PhaseTrackerProps {\n  currentPhase: GamePhase;\n  runNumber: number;\n}\n\nexport const PhaseTracker: React.FC<PhaseTrackerProps> = ({currentPhase, runNumber}) => {\n  const phases = ['combat', 'shop', 'death', 'lab'];\n  return (\n    <div className=\"fixed left-0 top-0 h-full w-48 bg-gray-800 text-white p-4\">\n      {/* phase indicators */}\n    </div>\n  );\n};\n```",
-        "testStrategy": "Verify the component renders correctly, updates when phase changes, maintains fixed position, and displays proper visual feedback for active phase.",
-        "priority": "medium",
+        "title": "Implement Character Sheet System",
+        "description": "Build the character sheet system that stores base stats and derives active combat stats for all units",
+        "details": "Create CharacterSheet class with base stats (strength, agility, health, etc.). Implement stat derivation logic: attack = strength + weapon_bonus, initiative = agility + speed_bonus, etc. Each unit type should have predefined base stats. Create methods like getAttackStat(), getInitiativeStat(), getHealthStat(). Ensure the system is extensible for future stat additions and modifications.",
+        "testStrategy": "Unit tests for stat calculations, verify base stats are correctly set for each unit type, test stat derivation formulas, and ensure character sheet modifications properly update derived combat stats",
+        "priority": "high",
         "dependencies": [
-          1,
-          2
+          1
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 4,
-        "title": "Refactor Combat System into Separate Module",
-        "description": "Extract the existing combat simulator logic into a dedicated Combat component and supporting utility functions, maintaining all current functionality while making it modular.",
-        "details": "Create Combat.tsx component and combatUtils.ts:\n- Move existing combat logic into Combat component\n- Extract combat calculations into combatUtils.ts (damage calculation, turn order, etc.)\n- Implement automatic transition to shop phase when all enemies defeated\n- Keep Reset button functionality for development (resets current combat only)\n- Maintain existing combat UI and interactions\n\nCombat component structure:\n```tsx\ninterface CombatProps {\n  playerTeam: Character[];\n  enemies: Enemy[];\n  onCombatEnd: (result: 'victory' | 'defeat') => void;\n  onReset: () => void;\n}\n\nexport const Combat: React.FC<CombatProps> = (props) => {\n  // combat logic implementation\n};\n```",
-        "testStrategy": "Ensure all existing combat functionality works identically, verify automatic phase transitions trigger correctly, and test that Reset button only affects current combat state.",
+        "title": "Implement Core Targeting System",
+        "description": "Build the targeting rule engine that determines valid targets for different attack types",
+        "details": "Create TargetingEngine class with methods for different targeting patterns: targetInFront(), targetOneRight(), etc. Implement position-based targeting logic considering unit positions on battlefield. Create TargetingRule interface with execute(attacker, battlefield) method. Support for 'no valid target' scenarios. Make system extensible for future targeting patterns like area-of-effect, random target, etc.",
+        "testStrategy": "Test each targeting rule with various battlefield configurations, verify correct target selection, test edge cases like no valid targets, and ensure targeting works correctly with different unit positions",
         "priority": "high",
         "dependencies": [
-          1,
-          2
+          1
         ],
-        "status": "done",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design TargetingEngine Class Structure",
+            "description": "Create the main TargetingEngine class with core architecture for managing targeting operations, rule registration, and target validation",
+            "dependencies": [],
+            "details": "Implement TargetingEngine class with methods for rule registration, target calculation, battlefield state management, and coordinate system handling. Include constructor for battlefield dimensions and unit positioning.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Define TargetingRule Interface",
+            "description": "Create the TargetingRule interface with standardized execution methods for all targeting patterns",
+            "dependencies": [
+              1
+            ],
+            "details": "Design interface with methods like execute(), validateTarget(), calculateTargets(), and getTargetPositions(). Include parameters for source position, battlefield state, and targeting constraints.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Individual Targeting Rule Classes",
+            "description": "Create concrete implementations for directional targeting rules (front, right, left, back, diagonal, etc.)",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement FrontTargetingRule, RightTargetingRule, LeftTargetingRule, BackTargetingRule, and DiagonalTargetingRule classes. Each should handle position calculations, range validation, and obstacle detection.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Develop Position-Based Battlefield Logic",
+            "description": "Implement battlefield coordinate system, position validation, and spatial relationship calculations",
+            "dependencies": [
+              1
+            ],
+            "details": "Create BattlefieldGrid class with coordinate mapping, distance calculations, line-of-sight algorithms, and position validation. Include methods for checking valid moves and target accessibility.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Edge Case Handling and Validation",
+            "description": "Add comprehensive error handling for invalid targets, out-of-bounds positions, and edge battlefield scenarios",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Implement validation for null targets, boundary checking, friendly fire prevention, obstacle collision detection, and invalid rule combinations. Include exception handling and fallback targeting strategies.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 5,
-        "title": "Implement Shop Phase Component",
-        "description": "Create a Shop component that displays placeholder upgrades for characters and the Lab, allowing players to simulate purchasing upgrades before continuing to the next combat.",
-        "details": "Create Shop.tsx component:\n- Display list of placeholder upgrades (character stat boosts, lab improvements)\n- Implement \"buy\" functionality (simulate purchase without real currency)\n- Add \"Continue\" button to proceed to next combat phase\n- Generate more difficult enemies for next combat round\n- Use Tailwind CSS for clean, modern shop interface\n\nShop structure:\n```tsx\ninterface ShopProps {\n  playerTeam: Character[];\n  onContinue: () => void;\n  onUpgradePurchased: (upgrade: Upgrade) => void;\n}\n\nconst placeholderUpgrades = [\n  { id: '1', name: 'Health Boost', description: '+10 Health', cost: 100 },\n  { id: '2', name: 'Attack Upgrade', description: '+5 Attack', cost: 150 },\n  // more upgrades\n];\n```",
-        "testStrategy": "Verify shop displays correctly, upgrade purchase simulation works, Continue button transitions to combat phase, and enemy difficulty increases appropriately.",
-        "priority": "medium",
+        "title": "Implement Player Units (Bear, Tiger, Eagle)",
+        "description": "Create the three player units with their unique attacks and character sheets",
+        "details": "Implement Bear unit with Slash attack (targets enemy in front), Tiger with Pounce attack (targets enemy in front), and Eagle with Swoop attack (targets enemy one to the right). Each unit should have distinct base stats in their character sheets. Define attack damage calculations and ensure proper integration with targeting system. Store attack names for UI display.",
+        "testStrategy": "Test each unit's attack targeting and damage calculation, verify character sheet stats are correctly applied, test attack execution in various battlefield scenarios, and ensure attack names are properly stored and accessible",
+        "priority": "high",
         "dependencies": [
-          1,
-          2
+          2,
+          3,
+          4
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 6,
-        "title": "Create Death Phase Component",
-        "description": "Implement a Death screen that displays when all player characters die, showing game over state and automatically transitioning to Lab phase after delay or user interaction.",
-        "details": "Create Death.tsx component:\n- Display game over message/image when all player characters are defeated\n- Show run statistics (rounds survived, enemies defeated, etc.)\n- Implement automatic transition to Lab phase after delay or button click\n- Use dramatic, appropriate styling for game over state\n\nDeath component:\n```tsx\ninterface DeathProps {\n  runStats: {\n    roundsSurvived: number;\n    enemiesDefeated: number;\n    upgradesPurchased: number;\n  };\n  onContinue: () => void;\n}\n\nexport const Death: React.FC<DeathProps> = ({runStats, onContinue}) => {\n  useEffect(() => {\n    const timer = setTimeout(onContinue, 3000); // auto-advance after 3s\n    return () => clearTimeout(timer);\n  }, [onContinue]);\n  // render death screen\n};\n```",
-        "testStrategy": "Test that death screen appears when all characters die, displays correct statistics, and transitions to Lab phase automatically or on user input.",
+        "title": "Implement Enemy Unit (Goober)",
+        "description": "Create the Goober enemy unit with its Slam attack and appropriate stats",
+        "details": "Implement Goober enemy unit with Slam attack that targets enemy in front. Define appropriate base stats for enemy balance. Ensure Goober integrates properly with the unit factory and targeting system. Consider enemy-specific behavior patterns if needed for future AI implementation.",
+        "testStrategy": "Test Goober creation through factory, verify Slam attack targeting and damage, ensure proper integration with combat system, and test enemy unit behavior in combat scenarios",
         "priority": "medium",
         "dependencies": [
-          1,
-          2
+          2,
+          3,
+          4
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 7,
-        "title": "Implement Lab Phase Placeholder Component",
-        "description": "Create a placeholder Lab component that will eventually house evolution/breeding mechanics, currently displaying a coming soon message and allowing players to start a new run.",
-        "details": "Create Lab.tsx component:\n- Display placeholder message: \"Lab/Evolution phase coming soon\"\n- Show concept art or wireframes for future evolution system\n- Implement \"Start New Run\" button that resets game state\n- Reset upgrades, generate new team, reset run counter\n- Prepare component structure for future evolution mechanics\n\nLab component:\n```tsx\ninterface LabProps {\n  onStartNewRun: () => void;\n}\n\nexport const Lab: React.FC<LabProps> = ({onStartNewRun}) => {\n  const handleNewRun = () => {\n    // Reset game state\n    onStartNewRun();\n  };\n  \n  return (\n    <div className=\"flex flex-col items-center justify-center h-full\">\n      <h1>Lab/Evolution Phase</h1>\n      <p>Coming Soon...</p>\n      <button onClick={handleNewRun}>Start New Run</button>\n    </div>\n  );\n};\n```",
-        "testStrategy": "Verify placeholder displays correctly, Start New Run button resets all game state properly, and component is structured to easily add evolution features later.",
-        "priority": "low",
+        "title": "Implement Combat Logic and Turn Management",
+        "description": "Build the core combat engine that manages turn order, attack execution, and missed attack handling",
+        "details": "Create CombatEngine class to manage turn-based combat flow. Implement initiative-based turn order using derived stats. Handle attack execution by calling targeting system and applying damage. Implement missed attack logic: when no valid target exists, move to next unit to the left. Manage combat state transitions and victory/defeat conditions.",
+        "testStrategy": "Test turn order calculation based on initiative, verify attack execution and damage application, test missed attack handling with various scenarios, and ensure proper combat state management throughout battles",
+        "priority": "high",
         "dependencies": [
-          1,
-          2
+          5,
+          6
         ],
-        "status": "done",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "CombatEngine class structure",
+            "description": "Design and implement the core CombatEngine class with proper initialization, state variables, and method organization for managing combat flow",
+            "dependencies": [],
+            "details": "Create the main CombatEngine class with constructor, private/public methods for combat orchestration, state management variables, and integration points for other combat systems. Include proper error handling and logging mechanisms.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Initiative-based turn order calculation",
+            "description": "Implement the initiative system that determines combat turn order based on unit stats and random factors",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop algorithm to calculate initiative values for all combat participants, sort units by initiative, handle tie-breaking scenarios, and maintain turn order queue throughout combat rounds.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Attack execution and damage application logic",
+            "description": "Create the core attack resolution system that processes attacks and applies damage to targets",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement hit/miss calculations, damage computation based on attacker/defender stats, critical hit mechanics, damage type considerations, and health reduction with proper validation and bounds checking.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Missed attack handling with unit repositioning",
+            "description": "Develop system for handling missed attacks including potential unit movement and positioning changes",
+            "dependencies": [
+              3
+            ],
+            "details": "Create logic for miss consequences, unit repositioning mechanics when attacks fail, collision detection for movement, and updating unit positions on the battlefield grid while maintaining combat flow.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Combat state management",
+            "description": "Implement comprehensive combat state tracking and transition management system",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Design state machine for combat phases (initialization, turn execution, resolution), track active effects, manage unit status conditions, handle state persistence, and ensure proper state transitions with validation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Victory/defeat condition detection",
+            "description": "Create system to detect and handle combat end conditions including victory, defeat, and draw scenarios",
+            "dependencies": [
+              3,
+              5
+            ],
+            "details": "Implement win/loss condition checking after each action, handle multiple victory conditions (elimination, objectives, time limits), trigger appropriate end-game events, and clean up combat state upon completion.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 8,
-        "title": "Create Game State Management System",
-        "description": "Implement centralized game state management to handle player team, enemies, upgrades, run progress, and coordinate between all game phases.",
-        "details": "Create gameState.ts with React Context for global state:\n- Manage player team, current enemies, purchased upgrades\n- Track run statistics and progression\n- Handle enemy difficulty scaling between rounds\n- Implement state reset for new runs\n- Provide actions for state updates from each phase\n\nGameState implementation:\n```typescript\ninterface GameStateContextType {\n  gameState: GameState;\n  updatePlayerTeam: (team: Character[]) => void;\n  generateEnemies: (difficulty: number) => void;\n  purchaseUpgrade: (upgrade: Upgrade) => void;\n  resetForNewRun: () => void;\n  incrementRound: () => void;\n}\n\nexport const GameStateProvider: React.FC<{children: ReactNode}> = ({children}) => {\n  const [gameState, setGameState] = useState<GameState>(initialState);\n  // implementation\n};\n```",
-        "testStrategy": "Test that state updates correctly across all phases, enemy difficulty scales properly, upgrades persist between combats, and new run reset works completely.",
-        "priority": "high",
+        "title": "Implement Run Initialization System",
+        "description": "Create the system that initializes each run with Bear, Tiger, and Eagle as the starting team",
+        "details": "Implement RunManager or GameInitializer class that creates a new run with the default team composition. Use the unit factory to create Bear, Tiger, and Eagle instances. Set up initial team positioning and ensure proper integration with combat system. Prepare foundation for future team customization features.",
+        "testStrategy": "Test run initialization creates correct starting team, verify all three units are properly instantiated with correct stats and attacks, and ensure team is ready for combat engagement",
+        "priority": "medium",
         "dependencies": [
-          1,
-          2
+          5
         ],
         "status": "pending",
         "subtasks": []
       },
       {
         "id": 9,
-        "title": "Implement Main App Router and Layout",
-        "description": "Refactor main.tsx to focus on high-level app structure, routing between phases, and coordinating the overall game loop with the phase tracker and main content area.",
-        "details": "Refactor main.tsx to be the central coordinator:\n- Implement main layout with PhaseTracker on left, content area on right\n- Route between phase components based on current phase state\n- Handle automatic phase transitions based on game events\n- Integrate all context providers (Phase, GameState)\n- Maintain clean separation of concerns\n\nMain app structure:\n```tsx\nfunction App() {\n  return (\n    <GameStateProvider>\n      <PhaseProvider>\n        <div className=\"flex h-screen\">\n          <PhaseTracker />\n          <main className=\"flex-1 ml-48\">\n            <PhaseRouter />\n          </main>\n        </div>\n      </PhaseProvider>\n    </GameStateProvider>\n  );\n}\n\nconst PhaseRouter = () => {\n  const { currentPhase } = usePhase();\n  switch(currentPhase) {\n    case 'combat': return <Combat />;\n    case 'shop': return <Shop />;\n    case 'death': return <Death />;\n    case 'lab': return <Lab />;\n  }\n};\n```",
-        "testStrategy": "Verify proper routing between all phases, layout renders correctly with phase tracker, and all context providers work together without conflicts.",
-        "priority": "high",
+        "title": "Update Combat UI to Display Attack Names",
+        "description": "Modify the combat screen UI to show each unit's attack name in their character card stats section",
+        "details": "Update character card components to display attack names from unit data. Ensure attack names are fetched from the unit's attack property and displayed in the stats section. Maintain clean separation between UI components and combat logic. Consider responsive design for different screen sizes.",
+        "testStrategy": "Visual testing to ensure attack names appear correctly on character cards, test with all unit types, verify UI updates when units change, and ensure proper responsive behavior across different screen sizes",
+        "priority": "medium",
         "dependencies": [
-          3,
-          4,
-          5,
-          6,
-          7,
-          8
+          7
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 10,
-        "title": "Implement Automatic Phase Transitions",
-        "description": "Create the logic for automatic transitions between phases based on game state changes (combat victory/defeat, shop completion, death screen timeout).",
-        "details": "Implement transition logic in each component and phase manager:\n- Combat → Shop: When all enemies defeated\n- Combat → Death: When all player characters die\n- Shop → Combat: When Continue button clicked\n- Death → Lab: After timeout or button click\n- Lab → Combat: When Start New Run clicked\n\nTransition handlers:\n```typescript\nconst usePhaseTransitions = () => {\n  const { transitionToPhase } = usePhase();\n  const { gameState } = useGameState();\n  \n  const handleCombatEnd = (result: 'victory' | 'defeat') => {\n    if (result === 'victory') {\n      transitionToPhase('shop');\n    } else {\n      transitionToPhase('death');\n    }\n  };\n  \n  const handleShopContinue = () => {\n    transitionToPhase('combat');\n  };\n  \n  // other transition handlers\n};\n```",
-        "testStrategy": "Test all automatic transitions work correctly, verify transitions happen at appropriate times, and ensure no invalid or stuck states occur.",
-        "priority": "high",
+        "title": "Implement Dev-Only Unit and Attack Preview Panel",
+        "description": "Create a development tool that displays all available units, attacks, targeting rules, and sample stats",
+        "details": "Create a dev-only component or console output that lists all registered units and attacks. Display targeting rules, sample stats, and attack descriptions. Include toggle or environment variable to show/hide this panel. Format output clearly for debugging and verification purposes. Consider both UI panel and console.log options.",
+        "testStrategy": "Verify dev panel shows all registered units and attacks, test that targeting rules are correctly displayed, ensure panel only appears in development environment, and validate that information is accurate and helpful for debugging",
+        "priority": "low",
         "dependencies": [
-          9
+          2,
+          4
         ],
-        "status": "done",
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Core Combat Unit Tests",
+        "description": "Write comprehensive unit tests for the core combat logic, targeting system, and character sheet calculations",
+        "details": "Create test suites for: unit factory and registry, character sheet stat calculations, targeting rule execution, combat engine turn management, and attack damage calculations. Use testing framework like Jest or Vitest. Mock UI components to test core logic in isolation. Achieve reasonable code coverage for critical combat paths.",
+        "testStrategy": "Ensure all tests pass consistently, verify code coverage meets minimum requirements, test edge cases and error conditions, and validate that tests properly isolate core logic from UI components",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 12,
-        "title": "Polish UI and Add Final Integration Testing",
-        "description": "Apply final UI polish with consistent Tailwind styling across all components, ensure responsive design, and conduct comprehensive integration testing of the complete game loop.",
-        "details": "Final polish and testing:\n- Apply consistent color scheme and typography across all components\n- Ensure responsive design works on different screen sizes\n- Add loading states and smooth transitions between phases\n- Implement proper error boundaries and error handling\n- Add accessibility features (ARIA labels, keyboard navigation)\n- Comprehensive testing of full game loop multiple times\n\nUI consistency checklist:\n- Consistent button styles and hover states\n- Unified color palette and spacing\n- Proper loading and disabled states\n- Smooth animations for phase transitions\n- Mobile-responsive layout adjustments\n\nIntegration testing:\n```typescript\n// Test complete game loop\nconst testGameLoop = async () => {\n  // Start combat → win → shop → continue → combat → lose → death → lab → new run\n  // Verify all transitions and state changes work correctly\n};\n```",
-        "testStrategy": "Conduct full end-to-end testing of multiple complete game loops, verify UI consistency across all components, test responsive behavior, and ensure no memory leaks or performance issues.",
-        "priority": "medium",
+        "title": "Integration Testing and System Validation",
+        "description": "Perform end-to-end testing of the complete combat system and validate all acceptance criteria",
+        "details": "Test complete combat scenarios from run initialization through combat resolution. Verify all acceptance criteria are met: proper unit creation, attack execution, UI display, missed attack handling, and extensibility. Test integration between all system components. Validate performance and responsiveness requirements.",
+        "testStrategy": "Execute comprehensive integration tests covering full combat scenarios, validate all acceptance criteria through automated and manual testing, perform performance testing for combat responsiveness, and ensure system meets all functional and non-functional requirements",
+        "priority": "high",
         "dependencies": [
+          8,
+          9,
           10,
           11
         ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 13,
-        "title": "Extract Persistent GameLayout Component",
-        "description": "Create a persistent GameLayout component that wraps all phase screens with a consistent layout structure including phase tracker at top, control panel area at bottom left, and main content area.",
-        "details": "Create GameLayout.tsx component to provide consistent layout structure:\n- Extract layout logic from main.tsx into dedicated GameLayout component\n- Position phase tracker (Run #, Round #) at the top of the screen, persistent across all phases\n- Reserve fixed area at bottom left for control panel (development tools, reset buttons)\n- Provide main content area that dynamically renders current phase component\n- Use CSS Grid or Flexbox for responsive layout structure\n- Ensure layout remains stable during phase transitions\n\nGameLayout component structure:\n```tsx\ninterface GameLayoutProps {\n  children: React.ReactNode;\n  currentPhase: GamePhase;\n  runNumber: number;\n  roundNumber: number;\n}\n\nexport const GameLayout: React.FC<GameLayoutProps> = ({\n  children,\n  currentPhase,\n  runNumber,\n  roundNumber\n}) => {\n  return (\n    <div className=\"h-screen grid grid-rows-[auto_1fr_auto]\">\n      {/* Top: Phase Tracker */}\n      <header className=\"bg-gray-800 text-white p-4\">\n        <div className=\"flex justify-between items-center\">\n          <h1>Game Title</h1>\n          <div className=\"text-lg font-semibold\">\n            Run #{runNumber} - Round #{roundNumber}\n          </div>\n        </div>\n      </header>\n      \n      {/* Main Content Area */}\n      <main className=\"flex-1 overflow-auto p-4\">\n        {children}\n      </main>\n      \n      {/* Bottom Left: Control Panel Area */}\n      <footer className=\"bg-gray-100 p-4\">\n        <div className=\"flex justify-start\">\n          <div className=\"control-panel-area\">\n            {/* Reserved space for control panel */}\n          </div>\n        </div>\n      </footer>\n    </div>\n  );\n};\n```\n\nIntegration steps:\n- Update main.tsx to use GameLayout wrapper around phase components\n- Pass phase information and game state to layout component\n- Ensure all phase components render properly within the main content area\n- Maintain existing functionality while improving layout consistency",
-        "testStrategy": "Verify GameLayout renders correctly with all phase components (Combat, Shop, Death, Lab), confirm phase tracker displays accurate run/round numbers and updates properly during transitions, test that control panel area is properly reserved and accessible, ensure layout remains stable during phase changes without flickering or repositioning, verify responsive behavior on different screen sizes, and test that all existing functionality continues to work within the new layout structure.",
-        "status": "done",
-        "dependencies": [
-          3,
-          9
-        ],
-        "priority": "medium",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create GameLayout Component with Phase Tracker",
-            "description": "Create the GameLayout.tsx component with a persistent phase tracker at the top that displays run and round numbers across all game phases.",
-            "dependencies": [],
-            "details": "Create src/components/GameLayout.tsx with the interface GameLayoutProps including children, currentPhase, runNumber, and roundNumber. Implement the component using CSS Grid with grid-rows-[auto_1fr_auto] for three-section layout. Add header section with game title on left and 'Run #{runNumber} - Round #{roundNumber}' on right. Use Tailwind classes: bg-gray-800 text-white p-4 for header styling, flex justify-between items-center for header layout, and text-lg font-semibold for phase tracker text.",
-            "status": "done",
-            "testStrategy": "Test component renders correctly with different run/round numbers, verify header layout is responsive, and confirm phase tracker displays properly"
-          },
-          {
-            "id": 2,
-            "title": "Add Main Content Area to GameLayout",
-            "description": "Implement the main content area in GameLayout that will dynamically render the current phase component as children with proper overflow handling.",
-            "dependencies": [
-              1
-            ],
-            "details": "Add main element to GameLayout with flex-1 overflow-auto p-4 classes to create scrollable content area that takes remaining vertical space. Render {children} prop within this main section. Ensure the content area properly handles different phase components and maintains consistent padding. The main area should expand to fill available space between header and footer.",
-            "status": "done",
-            "testStrategy": "Test with mock phase components of varying heights, verify scrolling works when content exceeds viewport, and confirm consistent padding across different phases"
-          },
-          {
-            "id": 3,
-            "title": "Add Control Panel Area to GameLayout Footer",
-            "description": "Implement the footer section with a reserved fixed area at bottom left specifically for control panel components like development tools and reset buttons.",
-            "dependencies": [
-              2
-            ],
-            "details": "Add footer element with bg-gray-100 p-4 classes. Inside footer, create div with flex justify-start layout containing a control-panel-area div. This area should be positioned at bottom left and maintain consistent spacing. Add placeholder comment indicating this space is reserved for control panel components. The footer should have fixed height and not interfere with main content scrolling.",
-            "status": "done",
-            "testStrategy": "Verify footer remains at bottom of viewport, confirm control panel area is positioned correctly at bottom left, and test that footer doesn't overlap with main content"
-          },
-          {
-            "id": 4,
-            "title": "Integrate GameLayout into App Component",
-            "description": "Update the main App component to use GameLayout wrapper around phase components, passing necessary game state and ensuring all existing functionality is preserved.",
-            "dependencies": [
-              3
-            ],
-            "details": "Import GameLayout into App.tsx. Wrap the current phase rendering logic with GameLayout component, passing currentPhase, runNumber, and roundNumber as props. Move the phase component rendering (PhaseIntro, PhaseAction, PhaseResults, PhaseEnd) to be children of GameLayout. Remove any existing layout/header code from App.tsx that's now handled by GameLayout. Ensure game state management and phase transitions continue to work correctly.",
-            "status": "done",
-            "testStrategy": "Test all phase transitions work correctly with new layout, verify game state is properly passed to layout, confirm all existing game functionality is preserved, and test responsive behavior across different screen sizes"
-          }
-        ]
-      },
-      {
-        "id": 14,
-        "title": "Stepwise Layout Refactor for Improved Modularity",
-        "description": "Implement a 5-step gradual refactor to improve layout modularity and UI consistency by extracting components and reorganizing the layout structure while maintaining functionality.",
-        "details": "Execute a careful stepwise refactor to improve modularity without breaking existing functionality:\n\n**Step 1: Extract Phase Tracker to GameLayout**\n- Create GameLayout.tsx component that wraps all phase screens\n- Extract only the phase tracker (Run #, Round #) into persistent header\n- Keep all existing screen content and control panels unchanged in their current locations\n- Ensure GameLayout provides consistent wrapper structure\n\n**Step 2: Extract Combat Control Panel Component**\n- Create CombatControlPanel.tsx component for combat phase controls\n- Move combat-specific controls (attack buttons, abilities) into separate component\n- Keep component rendered within CombatScreen to maintain current layout\n- Ensure all state management and event handlers remain local to combat screen\n\n**Step 3: Gradually Move Control Panels to Layout**\n- Modify GameLayout to include dedicated control panel area (bottom-left)\n- Move combat control panel into layout structure, passing state/handlers as props\n- Repeat process for shop and other phase control panels one at a time\n- Maintain backward compatibility during transition\n\n**Step 4: Move Combat Log to Layout**\n- Extract combat log into shared layout component\n- Ensure combat log receives proper state updates from combat system\n- Position log in consistent location across all phases\n- Maintain log persistence and proper state management\n\n**Step 5: Center Non-Combat Screens and Polish**\n- Center shop, death, and lab screens within main content area\n- Apply consistent spacing and alignment across all phases\n- Polish layout transitions and ensure responsive behavior\n- Add final styling touches for professional appearance\n\nComponent structure:\n```tsx\ninterface GameLayoutProps {\n  children: React.ReactNode;\n  currentPhase: GamePhase;\n  runNumber: number;\n  roundNumber: number;\n  controlPanel?: React.ReactNode;\n  combatLog?: CombatLogEntry[];\n}\n```",
-        "testStrategy": "Verify each step independently before proceeding to next step. Test that phase tracker remains persistent and updates correctly across all phases. Confirm control panels maintain full functionality when extracted and moved. Verify combat log displays correctly and receives proper state updates. Test that non-combat screens are properly centered and responsive. Conduct full game loop testing after each step to ensure no functionality is broken. Verify layout remains stable during phase transitions and maintains consistent appearance across all screen sizes.",
-        "status": "done",
-        "dependencies": [
-          13
-        ],
-        "priority": "medium",
-        "subtasks": []
-      },
-      {
-        "id": 15,
-        "title": "Stepwise Layout Refactor for Improved Modularity and UI Consistency",
-        "description": "Implement a 5-step gradual refactor to improve layout modularity and UI consistency by extracting components and reorganizing the layout structure while maintaining functionality.",
-        "details": "Execute a careful stepwise refactor to improve modularity without breaking existing functionality:\n\n**Step 1: Extract Phase Tracker to GameLayout**\n- Create GameLayout.tsx component that wraps all phase screens\n- Extract only the phase tracker (Run #, Round #) into persistent header\n- Keep all existing screen content and control panels unchanged in their current locations\n- Ensure GameLayout provides consistent wrapper structure\n\n**Step 2: Extract Combat Control Panel Component**\n- Create CombatControlPanel.tsx component from existing combat controls\n- Keep component rendered within CombatScreen initially\n- Maintain all state and event handlers as local to CombatScreen\n- Ensure no functionality changes, only code organization\n\n**Step 3: Gradually Move Control Panels to Layout**\n- Move combat control panel into GameLayout component\n- Pass necessary state and handlers as props from phase components\n- Repeat process for other phase control panels one at a time\n- Maintain prop drilling temporarily for state management\n\n**Step 4: Move Combat Log to Layout**\n- Extract combat log into shared layout area\n- Ensure combat log receives proper state updates from combat phase\n- Position log appropriately within GameLayout structure\n- Verify log persists correctly during phase transitions\n\n**Step 5: Center Non-Combat Screens and Polish**\n- Center shop, death, and lab screens within main content area\n- Apply consistent spacing and alignment across all phases\n- Polish layout responsiveness and visual consistency\n- Remove any temporary scaffolding code\n\nEach step should be completed and tested before proceeding to the next to avoid breaking changes.",
-        "testStrategy": "Verify each step independently before proceeding to next step. Test that phase tracker remains persistent and updates correctly across all phases. Confirm control panels maintain full functionality when extracted and moved. Verify combat log displays correctly and receives proper state updates. Test that non-combat screens are properly centered and responsive. Conduct full game loop testing after each step to ensure no regressions. Verify layout remains stable during all phase transitions and maintains visual consistency.",
-        "status": "done",
-        "dependencies": [
-          14
-        ],
-        "priority": "medium",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Extract Phase Tracker to GameLayout Component",
-            "description": "Create a new GameLayout.tsx component that wraps all phase screens and extracts only the phase tracker (Run #, Round #) into a persistent header. Keep all existing screen content and control panels unchanged in their current locations.",
-            "dependencies": [],
-            "details": "Create GameLayout.tsx in components folder. Move the phase tracker display logic from individual screens into the layout header. Wrap the main App component's phase rendering with GameLayout. Ensure the layout provides a consistent wrapper structure with header for phase tracker and main content area for screens. Pass current run and round data as props to GameLayout.",
-            "status": "done",
-            "testStrategy": "Verify phase tracker displays correctly across all phases, ensure no visual regressions in existing screens, test phase transitions maintain tracker state"
-          },
-          {
-            "id": 2,
-            "title": "Extract Combat Control Panel Component",
-            "description": "Create a separate CombatControlPanel.tsx component from the existing combat controls while keeping it rendered within CombatScreen. Maintain all state and event handlers as local to CombatScreen with no functionality changes.",
-            "dependencies": [
-              1
-            ],
-            "details": "Extract combat control buttons (attack, defend, use item, etc.) into CombatControlPanel.tsx. Keep the component imported and rendered within CombatScreen.tsx. Pass all necessary state (player stats, available actions, etc.) and event handlers as props to the new component. Ensure no state management changes - all handlers remain in CombatScreen.",
-            "status": "done",
-            "testStrategy": "Test all combat actions work identically, verify no state management regressions, ensure UI layout remains unchanged"
-          },
-          {
-            "id": 3,
-            "title": "Move Control Panels to GameLayout",
-            "description": "Gradually move the combat control panel into GameLayout component and pass necessary state and handlers as props from phase components. Repeat this process for other phase control panels one at a time while maintaining prop drilling temporarily.",
-            "dependencies": [
-              2
-            ],
-            "details": "Move CombatControlPanel rendering from CombatScreen to GameLayout. Create a control panel area in GameLayout and conditionally render appropriate panels based on current phase. Pass combat state and handlers from CombatScreen through GameLayout props. Repeat for shop, lab, and other phase control panels. Maintain temporary prop drilling architecture.",
-            "status": "done",
-            "testStrategy": "Test each phase's controls work correctly after moving, verify state updates flow properly through props, ensure no control functionality is lost"
-          },
-          {
-            "id": 4,
-            "title": "Move Combat Log to Shared Layout",
-            "description": "Extract the combat log into a shared layout area within GameLayout, ensuring it receives proper state updates from the combat phase and persists correctly during phase transitions.",
-            "dependencies": [
-              3
-            ],
-            "details": "Move combat log rendering from CombatScreen to GameLayout. Create a dedicated log area in the layout (sidebar or bottom panel). Ensure combat log state is passed from CombatScreen to GameLayout and properly updates during combat. Verify log persists when transitioning between phases and maintains scroll position and history.",
-            "status": "done",
-            "testStrategy": "Verify combat log updates correctly during combat, test log persistence across phase transitions, ensure log history is maintained and accessible"
-          },
-          {
-            "id": 5,
-            "title": "Center Non-Combat Screens and Polish Layout",
-            "description": "Center shop, death, and lab screens within the main content area, apply consistent spacing and alignment across all phases, polish layout responsiveness, and remove any temporary scaffolding code.",
-            "dependencies": [
-              4
-            ],
-            "details": "Apply CSS centering to shop, death, and lab screens within GameLayout's main content area. Standardize spacing, padding, and alignment across all phase screens. Ensure responsive design works on different screen sizes. Clean up any temporary prop drilling code and optimize the component structure. Apply consistent styling theme across all layout elements.",
-            "status": "done",
-            "testStrategy": "Test layout on multiple screen sizes, verify consistent visual appearance across all phases, ensure no functionality regressions after cleanup"
-          }
-        ]
-      },
-      {
-        "id": 16,
-        "title": "Deploy Prototype to Web with Production Pipeline",
-        "description": "Set up a production deployment pipeline and deploy the game prototype to a web hosting platform, making it publicly accessible for testing and feedback.",
-        "details": "Implement a complete deployment pipeline for the game prototype:\n\n**Platform Selection and Setup:**\n- Choose deployment platform (Vercel recommended for React/TypeScript projects)\n- Create account and connect GitHub repository\n- Configure automatic deployments from main branch\n\n**Production Build Configuration:**\n- Ensure package.json has proper build scripts\n- Configure environment variables for production\n- Optimize build settings for performance (code splitting, minification)\n- Set up proper TypeScript compilation for production\n- Configure asset optimization and compression\n\n**Deployment Pipeline Setup:**\n- Set up continuous deployment from GitHub repository\n- Configure build commands and output directory\n- Set up preview deployments for pull requests\n- Configure custom domain if needed\n- Set up SSL certificate (automatic with most platforms)\n\n**Production Readiness Checklist:**\n- Remove development-only code and console logs\n- Ensure all dependencies are properly listed in package.json\n- Configure proper error boundaries for production\n- Set up basic analytics or monitoring\n- Test build locally before deployment\n- Verify all game phases work in production build\n\n**Post-Deployment Setup:**\n- Configure custom 404 page if needed\n- Set up basic SEO meta tags\n- Test deployment across different browsers and devices\n- Document deployment process and URL sharing",
-        "testStrategy": "Verify successful deployment by testing the public URL across multiple browsers and devices, confirm all game phases (Combat, Shop, Death, Lab) function correctly in the production environment, test the complete game loop end-to-end on the deployed version, verify automatic deployments trigger correctly when pushing to main branch, and ensure the site loads quickly and handles errors gracefully. Share the URL with team members to confirm external accessibility and gather initial feedback on performance and functionality.",
         "status": "pending",
-        "dependencies": [
-          12,
-          15
-        ],
-        "priority": "high",
-        "subtasks": []
-      },
-      {
-        "id": 17,
-        "title": "Review and Prioritize Progression System Epic Tasks",
-        "description": "Conduct a comprehensive review of all tasks tagged with 'progression-epic' to assess current status, identify blockers, and create a prioritized roadmap for the next development phase.",
-        "details": "Perform a thorough analysis of the progression system epic to prepare for the next development phase:\n\n**Epic Review Process:**\n- Audit all tasks currently tagged with 'progression-epic' in the project management system\n- Categorize tasks by status: completed, in-progress, blocked, and pending\n- Identify task dependencies and critical path items within the progression epic\n- Assess resource requirements and estimated effort for each remaining task\n\n**Gap Analysis and Planning:**\n- Review existing progression system requirements and identify any missing functionality\n- Evaluate current game state management to determine integration points for progression features\n- Identify potential conflicts or dependencies with recently completed tasks (Tasks 12-16)\n- Document any new tasks that need to be created to complete the progression system\n\n**Prioritization Framework:**\n- Rank tasks by business value and player impact\n- Consider technical dependencies and implementation complexity\n- Factor in current team capacity and sprint planning constraints\n- Create a recommended implementation sequence with clear milestones\n\n**Deliverables:**\n- Updated task status report for all progression-epic tagged items\n- Prioritized backlog with recommended sprint assignments\n- Risk assessment and mitigation strategies for high-priority items\n- Updated epic timeline with realistic completion estimates",
-        "testStrategy": "Verify the review is comprehensive by confirming all progression-epic tagged tasks are accounted for and properly categorized. Validate prioritization logic by cross-referencing with product requirements and technical constraints. Test the proposed implementation sequence by checking that all dependencies are properly ordered and no circular dependencies exist. Confirm the timeline estimates are realistic by comparing against historical velocity data and team capacity.",
-        "status": "pending",
-        "dependencies": [
-          16
-        ],
-        "priority": "medium",
-        "subtasks": []
-      },
-      {
-        "id": 18,
-        "title": "Review and Prioritize Combat System Epic Tasks",
-        "description": "Conduct a comprehensive review of all tasks tagged with 'combat-epic' to assess current status, identify blockers, and create a prioritized roadmap for the next development phase.",
-        "details": "Perform a thorough analysis of the combat system epic to prepare for the next development phase:\n\n**Epic Review Process:**\n- Audit all tasks currently tagged with 'combat-epic' in the project management system\n- Categorize tasks by status: completed, in-progress, blocked, and pending\n- Identify task dependencies and critical path items within the combat epic\n- Assess resource requirements and estimated effort for each remaining task\n\n**Gap Analysis and Planning:**\n- Review existing combat system architecture and identify areas for enhancement\n- Analyze combat mechanics completeness (damage calculation, turn order, status effects, special abilities)\n- Evaluate combat UI/UX improvements needed for better player experience\n- Identify integration points with other game systems (progression, shop, character management)\n\n**Priority Matrix Creation:**\n- Rank tasks by impact vs effort using MoSCoW method (Must have, Should have, Could have, Won't have)\n- Consider technical debt and refactoring needs within combat system\n- Account for player feedback and gameplay balance requirements\n- Align priorities with overall product roadmap and release milestones\n\n**Deliverables:**\n- Comprehensive task inventory with status and effort estimates\n- Prioritized backlog for combat epic with clear rationale\n- Risk assessment and mitigation strategies for high-priority items\n- Recommended sprint planning approach for combat system development\n- Updated task descriptions and acceptance criteria where needed",
-        "testStrategy": "Verify the review is comprehensive by confirming all combat-epic tagged tasks are accounted for and properly categorized. Validate prioritization logic by cross-referencing with product requirements and technical constraints. Test the proposed implementation sequence by checking that all dependencies are properly identified and no circular dependencies exist. Confirm resource estimates are realistic by comparing with historical task completion data. Validate the priority matrix by reviewing with stakeholders and ensuring alignment with business objectives.",
-        "status": "pending",
-        "dependencies": [
-          4,
-          17
-        ],
-        "priority": "medium",
         "subtasks": []
       }
     ],
     "metadata": {
-      "created": "2025-06-27T19:16:54.868Z",
-      "updated": "2025-06-27T22:06:02.688Z",
-      "description": "Tasks for master context"
+      "created": "2025-06-29T03:01:22.079Z",
+      "updated": "2025-06-29T03:32:14.432Z",
+      "description": "Tasks for combat-epic context"
     }
   },
   "combat-epic": {
     "tasks": [
       {
         "id": 1,
-        "title": "Create Core Types and Interfaces",
-        "description": "Define TypeScript interfaces and types for the game state, phases, characters, enemies, and upgrades to establish a strong foundation for the refactored codebase.",
-        "details": "Create a types.ts file with interfaces for:\n- GamePhase type: 'combat' | 'shop' | 'death' | 'lab'\n- Character interface with stats, health, abilities\n- Enemy interface extending or similar to Character\n- Upgrade interface for shop items\n- GameState interface containing current phase, characters, enemies, run progress\n- Combat-related types for actions, results, etc.\n\nExample structure:\n```typescript\nexport type GamePhase = 'combat' | 'shop' | 'death' | 'lab';\n\nexport interface Character {\n  id: string;\n  name: string;\n  health: number;\n  maxHealth: number;\n  attack: number;\n  defense: number;\n  // other stats\n}\n\nexport interface GameState {\n  currentPhase: GamePhase;\n  playerTeam: Character[];\n  enemies: Enemy[];\n  runNumber: number;\n  // other state\n}\n```",
-        "testStrategy": "Verify all interfaces compile correctly and can be imported by other modules. Create sample objects for each interface to ensure they're properly structured.",
+        "title": "Design and Document Core Data Models",
+        "description": "Define the foundational data structures for units, attacks, targeting rules, and character sheets with clear documentation",
+        "details": "Create TypeScript interfaces/classes for: Unit (base properties like id, name, type), Attack (name, damage calculation, targeting rule), TargetingRule (enum/interface for different targeting patterns), CharacterSheet (base stats like strength, agility), and CombatStats (derived stats like attack, initiative). Document the relationships between these models in code comments or markdown. Use composition over inheritance where possible for extensibility.",
+        "testStrategy": "Write unit tests to validate data model integrity, ensure proper inheritance/composition, and verify that combat stats are correctly derived from character sheet base stats",
         "priority": "high",
         "dependencies": [],
         "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Define GamePhase type and enums",
-            "description": "Create TypeScript enums and types for game phases including menu, playing, paused, game over, and upgrade phases. Define phase transition logic and validation.",
+            "title": "Design Unit Model Definition",
+            "description": "Create the foundational Unit model class with core properties, methods, and interfaces that will serve as the base for all game entities",
             "dependencies": [],
-            "details": "Implement GamePhase enum with all possible game states, create type guards for phase validation, and establish phase transition rules with proper TypeScript typing.",
+            "details": "Define Unit class structure including unique identifiers, name, type classification, position/location properties, state management (active/inactive/destroyed), and base interface methods. Establish inheritance patterns and extensibility points for specialized unit types. Include validation rules and serialization support.\n<info added on 2025-06-29T03:39:23.401Z>\nReview current unit-related code including existing types, interfaces, and usage patterns in combat and UI systems. Plan comprehensive migration strategy from old to new Unit model by identifying all current usages across the codebase. Update all references throughout the application to utilize the new Unit class structure, ensuring seamless integration with existing combat logic and UI components. Conduct thorough testing and refactoring to maintain compatibility and functionality. Document all changes with detailed code comments and create migration notes outlining the transition process and any breaking changes.\n</info added on 2025-06-29T03:39:23.401Z>",
             "status": "done",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Create Character and Enemy interfaces",
-            "description": "Design comprehensive interfaces for player character and enemy entities including stats, abilities, position, and behavior properties with proper TypeScript typing.",
+            "title": "Implement Attack Model with Damage Calculation Logic",
+            "description": "Design and implement the Attack model containing damage calculation algorithms, attack types, and combat mechanics",
             "dependencies": [
               1
             ],
-            "details": "Define Character interface with health, damage, position, abilities, and upgrade properties. Create Enemy interface extending base entity properties with AI behavior, spawn patterns, and difficulty scaling attributes.",
+            "details": "Create Attack class with damage calculation methods, attack type enumeration (physical, magical, ranged, etc.), damage formulas incorporating base damage, modifiers, and random factors. Include critical hit logic, damage resistance calculations, and attack validation. Integrate with Unit model for attack execution.",
             "status": "done",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Design Upgrade and GameState interfaces",
-            "description": "Create interfaces for upgrade system and overall game state management including player progress, unlocked upgrades, and persistent game data.",
+            "title": "Design TargetingRule Interface System",
+            "description": "Create a flexible TargetingRule interface system to handle various targeting mechanics and constraints",
             "dependencies": [
-              1,
-              2
+              1
             ],
-            "details": "Define Upgrade interface with type, rarity, effects, and prerequisites. Create GameState interface encompassing current phase, player stats, active upgrades, wave progress, and serializable game data.",
+            "details": "Define TargetingRule interface with methods for target validation, range checking, line-of-sight calculations, and area-of-effect targeting. Implement concrete targeting rule classes for different scenarios (single target, multi-target, friendly fire, etc.). Include targeting priority algorithms and constraint validation.",
             "status": "done",
             "testStrategy": ""
           },
           {
             "id": 4,
-            "title": "Implement and test combat-related types and sample objects",
-            "description": "Create concrete implementations of combat types, damage calculations, and status effects. Generate sample objects and write unit tests to validate type correctness and extensibility.",
+            "title": "Implement CharacterSheet with Base Stats Structure",
+            "description": "Design the CharacterSheet model containing all base character statistics and attribute management",
             "dependencies": [
-              1,
-              2,
-              3
+              1
             ],
-            "details": "Implement damage types, status effects, combat calculations, and weapon interfaces. Create sample character, enemy, and upgrade objects. Write comprehensive unit tests to validate type safety, interface compliance, and extensibility requirements.",
+            "details": "Create CharacterSheet class with core attributes (strength, dexterity, intelligence, etc.), health/mana pools, level progression system, and stat modification methods. Include stat validation, bounds checking, and persistence mechanisms. Design for extensibility to support different character classes and custom attributes.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Develop CombatStats Derivation System with Relationships Documentation",
+            "description": "Create the CombatStats system that derives combat-relevant statistics from base stats and documents all model relationships",
+            "dependencies": [
+              2,
+              4
+            ],
+            "details": "Implement CombatStats class that calculates derived statistics (attack power, defense, accuracy, etc.) from CharacterSheet base stats. Create comprehensive documentation of relationships between Unit, Attack, CharacterSheet, and CombatStats models. Include dependency mapping, data flow diagrams, and integration patterns for the complete combat system.",
             "status": "done",
             "testStrategy": ""
           }
@@ -505,413 +462,369 @@
       },
       {
         "id": 2,
-        "title": "Implement Phase Management System",
-        "description": "Create a centralized phase management system with state management for tracking and transitioning between game phases (combat, shop, death, lab).",
-        "details": "Create a phaseManager.ts utility file with:\n- Phase state management using React Context or useState\n- Functions for phase transitions: transitionToShop(), transitionToDeath(), transitionToLab(), startNewRun()\n- Phase validation logic to ensure valid transitions\n- Event handlers for automatic phase transitions based on game state\n\nImplement PhaseContext:\n```typescript\ninterface PhaseContextType {\n  currentPhase: GamePhase;\n  transitionToPhase: (phase: GamePhase) => void;\n  canTransition: (from: GamePhase, to: GamePhase) => boolean;\n}\n\nexport const PhaseProvider: React.FC<{children: ReactNode}> = ({children}) => {\n  const [currentPhase, setCurrentPhase] = useState<GamePhase>('combat');\n  // implementation\n};\n```",
-        "testStrategy": "Test all phase transitions work correctly, validate that invalid transitions are prevented, and ensure phase state persists correctly during component re-renders.",
+        "title": "Implement Unit Factory and Registry System",
+        "description": "Create a factory pattern for unit creation and a registry system to manage available units and attacks",
+        "details": "Implement UnitFactory class with methods like createPlayerUnit(type) and createEnemyUnit(type). Create UnitRegistry to store unit templates and AttackRegistry for attack definitions. Use enum or constants for unit types (BEAR, TIGER, EAGLE, GOOBER). Factory should instantiate units with proper character sheets and attacks based on type. Registry should support easy addition of new unit types without modifying existing code.",
+        "testStrategy": "Test factory creation of all unit types, verify registry contains expected units/attacks, ensure factory throws appropriate errors for invalid types, and validate that created units have correct default stats and attacks",
         "priority": "high",
         "dependencies": [
           1
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Set up phase state management (React Context/useState)",
-            "description": "Create a centralized state management system for phase tracking using React Context API and useState hooks. Define the phase state structure, initial values, and context provider component.",
+            "title": "Implement unit type constants and enums with validation logic",
+            "description": "Create comprehensive enums and constants for unit types, attributes, and properties. Include validation methods to ensure data integrity and type safety across the unit system.",
             "dependencies": [],
-            "details": "Implement PhaseContext with provider component, define phase state interface, set up initial phase values, create custom hooks for consuming phase state, and establish state update patterns.",
-            "status": "done",
+            "details": "Define UnitType enum, AttributeType enum, unit property constants, and validation functions for unit parameters. Include error handling for invalid unit configurations and type checking utilities.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Implement phase transition functions",
-            "description": "Develop core functions to handle transitions between different phases, including forward and backward navigation, conditional transitions, and state updates.",
+            "title": "Develop AttackRegistry for attack definitions and management",
+            "description": "Create a registry system to store, retrieve, and manage attack definitions including damage types, effects, and attack patterns. Implement methods for attack registration and lookup.",
             "dependencies": [
               1
             ],
-            "details": "Create transition functions for each phase change, implement phase progression logic, handle edge cases for invalid transitions, ensure proper state updates, and maintain transition history.",
-            "status": "done",
+            "details": "Build AttackRegistry class with methods for registering attacks, retrieving attack data, validating attack definitions, and managing attack templates. Include support for different damage types and special effects.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Add phase validation logic",
-            "description": "Implement validation rules and checks to ensure phase transitions are valid and meet required conditions before allowing progression.",
+            "title": "Build UnitRegistry system for storing unit templates",
+            "description": "Implement a registry pattern to store and manage unit templates with efficient lookup and retrieval mechanisms. Include template validation and error handling for missing or invalid templates.",
             "dependencies": [
-              1,
-              2
+              1
             ],
-            "details": "Define validation schemas for each phase, implement validation functions, create error handling for invalid states, add pre-transition checks, and ensure data integrity across phases.",
-            "status": "done",
+            "details": "Create UnitRegistry class with template storage, retrieval methods, template validation, and caching mechanisms. Support for template inheritance and composition patterns.",
+            "status": "pending",
             "testStrategy": ""
           },
           {
             "id": 4,
-            "title": "Create event handlers for automatic transitions",
-            "description": "Develop event-driven mechanisms to automatically trigger phase transitions based on user actions, time-based events, or external conditions.",
+            "title": "Create UnitFactory class with unit creation methods",
+            "description": "Implement the factory pattern for unit creation using registered templates and attack definitions. Include methods for creating units with proper initialization and dependency injection.",
             "dependencies": [
               2,
               3
             ],
-            "details": "Implement event listeners for automatic transitions, create timer-based phase changes, handle user interaction events, set up conditional auto-progression, and manage event cleanup.\n<info added on 2025-06-27T20:23:23.709Z>\nCombat to shop transition modified to be manual instead of automatic. User must click a button to proceed from combat screen to shop, allowing time to display rewards or combat summary. Future enhancement planned to add rewards indication before shop transition.\n</info added on 2025-06-27T20:23:23.709Z>",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Write tests for all transitions and persistence",
-            "description": "Create comprehensive test suites covering all phase transitions, validation logic, event handling, and state persistence scenarios.",
-            "dependencies": [
-              1,
-              2,
-              3,
-              4
-            ],
-            "details": "Write unit tests for phase transitions, test validation logic, create integration tests for event handlers, test state persistence, mock external dependencies, and ensure edge case coverage.",
-            "status": "done",
+            "details": "Build UnitFactory class with createUnit methods, template-based instantiation, attack assignment, unit initialization, and error handling for creation failures. Integrate with both registries for complete unit assembly.",
+            "status": "pending",
             "testStrategy": ""
           }
         ]
       },
       {
         "id": 3,
-        "title": "Create Phase Tracker UI Component",
-        "description": "Build a persistent phase tracker component that displays on the left side of the screen, showing the current phase and overall game loop progress.",
-        "details": "Create PhaseTracker.tsx component:\n- Fixed position on the left side of the screen\n- Visual indicators for each phase (combat, shop, death, lab)\n- Highlight current active phase\n- Show progression through the game loop\n- Use Tailwind CSS for styling with modern, clean design\n\nComponent structure:\n```tsx\ninterface PhaseTrackerProps {\n  currentPhase: GamePhase;\n  runNumber: number;\n}\n\nexport const PhaseTracker: React.FC<PhaseTrackerProps> = ({currentPhase, runNumber}) => {\n  const phases = ['combat', 'shop', 'death', 'lab'];\n  return (\n    <div className=\"fixed left-0 top-0 h-full w-48 bg-gray-800 text-white p-4\">\n      {/* phase indicators */}\n    </div>\n  );\n};\n```",
-        "testStrategy": "Verify the component renders correctly, updates when phase changes, maintains fixed position, and displays proper visual feedback for active phase.",
-        "priority": "medium",
+        "title": "Implement Character Sheet System",
+        "description": "Build the character sheet system that stores base stats and derives active combat stats for all units",
+        "details": "Create CharacterSheet class with base stats (strength, agility, health, etc.). Implement stat derivation logic: attack = strength + weapon_bonus, initiative = agility + speed_bonus, etc. Each unit type should have predefined base stats. Create methods like getAttackStat(), getInitiativeStat(), getHealthStat(). Ensure the system is extensible for future stat additions and modifications.",
+        "testStrategy": "Unit tests for stat calculations, verify base stats are correctly set for each unit type, test stat derivation formulas, and ensure character sheet modifications properly update derived combat stats",
+        "priority": "high",
         "dependencies": [
-          1,
-          2
+          1
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 4,
-        "title": "Refactor Combat System into Separate Module",
-        "description": "Extract the existing combat simulator logic into a dedicated Combat component and supporting utility functions, maintaining all current functionality while making it modular.",
-        "details": "Create Combat.tsx component and combatUtils.ts:\n- Move existing combat logic into Combat component\n- Extract combat calculations into combatUtils.ts (damage calculation, turn order, etc.)\n- Implement automatic transition to shop phase when all enemies defeated\n- Keep Reset button functionality for development (resets current combat only)\n- Maintain existing combat UI and interactions\n\nCombat component structure:\n```tsx\ninterface CombatProps {\n  playerTeam: Character[];\n  enemies: Enemy[];\n  onCombatEnd: (result: 'victory' | 'defeat') => void;\n  onReset: () => void;\n}\n\nexport const Combat: React.FC<CombatProps> = (props) => {\n  // combat logic implementation\n};\n```",
-        "testStrategy": "Ensure all existing combat functionality works identically, verify automatic phase transitions trigger correctly, and test that Reset button only affects current combat state.",
+        "title": "Implement Core Targeting System",
+        "description": "Build the targeting rule engine that determines valid targets for different attack types",
+        "details": "Create TargetingEngine class with methods for different targeting patterns: targetInFront(), targetOneRight(), etc. Implement position-based targeting logic considering unit positions on battlefield. Create TargetingRule interface with execute(attacker, battlefield) method. Support for 'no valid target' scenarios. Make system extensible for future targeting patterns like area-of-effect, random target, etc.",
+        "testStrategy": "Test each targeting rule with various battlefield configurations, verify correct target selection, test edge cases like no valid targets, and ensure targeting works correctly with different unit positions",
         "priority": "high",
         "dependencies": [
-          1,
-          2
+          1
         ],
-        "status": "done",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design TargetingEngine Class Structure",
+            "description": "Create the main TargetingEngine class with core architecture for managing targeting operations, rule registration, and target validation",
+            "dependencies": [],
+            "details": "Implement TargetingEngine class with methods for rule registration, target calculation, battlefield state management, and coordinate system handling. Include constructor for battlefield dimensions and unit positioning.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Define TargetingRule Interface",
+            "description": "Create the TargetingRule interface with standardized execution methods for all targeting patterns",
+            "dependencies": [
+              1
+            ],
+            "details": "Design interface with methods like execute(), validateTarget(), calculateTargets(), and getTargetPositions(). Include parameters for source position, battlefield state, and targeting constraints.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Individual Targeting Rule Classes",
+            "description": "Create concrete implementations for directional targeting rules (front, right, left, back, diagonal, etc.)",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement FrontTargetingRule, RightTargetingRule, LeftTargetingRule, BackTargetingRule, and DiagonalTargetingRule classes. Each should handle position calculations, range validation, and obstacle detection.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Develop Position-Based Battlefield Logic",
+            "description": "Implement battlefield coordinate system, position validation, and spatial relationship calculations",
+            "dependencies": [
+              1
+            ],
+            "details": "Create BattlefieldGrid class with coordinate mapping, distance calculations, line-of-sight algorithms, and position validation. Include methods for checking valid moves and target accessibility.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Edge Case Handling and Validation",
+            "description": "Add comprehensive error handling for invalid targets, out-of-bounds positions, and edge battlefield scenarios",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Implement validation for null targets, boundary checking, friendly fire prevention, obstacle collision detection, and invalid rule combinations. Include exception handling and fallback targeting strategies.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 5,
-        "title": "Implement Shop Phase Component",
-        "description": "Create a Shop component that displays placeholder upgrades for characters and the Lab, allowing players to simulate purchasing upgrades before continuing to the next combat.",
-        "details": "Create Shop.tsx component:\n- Display list of placeholder upgrades (character stat boosts, lab improvements)\n- Implement \"buy\" functionality (simulate purchase without real currency)\n- Add \"Continue\" button to proceed to next combat phase\n- Generate more difficult enemies for next combat round\n- Use Tailwind CSS for clean, modern shop interface\n\nShop structure:\n```tsx\ninterface ShopProps {\n  playerTeam: Character[];\n  onContinue: () => void;\n  onUpgradePurchased: (upgrade: Upgrade) => void;\n}\n\nconst placeholderUpgrades = [\n  { id: '1', name: 'Health Boost', description: '+10 Health', cost: 100 },\n  { id: '2', name: 'Attack Upgrade', description: '+5 Attack', cost: 150 },\n  // more upgrades\n];\n```",
-        "testStrategy": "Verify shop displays correctly, upgrade purchase simulation works, Continue button transitions to combat phase, and enemy difficulty increases appropriately.",
-        "priority": "medium",
+        "title": "Implement Player Units (Bear, Tiger, Eagle)",
+        "description": "Create the three player units with their unique attacks and character sheets",
+        "details": "Implement Bear unit with Slash attack (targets enemy in front), Tiger with Pounce attack (targets enemy in front), and Eagle with Swoop attack (targets enemy one to the right). Each unit should have distinct base stats in their character sheets. Define attack damage calculations and ensure proper integration with targeting system. Store attack names for UI display.",
+        "testStrategy": "Test each unit's attack targeting and damage calculation, verify character sheet stats are correctly applied, test attack execution in various battlefield scenarios, and ensure attack names are properly stored and accessible",
+        "priority": "high",
         "dependencies": [
-          1,
-          2
+          2,
+          3,
+          4
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 6,
-        "title": "Create Death Phase Component",
-        "description": "Implement a Death screen that displays when all player characters die, showing game over state and automatically transitioning to Lab phase after delay or user interaction.",
-        "details": "Create Death.tsx component:\n- Display game over message/image when all player characters are defeated\n- Show run statistics (rounds survived, enemies defeated, etc.)\n- Implement automatic transition to Lab phase after delay or button click\n- Use dramatic, appropriate styling for game over state\n\nDeath component:\n```tsx\ninterface DeathProps {\n  runStats: {\n    roundsSurvived: number;\n    enemiesDefeated: number;\n    upgradesPurchased: number;\n  };\n  onContinue: () => void;\n}\n\nexport const Death: React.FC<DeathProps> = ({runStats, onContinue}) => {\n  useEffect(() => {\n    const timer = setTimeout(onContinue, 3000); // auto-advance after 3s\n    return () => clearTimeout(timer);\n  }, [onContinue]);\n  // render death screen\n};\n```",
-        "testStrategy": "Test that death screen appears when all characters die, displays correct statistics, and transitions to Lab phase automatically or on user input.",
+        "title": "Implement Enemy Unit (Goober)",
+        "description": "Create the Goober enemy unit with its Slam attack and appropriate stats",
+        "details": "Implement Goober enemy unit with Slam attack that targets enemy in front. Define appropriate base stats for enemy balance. Ensure Goober integrates properly with the unit factory and targeting system. Consider enemy-specific behavior patterns if needed for future AI implementation.",
+        "testStrategy": "Test Goober creation through factory, verify Slam attack targeting and damage, ensure proper integration with combat system, and test enemy unit behavior in combat scenarios",
         "priority": "medium",
         "dependencies": [
-          1,
-          2
+          2,
+          3,
+          4
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 7,
-        "title": "Implement Lab Phase Placeholder Component",
-        "description": "Create a placeholder Lab component that will eventually house evolution/breeding mechanics, currently displaying a coming soon message and allowing players to start a new run.",
-        "details": "Create Lab.tsx component:\n- Display placeholder message: \"Lab/Evolution phase coming soon\"\n- Show concept art or wireframes for future evolution system\n- Implement \"Start New Run\" button that resets game state\n- Reset upgrades, generate new team, reset run counter\n- Prepare component structure for future evolution mechanics\n\nLab component:\n```tsx\ninterface LabProps {\n  onStartNewRun: () => void;\n}\n\nexport const Lab: React.FC<LabProps> = ({onStartNewRun}) => {\n  const handleNewRun = () => {\n    // Reset game state\n    onStartNewRun();\n  };\n  \n  return (\n    <div className=\"flex flex-col items-center justify-center h-full\">\n      <h1>Lab/Evolution Phase</h1>\n      <p>Coming Soon...</p>\n      <button onClick={handleNewRun}>Start New Run</button>\n    </div>\n  );\n};\n```",
-        "testStrategy": "Verify placeholder displays correctly, Start New Run button resets all game state properly, and component is structured to easily add evolution features later.",
-        "priority": "low",
+        "title": "Implement Combat Logic and Turn Management",
+        "description": "Build the core combat engine that manages turn order, attack execution, and missed attack handling",
+        "details": "Create CombatEngine class to manage turn-based combat flow. Implement initiative-based turn order using derived stats. Handle attack execution by calling targeting system and applying damage. Implement missed attack logic: when no valid target exists, move to next unit to the left. Manage combat state transitions and victory/defeat conditions.",
+        "testStrategy": "Test turn order calculation based on initiative, verify attack execution and damage application, test missed attack handling with various scenarios, and ensure proper combat state management throughout battles",
+        "priority": "high",
         "dependencies": [
-          1,
-          2
+          5,
+          6
         ],
-        "status": "done",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "CombatEngine class structure",
+            "description": "Design and implement the core CombatEngine class with proper initialization, state variables, and method organization for managing combat flow",
+            "dependencies": [],
+            "details": "Create the main CombatEngine class with constructor, private/public methods for combat orchestration, state management variables, and integration points for other combat systems. Include proper error handling and logging mechanisms.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Initiative-based turn order calculation",
+            "description": "Implement the initiative system that determines combat turn order based on unit stats and random factors",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop algorithm to calculate initiative values for all combat participants, sort units by initiative, handle tie-breaking scenarios, and maintain turn order queue throughout combat rounds.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Attack execution and damage application logic",
+            "description": "Create the core attack resolution system that processes attacks and applies damage to targets",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement hit/miss calculations, damage computation based on attacker/defender stats, critical hit mechanics, damage type considerations, and health reduction with proper validation and bounds checking.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Missed attack handling with unit repositioning",
+            "description": "Develop system for handling missed attacks including potential unit movement and positioning changes",
+            "dependencies": [
+              3
+            ],
+            "details": "Create logic for miss consequences, unit repositioning mechanics when attacks fail, collision detection for movement, and updating unit positions on the battlefield grid while maintaining combat flow.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Combat state management",
+            "description": "Implement comprehensive combat state tracking and transition management system",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Design state machine for combat phases (initialization, turn execution, resolution), track active effects, manage unit status conditions, handle state persistence, and ensure proper state transitions with validation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Victory/defeat condition detection",
+            "description": "Create system to detect and handle combat end conditions including victory, defeat, and draw scenarios",
+            "dependencies": [
+              3,
+              5
+            ],
+            "details": "Implement win/loss condition checking after each action, handle multiple victory conditions (elimination, objectives, time limits), trigger appropriate end-game events, and clean up combat state upon completion.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 8,
-        "title": "Create Game State Management System",
-        "description": "Implement centralized game state management to handle player team, enemies, upgrades, run progress, and coordinate between all game phases.",
-        "details": "Create gameState.ts with React Context for global state:\n- Manage player team, current enemies, purchased upgrades\n- Track run statistics and progression\n- Handle enemy difficulty scaling between rounds\n- Implement state reset for new runs\n- Provide actions for state updates from each phase\n\nGameState implementation:\n```typescript\ninterface GameStateContextType {\n  gameState: GameState;\n  updatePlayerTeam: (team: Character[]) => void;\n  generateEnemies: (difficulty: number) => void;\n  purchaseUpgrade: (upgrade: Upgrade) => void;\n  resetForNewRun: () => void;\n  incrementRound: () => void;\n}\n\nexport const GameStateProvider: React.FC<{children: ReactNode}> = ({children}) => {\n  const [gameState, setGameState] = useState<GameState>(initialState);\n  // implementation\n};\n```",
-        "testStrategy": "Test that state updates correctly across all phases, enemy difficulty scales properly, upgrades persist between combats, and new run reset works completely.",
-        "priority": "high",
+        "title": "Implement Run Initialization System",
+        "description": "Create the system that initializes each run with Bear, Tiger, and Eagle as the starting team",
+        "details": "Implement RunManager or GameInitializer class that creates a new run with the default team composition. Use the unit factory to create Bear, Tiger, and Eagle instances. Set up initial team positioning and ensure proper integration with combat system. Prepare foundation for future team customization features.",
+        "testStrategy": "Test run initialization creates correct starting team, verify all three units are properly instantiated with correct stats and attacks, and ensure team is ready for combat engagement",
+        "priority": "medium",
         "dependencies": [
-          1,
-          2
+          5
         ],
         "status": "pending",
         "subtasks": []
       },
       {
         "id": 9,
-        "title": "Implement Main App Router and Layout",
-        "description": "Refactor main.tsx to focus on high-level app structure, routing between phases, and coordinating the overall game loop with the phase tracker and main content area.",
-        "details": "Refactor main.tsx to be the central coordinator:\n- Implement main layout with PhaseTracker on left, content area on right\n- Route between phase components based on current phase state\n- Handle automatic phase transitions based on game events\n- Integrate all context providers (Phase, GameState)\n- Maintain clean separation of concerns\n\nMain app structure:\n```tsx\nfunction App() {\n  return (\n    <GameStateProvider>\n      <PhaseProvider>\n        <div className=\"flex h-screen\">\n          <PhaseTracker />\n          <main className=\"flex-1 ml-48\">\n            <PhaseRouter />\n          </main>\n        </div>\n      </PhaseProvider>\n    </GameStateProvider>\n  );\n}\n\nconst PhaseRouter = () => {\n  const { currentPhase } = usePhase();\n  switch(currentPhase) {\n    case 'combat': return <Combat />;\n    case 'shop': return <Shop />;\n    case 'death': return <Death />;\n    case 'lab': return <Lab />;\n  }\n};\n```",
-        "testStrategy": "Verify proper routing between all phases, layout renders correctly with phase tracker, and all context providers work together without conflicts.",
-        "priority": "high",
+        "title": "Update Combat UI to Display Attack Names",
+        "description": "Modify the combat screen UI to show each unit's attack name in their character card stats section",
+        "details": "Update character card components to display attack names from unit data. Ensure attack names are fetched from the unit's attack property and displayed in the stats section. Maintain clean separation between UI components and combat logic. Consider responsive design for different screen sizes.",
+        "testStrategy": "Visual testing to ensure attack names appear correctly on character cards, test with all unit types, verify UI updates when units change, and ensure proper responsive behavior across different screen sizes",
+        "priority": "medium",
         "dependencies": [
-          3,
-          4,
-          5,
-          6,
-          7,
-          8
+          7
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 10,
-        "title": "Implement Automatic Phase Transitions",
-        "description": "Create the logic for automatic transitions between phases based on game state changes (combat victory/defeat, shop completion, death screen timeout).",
-        "details": "Implement transition logic in each component and phase manager:\n- Combat → Shop: When all enemies defeated\n- Combat → Death: When all player characters die\n- Shop → Combat: When Continue button clicked\n- Death → Lab: After timeout or button click\n- Lab → Combat: When Start New Run clicked\n\nTransition handlers:\n```typescript\nconst usePhaseTransitions = () => {\n  const { transitionToPhase } = usePhase();\n  const { gameState } = useGameState();\n  \n  const handleCombatEnd = (result: 'victory' | 'defeat') => {\n    if (result === 'victory') {\n      transitionToPhase('shop');\n    } else {\n      transitionToPhase('death');\n    }\n  };\n  \n  const handleShopContinue = () => {\n    transitionToPhase('combat');\n  };\n  \n  // other transition handlers\n};\n```",
-        "testStrategy": "Test all automatic transitions work correctly, verify transitions happen at appropriate times, and ensure no invalid or stuck states occur.",
-        "priority": "high",
+        "title": "Implement Dev-Only Unit and Attack Preview Panel",
+        "description": "Create a development tool that displays all available units, attacks, targeting rules, and sample stats",
+        "details": "Create a dev-only component or console output that lists all registered units and attacks. Display targeting rules, sample stats, and attack descriptions. Include toggle or environment variable to show/hide this panel. Format output clearly for debugging and verification purposes. Consider both UI panel and console.log options.",
+        "testStrategy": "Verify dev panel shows all registered units and attacks, test that targeting rules are correctly displayed, ensure panel only appears in development environment, and validate that information is accurate and helpful for debugging",
+        "priority": "low",
         "dependencies": [
-          9
+          2,
+          4
         ],
-        "status": "done",
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Core Combat Unit Tests",
+        "description": "Write comprehensive unit tests for the core combat logic, targeting system, and character sheet calculations",
+        "details": "Create test suites for: unit factory and registry, character sheet stat calculations, targeting rule execution, combat engine turn management, and attack damage calculations. Use testing framework like Jest or Vitest. Mock UI components to test core logic in isolation. Achieve reasonable code coverage for critical combat paths.",
+        "testStrategy": "Ensure all tests pass consistently, verify code coverage meets minimum requirements, test edge cases and error conditions, and validate that tests properly isolate core logic from UI components",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 12,
-        "title": "Polish UI and Add Final Integration Testing",
-        "description": "Apply final UI polish with consistent Tailwind styling across all components, ensure responsive design, and conduct comprehensive integration testing of the complete game loop.",
-        "details": "Final polish and testing:\n- Apply consistent color scheme and typography across all components\n- Ensure responsive design works on different screen sizes\n- Add loading states and smooth transitions between phases\n- Implement proper error boundaries and error handling\n- Add accessibility features (ARIA labels, keyboard navigation)\n- Comprehensive testing of full game loop multiple times\n\nUI consistency checklist:\n- Consistent button styles and hover states\n- Unified color palette and spacing\n- Proper loading and disabled states\n- Smooth animations for phase transitions\n- Mobile-responsive layout adjustments\n\nIntegration testing:\n```typescript\n// Test complete game loop\nconst testGameLoop = async () => {\n  // Start combat → win → shop → continue → combat → lose → death → lab → new run\n  // Verify all transitions and state changes work correctly\n};\n```",
-        "testStrategy": "Conduct full end-to-end testing of multiple complete game loops, verify UI consistency across all components, test responsive behavior, and ensure no memory leaks or performance issues.",
-        "priority": "medium",
+        "title": "Integration Testing and System Validation",
+        "description": "Perform end-to-end testing of the complete combat system and validate all acceptance criteria",
+        "details": "Test complete combat scenarios from run initialization through combat resolution. Verify all acceptance criteria are met: proper unit creation, attack execution, UI display, missed attack handling, and extensibility. Test integration between all system components. Validate performance and responsiveness requirements.",
+        "testStrategy": "Execute comprehensive integration tests covering full combat scenarios, validate all acceptance criteria through automated and manual testing, perform performance testing for combat responsiveness, and ensure system meets all functional and non-functional requirements",
+        "priority": "high",
         "dependencies": [
+          8,
+          9,
           10,
           11
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 13,
-        "title": "Extract Persistent GameLayout Component",
-        "description": "Create a persistent GameLayout component that wraps all phase screens with a consistent layout structure including phase tracker at top, control panel area at bottom left, and main content area.",
-        "details": "Create GameLayout.tsx component to provide consistent layout structure:\n- Extract layout logic from main.tsx into dedicated GameLayout component\n- Position phase tracker (Run #, Round #) at the top of the screen, persistent across all phases\n- Reserve fixed area at bottom left for control panel (development tools, reset buttons)\n- Provide main content area that dynamically renders current phase component\n- Use CSS Grid or Flexbox for responsive layout structure\n- Ensure layout remains stable during phase transitions\n\nGameLayout component structure:\n```tsx\ninterface GameLayoutProps {\n  children: React.ReactNode;\n  currentPhase: GamePhase;\n  runNumber: number;\n  roundNumber: number;\n}\n\nexport const GameLayout: React.FC<GameLayoutProps> = ({\n  children,\n  currentPhase,\n  runNumber,\n  roundNumber\n}) => {\n  return (\n    <div className=\"h-screen grid grid-rows-[auto_1fr_auto]\">\n      {/* Top: Phase Tracker */}\n      <header className=\"bg-gray-800 text-white p-4\">\n        <div className=\"flex justify-between items-center\">\n          <h1>Game Title</h1>\n          <div className=\"text-lg font-semibold\">\n            Run #{runNumber} - Round #{roundNumber}\n          </div>\n        </div>\n      </header>\n      \n      {/* Main Content Area */}\n      <main className=\"flex-1 overflow-auto p-4\">\n        {children}\n      </main>\n      \n      {/* Bottom Left: Control Panel Area */}\n      <footer className=\"bg-gray-100 p-4\">\n        <div className=\"flex justify-start\">\n          <div className=\"control-panel-area\">\n            {/* Reserved space for control panel */}\n          </div>\n        </div>\n      </footer>\n    </div>\n  );\n};\n```\n\nIntegration steps:\n- Update main.tsx to use GameLayout wrapper around phase components\n- Pass phase information and game state to layout component\n- Ensure all phase components render properly within the main content area\n- Maintain existing functionality while improving layout consistency",
-        "testStrategy": "Verify GameLayout renders correctly with all phase components (Combat, Shop, Death, Lab), confirm phase tracker displays accurate run/round numbers and updates properly during transitions, test that control panel area is properly reserved and accessible, ensure layout remains stable during phase changes without flickering or repositioning, verify responsive behavior on different screen sizes, and test that all existing functionality continues to work within the new layout structure.",
-        "status": "done",
+        "title": "Create Character Death Images and Asset Integration",
+        "description": "Design and implement unique death images for each character (Bear, Tiger, Eagle, Goober) that visually represent their defeat, ensuring consistency with game art direction and web optimization.",
+        "details": "Create death/defeat images for all four character types: Bear, Tiger, Eagle, and Goober. Each image should capture the character's unique personality and defeat state while maintaining visual consistency with the overall game art style. Coordinate with design team to establish art direction guidelines including color palette, style consistency, and thematic elements. Images should be optimized for web delivery (appropriate file formats like WebP/PNG, compressed file sizes, multiple resolutions if needed). Implement asset loading system that maps character types to their corresponding death images. Create AssetManager or ImageLoader utility to handle death image loading and caching. Integrate death images into the combat system so they display when units are defeated. Consider animation possibilities (fade-in, scale effects) for death image presentation. Store images in organized asset directory structure (e.g., /assets/images/characters/death/). Ensure images work across different screen sizes and maintain quality on various devices.",
+        "testStrategy": "Verify death images exist for all character types (Bear, Tiger, Eagle, Goober), test image loading and display when units are defeated in combat, validate image optimization (file sizes, load times, visual quality), ensure images maintain consistency with game art direction, test image display across different screen sizes and devices, verify asset loading system properly maps character types to correct death images, and test that images integrate smoothly with combat defeat animations or transitions.",
+        "status": "pending",
         "dependencies": [
-          3,
-          9
-        ],
-        "priority": "medium",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create GameLayout Component with Phase Tracker",
-            "description": "Create the GameLayout.tsx component with a persistent phase tracker at the top that displays run and round numbers across all game phases.",
-            "dependencies": [],
-            "details": "Create src/components/GameLayout.tsx with the interface GameLayoutProps including children, currentPhase, runNumber, and roundNumber. Implement the component using CSS Grid with grid-rows-[auto_1fr_auto] for three-section layout. Add header section with game title on left and 'Run #{runNumber} - Round #{roundNumber}' on right. Use Tailwind classes: bg-gray-800 text-white p-4 for header styling, flex justify-between items-center for header layout, and text-lg font-semibold for phase tracker text.",
-            "status": "done",
-            "testStrategy": "Test component renders correctly with different run/round numbers, verify header layout is responsive, and confirm phase tracker displays properly"
-          },
-          {
-            "id": 2,
-            "title": "Add Main Content Area to GameLayout",
-            "description": "Implement the main content area in GameLayout that will dynamically render the current phase component as children with proper overflow handling.",
-            "dependencies": [
-              1
-            ],
-            "details": "Add main element to GameLayout with flex-1 overflow-auto p-4 classes to create scrollable content area that takes remaining vertical space. Render {children} prop within this main section. Ensure the content area properly handles different phase components and maintains consistent padding. The main area should expand to fill available space between header and footer.",
-            "status": "done",
-            "testStrategy": "Test with mock phase components of varying heights, verify scrolling works when content exceeds viewport, and confirm consistent padding across different phases"
-          },
-          {
-            "id": 3,
-            "title": "Add Control Panel Area to GameLayout Footer",
-            "description": "Implement the footer section with a reserved fixed area at bottom left specifically for control panel components like development tools and reset buttons.",
-            "dependencies": [
-              2
-            ],
-            "details": "Add footer element with bg-gray-100 p-4 classes. Inside footer, create div with flex justify-start layout containing a control-panel-area div. This area should be positioned at bottom left and maintain consistent spacing. Add placeholder comment indicating this space is reserved for control panel components. The footer should have fixed height and not interfere with main content scrolling.",
-            "status": "done",
-            "testStrategy": "Verify footer remains at bottom of viewport, confirm control panel area is positioned correctly at bottom left, and test that footer doesn't overlap with main content"
-          },
-          {
-            "id": 4,
-            "title": "Integrate GameLayout into App Component",
-            "description": "Update the main App component to use GameLayout wrapper around phase components, passing necessary game state and ensuring all existing functionality is preserved.",
-            "dependencies": [
-              3
-            ],
-            "details": "Import GameLayout into App.tsx. Wrap the current phase rendering logic with GameLayout component, passing currentPhase, runNumber, and roundNumber as props. Move the phase component rendering (PhaseIntro, PhaseAction, PhaseResults, PhaseEnd) to be children of GameLayout. Remove any existing layout/header code from App.tsx that's now handled by GameLayout. Ensure game state management and phase transitions continue to work correctly.",
-            "status": "done",
-            "testStrategy": "Test all phase transitions work correctly with new layout, verify game state is properly passed to layout, confirm all existing game functionality is preserved, and test responsive behavior across different screen sizes"
-          }
-        ]
-      },
-      {
-        "id": 14,
-        "title": "Stepwise Layout Refactor for Improved Modularity",
-        "description": "Implement a 5-step gradual refactor to improve layout modularity and UI consistency by extracting components and reorganizing the layout structure while maintaining functionality.",
-        "details": "Execute a careful stepwise refactor to improve modularity without breaking existing functionality:\n\n**Step 1: Extract Phase Tracker to GameLayout**\n- Create GameLayout.tsx component that wraps all phase screens\n- Extract only the phase tracker (Run #, Round #) into persistent header\n- Keep all existing screen content and control panels unchanged in their current locations\n- Ensure GameLayout provides consistent wrapper structure\n\n**Step 2: Extract Combat Control Panel Component**\n- Create CombatControlPanel.tsx component for combat phase controls\n- Move combat-specific controls (attack buttons, abilities) into separate component\n- Keep component rendered within CombatScreen to maintain current layout\n- Ensure all state management and event handlers remain local to combat screen\n\n**Step 3: Gradually Move Control Panels to Layout**\n- Modify GameLayout to include dedicated control panel area (bottom-left)\n- Move combat control panel into layout structure, passing state/handlers as props\n- Repeat process for shop and other phase control panels one at a time\n- Maintain backward compatibility during transition\n\n**Step 4: Move Combat Log to Layout**\n- Extract combat log into shared layout component\n- Ensure combat log receives proper state updates from combat system\n- Position log in consistent location across all phases\n- Maintain log persistence and proper state management\n\n**Step 5: Center Non-Combat Screens and Polish**\n- Center shop, death, and lab screens within main content area\n- Apply consistent spacing and alignment across all phases\n- Polish layout transitions and ensure responsive behavior\n- Add final styling touches for professional appearance\n\nComponent structure:\n```tsx\ninterface GameLayoutProps {\n  children: React.ReactNode;\n  currentPhase: GamePhase;\n  runNumber: number;\n  roundNumber: number;\n  controlPanel?: React.ReactNode;\n  combatLog?: CombatLogEntry[];\n}\n```",
-        "testStrategy": "Verify each step independently before proceeding to next step. Test that phase tracker remains persistent and updates correctly across all phases. Confirm control panels maintain full functionality when extracted and moved. Verify combat log displays correctly and receives proper state updates. Test that non-combat screens are properly centered and responsive. Conduct full game loop testing after each step to ensure no functionality is broken. Verify layout remains stable during phase transitions and maintains consistent appearance across all screen sizes.",
-        "status": "done",
-        "dependencies": [
-          13
+          5,
+          6
         ],
         "priority": "medium",
         "subtasks": []
-      },
-      {
-        "id": 15,
-        "title": "Stepwise Layout Refactor for Improved Modularity and UI Consistency",
-        "description": "Implement a 5-step gradual refactor to improve layout modularity and UI consistency by extracting components and reorganizing the layout structure while maintaining functionality.",
-        "details": "Execute a careful stepwise refactor to improve modularity without breaking existing functionality:\n\n**Step 1: Extract Phase Tracker to GameLayout**\n- Create GameLayout.tsx component that wraps all phase screens\n- Extract only the phase tracker (Run #, Round #) into persistent header\n- Keep all existing screen content and control panels unchanged in their current locations\n- Ensure GameLayout provides consistent wrapper structure\n\n**Step 2: Extract Combat Control Panel Component**\n- Create CombatControlPanel.tsx component from existing combat controls\n- Keep component rendered within CombatScreen initially\n- Maintain all state and event handlers as local to CombatScreen\n- Ensure no functionality changes, only code organization\n\n**Step 3: Gradually Move Control Panels to Layout**\n- Move combat control panel into GameLayout component\n- Pass necessary state and handlers as props from phase components\n- Repeat process for other phase control panels one at a time\n- Maintain prop drilling temporarily for state management\n\n**Step 4: Move Combat Log to Layout**\n- Extract combat log into shared layout area\n- Ensure combat log receives proper state updates from combat phase\n- Position log appropriately within GameLayout structure\n- Verify log persists correctly during phase transitions\n\n**Step 5: Center Non-Combat Screens and Polish**\n- Center shop, death, and lab screens within main content area\n- Apply consistent spacing and alignment across all phases\n- Polish layout responsiveness and visual consistency\n- Remove any temporary scaffolding code\n\nEach step should be completed and tested before proceeding to the next to avoid breaking changes.",
-        "testStrategy": "Verify each step independently before proceeding to next step. Test that phase tracker remains persistent and updates correctly across all phases. Confirm control panels maintain full functionality when extracted and moved. Verify combat log displays correctly and receives proper state updates. Test that non-combat screens are properly centered and responsive. Conduct full game loop testing after each step to ensure no regressions. Verify layout remains stable during all phase transitions and maintains visual consistency.",
-        "status": "done",
-        "dependencies": [
-          14
-        ],
-        "priority": "medium",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Extract Phase Tracker to GameLayout Component",
-            "description": "Create a new GameLayout.tsx component that wraps all phase screens and extracts only the phase tracker (Run #, Round #) into a persistent header. Keep all existing screen content and control panels unchanged in their current locations.",
-            "dependencies": [],
-            "details": "Create GameLayout.tsx in components folder. Move the phase tracker display logic from individual screens into the layout header. Wrap the main App component's phase rendering with GameLayout. Ensure the layout provides a consistent wrapper structure with header for phase tracker and main content area for screens. Pass current run and round data as props to GameLayout.",
-            "status": "done",
-            "testStrategy": "Verify phase tracker displays correctly across all phases, ensure no visual regressions in existing screens, test phase transitions maintain tracker state"
-          },
-          {
-            "id": 2,
-            "title": "Extract Combat Control Panel Component",
-            "description": "Create a separate CombatControlPanel.tsx component from the existing combat controls while keeping it rendered within CombatScreen. Maintain all state and event handlers as local to CombatScreen with no functionality changes.",
-            "dependencies": [
-              1
-            ],
-            "details": "Extract combat control buttons (attack, defend, use item, etc.) into CombatControlPanel.tsx. Keep the component imported and rendered within CombatScreen.tsx. Pass all necessary state (player stats, available actions, etc.) and event handlers as props to the new component. Ensure no state management changes - all handlers remain in CombatScreen.",
-            "status": "done",
-            "testStrategy": "Test all combat actions work identically, verify no state management regressions, ensure UI layout remains unchanged"
-          },
-          {
-            "id": 3,
-            "title": "Move Control Panels to GameLayout",
-            "description": "Gradually move the combat control panel into GameLayout component and pass necessary state and handlers as props from phase components. Repeat this process for other phase control panels one at a time while maintaining prop drilling temporarily.",
-            "dependencies": [
-              2
-            ],
-            "details": "Move CombatControlPanel rendering from CombatScreen to GameLayout. Create a control panel area in GameLayout and conditionally render appropriate panels based on current phase. Pass combat state and handlers from CombatScreen through GameLayout props. Repeat for shop, lab, and other phase control panels. Maintain temporary prop drilling architecture.",
-            "status": "done",
-            "testStrategy": "Test each phase's controls work correctly after moving, verify state updates flow properly through props, ensure no control functionality is lost"
-          },
-          {
-            "id": 4,
-            "title": "Move Combat Log to Shared Layout",
-            "description": "Extract the combat log into a shared layout area within GameLayout, ensuring it receives proper state updates from the combat phase and persists correctly during phase transitions.",
-            "dependencies": [
-              3
-            ],
-            "details": "Move combat log rendering from CombatScreen to GameLayout. Create a dedicated log area in the layout (sidebar or bottom panel). Ensure combat log state is passed from CombatScreen to GameLayout and properly updates during combat. Verify log persists when transitioning between phases and maintains scroll position and history.",
-            "status": "done",
-            "testStrategy": "Verify combat log updates correctly during combat, test log persistence across phase transitions, ensure log history is maintained and accessible"
-          },
-          {
-            "id": 5,
-            "title": "Center Non-Combat Screens and Polish Layout",
-            "description": "Center shop, death, and lab screens within the main content area, apply consistent spacing and alignment across all phases, polish layout responsiveness, and remove any temporary scaffolding code.",
-            "dependencies": [
-              4
-            ],
-            "details": "Apply CSS centering to shop, death, and lab screens within GameLayout's main content area. Standardize spacing, padding, and alignment across all phase screens. Ensure responsive design works on different screen sizes. Clean up any temporary prop drilling code and optimize the component structure. Apply consistent styling theme across all layout elements.",
-            "status": "done",
-            "testStrategy": "Test layout on multiple screen sizes, verify consistent visual appearance across all phases, ensure no functionality regressions after cleanup"
-          }
-        ]
-      },
-      {
-        "id": 16,
-        "title": "Create Unique Attack System for Characters and Enemies",
-        "description": "Implement a comprehensive attack system that allows characters and enemies to have unique special abilities, integrates with character sheets for stat-based attacks, and supports the enemy progression system.",
-        "details": "Create a robust attack system with the following components:\n\n**Attack System Architecture:**\nCreate attackSystem.ts with core attack interfaces:\n```typescript\ninterface Attack {\n  id: string;\n  name: string;\n  description: string;\n  type: 'physical' | 'magical' | 'special';\n  baseDamage: number;\n  cooldown: number;\n  currentCooldown: number;\n  targetType: 'single' | 'multiple' | 'all' | 'self';\n  effects?: AttackEffect[];\n}\n\ninterface AttackEffect {\n  type: 'damage' | 'heal' | 'buff' | 'debuff' | 'status';\n  value: number;\n  duration?: number;\n  stat?: string;\n}\n```\n\n**Character Sheet Integration:**\n- Extend Character interface to include attacks array and attack-related stats\n- Implement stat-based damage calculation using character's attack, magic, or special stats\n- Create attack scaling formulas that factor in character level and equipment\n- Add attack unlock system based on character progression\n\n**Unique Attack Implementation:**\n- Create predefined attack libraries for different character classes/types\n- Implement attack factories for generating enemy-specific attacks\n- Add attack animation triggers and visual effects placeholders\n- Create attack validation system to ensure attacks can be used (cooldowns, resources, etc.)\n\n**Enemy Attack Integration:**\n- Extend Enemy interface to include unique attacks based on enemy type\n- Implement AI decision-making for enemy attack selection\n- Scale enemy attacks with the existing difficulty progression system\n- Create boss-specific attack patterns and combinations\n\n**Combat System Integration:**\n- Modify existing combat logic to use new attack system instead of basic damage\n- Implement turn-based attack execution with proper cooldown management\n- Add attack preview system showing potential damage and effects\n- Create attack history tracking for combat log integration\n\n**Extensibility Features:**\n- Design modular attack effect system for easy addition of new effects\n- Create attack template system for rapid creation of new attacks\n- Implement attack combination system foundation for future combo mechanics\n- Add attack customization hooks for future character progression features",
-        "testStrategy": "Verify attack system integration by testing: 1) Characters can execute unique attacks with proper damage calculation based on their stats, 2) Enemy attacks scale correctly with difficulty progression and use appropriate AI selection logic, 3) Attack cooldowns function properly and prevent spam usage, 4) All attack effects (damage, healing, buffs, debuffs) apply correctly to targets, 5) Combat log displays attack information clearly, 6) Attack system maintains compatibility with existing combat flow and phase transitions, 7) Performance testing with multiple characters using different attacks simultaneously, 8) Edge case testing for invalid attack attempts and boundary conditions.",
-        "status": "pending",
-        "dependencies": [
-          1,
-          4,
-          11
-        ],
-        "priority": "high",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create unique attacks for characters and enemies",
-            "description": "Design and implement a system for unique attacks, including attack types, effects, and assignment to both player characters and enemies.",
-            "details": "",
-            "status": "pending",
-            "dependencies": [],
-            "parentTaskId": 16
-          },
-          {
-            "id": 2,
-            "title": "Integrate attacks with character sheets",
-            "description": "Tie the new attack system to character sheets, allowing each character to have a set of available attacks and manage their usage in combat.",
-            "details": "",
-            "status": "pending",
-            "dependencies": [],
-            "parentTaskId": 16
-          },
-          {
-            "id": 3,
-            "title": "Implement enemy progression and scaling system",
-            "description": "Develop a system for enemy progression and difficulty scaling, including stat increases, new abilities, and adaptive AI as the player advances.",
-            "details": "",
-            "status": "pending",
-            "dependencies": [],
-            "parentTaskId": 16
-          },
-          {
-            "id": 3,
-            "title": "Implement Enemy Difficulty Scaling",
-            "description": "Create a system to generate increasingly difficult enemies as the player progresses through multiple combat rounds, maintaining game balance and progression.",
-            "status": "pending",
-            "dependencies": [
-              8
-            ],
-            "details": "Create enemyGeneration.ts utility:\n- Scale enemy stats based on current round number\n- Increase enemy count or introduce new enemy types\n- Balance difficulty curve to be challenging but fair\n- Maintain variety in enemy compositions\n\nEnemy scaling implementation:\n```typescript\nexport const generateEnemiesForRound = (roundNumber: number): Enemy[] => {\n  const baseStats = { health: 100, attack: 20, defense: 5 };\n  const scalingFactor = 1 + (roundNumber - 1) * 0.2; // 20% increase per round\n  \n  const enemyCount = Math.min(1 + Math.floor(roundNumber / 3), 4); // Max 4 enemies\n  \n  return Array.from({length: enemyCount}, (_, i) => ({\n    id: `enemy-${roundNumber}-${i}`,\n    name: `Enemy ${i + 1}`,\n    health: Math.floor(baseStats.health * scalingFactor),\n    maxHealth: Math.floor(baseStats.health * scalingFactor),\n    attack: Math.floor(baseStats.attack * scalingFactor),\n    defense: Math.floor(baseStats.defense * scalingFactor)\n  }));\n};\n```",
-            "testStrategy": "Test that enemy difficulty increases appropriately with each round, verify scaling doesn't make enemies impossibly strong too quickly, and ensure enemy generation is consistent."
-          }
-        ]
       }
     ],
     "metadata": {
-      "created": "2025-06-27T22:05:11.814Z",
-      "updated": "2025-06-27T22:05:11.814Z",
-      "description": "Epic for all advanced combat system work: unique attacks, character sheets, enemy progression, and scaling.",
-      "copiedFrom": {
-        "tag": "master",
-        "date": "2025-06-27T22:05:11.814Z"
-      }
+      "created": "2025-06-29T03:01:22.079Z",
+      "updated": "2025-06-29T04:22:28.083Z",
+      "description": "Tasks for combat-epic context"
     }
   },
   "art-epic": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Create Death Images for Combat Units",
+        "description": "Design and create unique death/defeat image assets for each combat unit (Bear, Tiger, Eagle, Goober) that display when units are defeated in battle.",
+        "details": "Create death/defeat image assets for all four combat units with the following specifications:\n\n**Required Assets:**\n- bear_death.png - Bear unit defeat image\n- tiger_death.png - Tiger unit defeat image  \n- eagle_death.png - Eagle unit defeat image\n- goober_death.png - Goober unit defeat image\n\n**Visual Design Requirements:**\n- Maintain consistency with existing unit art style and color palette\n- Use clear visual cues to indicate defeat: dimmed colors, tilted/fallen poses, X-eyes, or similar defeated states\n- Ensure images are easily distinguishable from alive unit states\n- Maintain same dimensions and resolution as existing unit images\n- Consider unit-specific defeat animations: Bear could be lying on side, Tiger sprawled out, Eagle fallen with wings spread, Goober deflated or flattened\n\n**Implementation Considerations:**\n- Save images in same format and resolution as existing unit assets\n- Follow existing file naming conventions for consistency\n- Ensure images work well against various battlefield backgrounds\n- Consider adding subtle transparency or overlay effects to enhance the \"defeated\" appearance\n- Test images at different zoom levels to ensure clarity\n\n**File Organization:**\n- Place all death images in the same directory as existing unit images\n- Update any asset manifest or configuration files to reference new death images\n- Document the mapping between unit types and their corresponding death image files",
+        "testStrategy": "Verify task completion through the following steps:\n\n1. **Asset Verification:**\n   - Confirm all four death images (bear_death.png, tiger_death.png, eagle_death.png, goober_death.png) are created and properly named\n   - Check that image dimensions and file formats match existing unit assets\n   - Verify images are saved in correct directory location\n\n2. **Visual Quality Testing:**\n   - Display each death image alongside its corresponding alive unit image to confirm visual consistency\n   - Test images against different background colors/textures to ensure visibility\n   - Verify that defeat state is clearly distinguishable from alive state for each unit\n   - Check image quality at different zoom levels (25%, 50%, 100%, 200%)\n\n3. **Art Style Consistency:**\n   - Compare death images with existing unit art to confirm matching style, color palette, and artistic approach\n   - Ensure visual cues for defeat are appropriate and not overly graphic\n   - Verify that each unit's death image reflects its unique characteristics\n\n4. **Documentation Review:**\n   - Confirm file naming conventions are documented\n   - Verify that visual design decisions and defeat cues are documented for future reference\n   - Check that any asset configuration files are updated to include new death images",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-29T04:15:31.819Z",
+      "updated": "2025-06-29T04:20:28.542Z",
+      "description": "Tag created on 6/28/2025"
+    }
+  },
+  "progression-epic": {
     "tasks": [],
     "metadata": {
-      "created": "2025-06-28T01:11:26.975Z",
-      "updated": "2025-06-28T01:11:26.975Z",
-      "description": "Epic for all art, asset, and animation work: character images, UI art, and future animation/visual upgrades."
+      "created": "2025-06-29T19:50:23.950Z",
+      "updated": "2025-06-29T19:50:23.950Z",
+      "description": "Tag created on 6/29/2025"
     }
   }
 }

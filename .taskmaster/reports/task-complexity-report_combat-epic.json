@@ -1,0 +1,109 @@
+{
+	"meta": {
+		"generatedAt": "2025-06-29T19:51:22.777Z",
+		"tasksAnalyzed": 12,
+		"totalTasks": 13,
+		"analysisCount": 12,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 2,
+			"taskTitle": "Implement Unit Factory and Registry System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down the factory and registry implementation into: 1) Unit type constants and validation, 2) Attack registry development, 3) Unit registry system, and 4) Factory class creation with proper dependency integration.",
+			"reasoning": "Already well-decomposed with 4 logical subtasks. High complexity due to multiple design patterns, dependency management, and extensibility requirements."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Implement Character Sheet System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Decompose into: 1) Base stat structure and validation, 2) Stat derivation formula engine, 3) Unit type stat templates, and 4) Character sheet API methods and extensibility framework.",
+			"reasoning": "Moderate-high complexity involving mathematical calculations, extensible design, and integration with multiple unit types. Needs breakdown for stat management and derivation logic."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement Core Targeting System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Already well-structured with 5 subtasks covering engine design, interface definition, rule implementations, battlefield logic, and edge case handling.",
+			"reasoning": "High complexity with spatial calculations, multiple targeting patterns, and extensive edge case handling. Current subtask breakdown is appropriate for the complexity level."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement Player Units (Bear, Tiger, Eagle)",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Split into: 1) Bear unit implementation with Slash attack, 2) Tiger unit implementation with Pounce attack, and 3) Eagle unit implementation with Swoop attack, each including character sheet integration and attack mechanics.",
+			"reasoning": "Moderate complexity with three distinct units. Each unit has unique characteristics but follows similar patterns. Parallel development possible with proper breakdown."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Implement Enemy Unit (Goober)",
+			"complexityScore": 3,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Break into: 1) Goober unit class implementation with character sheet, and 2) Slam attack implementation with targeting integration and damage calculations.",
+			"reasoning": "Lower complexity as it's a single unit following established patterns. Simple breakdown into unit creation and attack implementation is sufficient."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Implement Combat Logic and Turn Management",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Already well-decomposed with 6 subtasks covering engine structure, initiative system, attack execution, miss handling, state management, and victory conditions.",
+			"reasoning": "Very high complexity as the core orchestration system. Involves complex state management, turn ordering, and integration of all combat systems. Current breakdown is comprehensive."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement Run Initialization System",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Decompose into: 1) RunManager class structure and initialization logic, 2) Default team composition setup using unit factory, and 3) Team positioning and combat system integration.",
+			"reasoning": "Moderate-low complexity involving straightforward initialization logic. Simple enough but benefits from separation of concerns between initialization, team setup, and integration."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Update Combat UI to Display Attack Names",
+			"complexityScore": 3,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Split into: 1) Character card component updates to display attack names, and 2) UI integration testing and responsive design validation across different screen sizes.",
+			"reasoning": "Low-moderate complexity UI task. Straightforward implementation but requires careful integration with existing components and responsive design considerations."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Implement Dev-Only Unit and Attack Preview Panel",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break into: 1) Dev panel component structure with environment detection, 2) Registry data display formatting and organization, and 3) Toggle functionality and debugging output options.",
+			"reasoning": "Moderate complexity development tool. Requires data aggregation from multiple registries and proper development environment handling."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Implement Core Combat Unit Tests",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Organize into: 1) Unit factory and registry test suites, 2) Character sheet and stat calculation tests, 3) Targeting system test coverage, 4) Combat engine and turn management tests, and 5) Integration test scenarios and mocking setup.",
+			"reasoning": "High complexity due to comprehensive test coverage requirements across multiple systems. Needs systematic approach to achieve good coverage and proper mocking."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Integration Testing and System Validation",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Structure as: 1) End-to-end combat scenario testing, 2) Acceptance criteria validation and checklist, 3) Performance and responsiveness testing, and 4) Cross-system integration verification.",
+			"reasoning": "Moderate-high complexity validation task requiring systematic testing across all components. Critical for ensuring system reliability and meeting requirements."
+		},
+		{
+			"taskId": null,
+			"taskTitle": "Create Character Death Images and Asset Integration",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Decompose into: 1) Death image design and creation for all characters with art direction consistency, 2) Image optimization and web delivery preparation, 3) Asset management system implementation, and 4) Combat system integration with death image display.",
+			"reasoning": "Moderate complexity involving both creative and technical aspects. Requires coordination between design work, technical optimization, and system integration."
+		}
+	]
+}

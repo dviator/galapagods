@@ -1,109 +1,109 @@
 {
 	"meta": {
-		"generatedAt": "2025-06-27T19:18:19.974Z",
+		"generatedAt": "2025-06-29T03:32:52.695Z",
 		"tasksAnalyzed": 12,
 		"totalTasks": 12,
 		"analysisCount": 12,
 		"thresholdScore": 5,
 		"projectName": "Taskmaster",
-		"usedResearch": true
+		"usedResearch": false
 	},
 	"complexityAnalysis": [
 		{
 			"taskId": 1,
-			"taskTitle": "Create Core Types and Interfaces",
-			"complexityScore": 4,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down the creation of core types and interfaces into: (1) Define GamePhase type and enums, (2) Create Character and Enemy interfaces, (3) Design Upgrade and GameState interfaces, (4) Implement and test combat-related types and sample objects.",
-			"reasoning": "Defining TypeScript types and interfaces is foundational but straightforward, especially with clear requirements. However, ensuring extensibility and correctness across all game entities adds moderate complexity. Subtasks should cover each major interface/type and validation."
+			"taskTitle": "Design and Document Core Data Models",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the data model design into separate subtasks for each core interface/class: Unit model definition, Attack model with damage calculation logic, TargetingRule interface design, CharacterSheet with base stats structure, and CombatStats derivation system with relationships documentation.",
+			"reasoning": "High complexity due to foundational nature affecting entire system architecture. Requires careful design of relationships, inheritance patterns, and extensibility. Multiple interconnected models need precise definition."
 		},
 		{
 			"taskId": 2,
-			"taskTitle": "Implement Phase Management System",
+			"taskTitle": "Implement Unit Factory and Registry System",
 			"complexityScore": 6,
-			"recommendedSubtasks": 5,
-			"expansionPrompt": "Expand into: (1) Set up phase state management (React Context/useState), (2) Implement phase transition functions, (3) Add phase validation logic, (4) Create event handlers for automatic transitions, (5) Write tests for all transitions and persistence.",
-			"reasoning": "Centralized phase management involves state logic, validation, and integration with UI, requiring careful design to avoid bugs and ensure smooth transitions. Each aspect (state, transitions, validation, events, testing) warrants a subtask."
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Split into: UnitFactory class implementation with creation methods, UnitRegistry system for storing unit templates, AttackRegistry for attack definitions, and unit type constants/enums with validation logic.",
+			"reasoning": "Moderate-high complexity involving design patterns and registry management. Requires proper abstraction and error handling, but follows established factory pattern principles."
 		},
 		{
 			"taskId": 3,
-			"taskTitle": "Create Phase Tracker UI Component",
-			"complexityScore": 3,
-			"recommendedSubtasks": 3,
-			"expansionPrompt": "Divide into: (1) Build PhaseTracker component structure and props, (2) Implement visual indicators and styling with Tailwind, (3) Integrate with phase state and test updates.",
-			"reasoning": "This is a focused UI task with clear requirements and low logic complexity, but it needs careful styling and state integration. Subtasks should address structure, styling, and state-driven updates."
+			"taskTitle": "Implement Character Sheet System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide into: CharacterSheet class with base stats storage, stat derivation calculation methods, unit-specific stat presets definition, and extensible stat modification system.",
+			"reasoning": "Medium complexity with mathematical calculations and stat relationships. Straightforward implementation but requires careful formula design and extensibility planning."
 		},
 		{
 			"taskId": 4,
-			"taskTitle": "Refactor Combat System into Separate Module",
+			"taskTitle": "Implement Core Targeting System",
 			"complexityScore": 7,
 			"recommendedSubtasks": 5,
-			"expansionPrompt": "Expand into: (1) Extract combat logic into Combat component, (2) Move calculations to combatUtils.ts, (3) Implement automatic phase transitions, (4) Maintain/reset combat UI and interactions, (5) Test for feature parity and correct transitions.",
-			"reasoning": "Refactoring core game logic is moderately complex, requiring careful separation of concerns, maintenance of existing features, and robust testing to avoid regressions."
+			"expansionPrompt": "Break into: TargetingEngine class structure, individual targeting rule implementations (front, right, etc.), position-based battlefield logic, TargetingRule interface with execution methods, and edge case handling for invalid targets.",
+			"reasoning": "High complexity due to spatial logic and multiple targeting patterns. Requires robust position calculation and extensible rule system design."
 		},
 		{
 			"taskId": 5,
-			"taskTitle": "Implement Shop Phase Component",
-			"complexityScore": 5,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down into: (1) Build Shop component structure and props, (2) Implement upgrade display and purchase simulation, (3) Add Continue button and phase transition, (4) Integrate enemy difficulty scaling for next round.",
-			"reasoning": "The shop phase involves UI, simulated logic, and integration with game progression. Each functional area (UI, upgrades, transitions, scaling) should be a subtask."
+			"taskTitle": "Implement Player Units (Bear, Tiger, Eagle)",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Split into: Bear unit with Slash attack implementation, Tiger unit with Pounce attack implementation, and Eagle unit with Swoop attack implementation, each with distinct stats and targeting integration.",
+			"reasoning": "Medium-low complexity as it applies existing systems. Repetitive implementation across three similar units with different parameters and attacks."
 		},
 		{
 			"taskId": 6,
-			"taskTitle": "Create Death Phase Component",
-			"complexityScore": 4,
-			"recommendedSubtasks": 3,
-			"expansionPrompt": "Expand into: (1) Build Death component UI and props, (2) Display run statistics and game over state, (3) Implement automatic and manual transition to Lab phase.",
-			"reasoning": "This is a focused UI and state transition task with moderate complexity, mainly involving display logic and timed/user-driven transitions."
+			"taskTitle": "Implement Enemy Unit (Goober)",
+			"complexityScore": 3,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Divide into: Goober unit class implementation with base stats, and Slam attack integration with targeting system validation.",
+			"reasoning": "Low-medium complexity as it's a single unit following established patterns. Straightforward implementation using existing factory and targeting systems."
 		},
 		{
 			"taskId": 7,
-			"taskTitle": "Implement Lab Phase Placeholder Component",
-			"complexityScore": 2,
-			"recommendedSubtasks": 2,
-			"expansionPrompt": "Divide into: (1) Build Lab placeholder UI and Start New Run logic, (2) Reset all game state and prepare for future evolution features.",
-			"reasoning": "This is a simple placeholder with minimal logic, mainly UI and state reset, so only two subtasks are needed."
+			"taskTitle": "Implement Combat Logic and Turn Management",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down into: CombatEngine class structure, initiative-based turn order calculation, attack execution and damage application logic, missed attack handling with unit repositioning, combat state management, and victory/defeat condition detection.",
+			"reasoning": "High complexity as the core orchestration system. Manages complex state transitions, turn order logic, and integrates all other combat systems. Critical for game functionality."
 		},
 		{
 			"taskId": 8,
-			"taskTitle": "Create Game State Management System",
-			"complexityScore": 7,
-			"recommendedSubtasks": 5,
-			"expansionPrompt": "Expand into: (1) Set up GameState context and provider, (2) Implement player team and enemy state management, (3) Handle upgrades and run statistics, (4) Add state reset and round increment logic, (5) Test state updates and integration with all phases.",
-			"reasoning": "Centralized state management is complex due to the need for robust, bug-free coordination across all game systems and phases. Each major state area and integration point should be a subtask."
+			"taskTitle": "Implement Run Initialization System",
+			"complexityScore": 3,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Split into: RunManager/GameInitializer class implementation, and default team composition setup with proper unit positioning and combat system integration.",
+			"reasoning": "Low-medium complexity using existing factory systems. Straightforward initialization logic with minimal business rules."
 		},
 		{
 			"taskId": 9,
-			"taskTitle": "Implement Main App Router and Layout",
-			"complexityScore": 6,
-			"recommendedSubtasks": 4,
-			"expansionPrompt": "Break down into: (1) Refactor main layout and integrate PhaseTracker, (2) Implement PhaseRouter logic, (3) Integrate all context providers, (4) Test routing and layout across all phases.",
-			"reasoning": "This task involves high-level coordination, routing, and layout, requiring careful integration and testing but is conceptually straightforward."
+			"taskTitle": "Update Combat UI to Display Attack Names",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide into: character card component updates for attack name display, data binding from unit attack properties to UI, and responsive design adjustments for different screen sizes.",
+			"reasoning": "Medium-low complexity involving UI updates and data binding. Requires frontend component modification but follows established UI patterns."
 		},
 		{
 			"taskId": 10,
-			"taskTitle": "Implement Automatic Phase Transitions",
-			"complexityScore": 5,
+			"taskTitle": "Implement Dev-Only Unit and Attack Preview Panel",
+			"complexionScore": 4,
 			"recommendedSubtasks": 3,
-			"expansionPrompt": "Expand into: (1) Implement transition handlers in each phase component, (2) Integrate with phase manager and validate transitions, (3) Test all automatic transitions and edge cases.",
-			"reasoning": "Automatic transitions require careful event handling and validation, but the logic is well-scoped. Subtasks should cover implementation, integration, and testing."
+			"expansionPrompt": "Break into: dev panel component creation with unit/attack listing, environment-based visibility toggle implementation, and formatted output display for debugging information.",
+			"reasoning": "Medium-low complexity as a development tool. Requires data aggregation and display logic but no complex business rules."
 		},
 		{
 			"taskId": 11,
-			"taskTitle": "Implement Enemy Difficulty Scaling",
-			"complexityScore": 4,
-			"recommendedSubtasks": 3,
-			"expansionPrompt": "Divide into: (1) Design enemy scaling algorithm and utility, (2) Integrate scaling with combat/shop phases, (3) Test scaling curve and enemy variety.",
-			"reasoning": "Enemy scaling is a contained logic task with moderate complexity, mainly involving algorithm design, integration, and testing."
+			"taskTitle": "Implement Core Combat Unit Tests",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Split into: unit factory and registry test suites, character sheet calculation tests, targeting system test coverage, combat engine turn management tests, and mock setup for UI component isolation.",
+			"reasoning": "Moderate-high complexity requiring comprehensive test coverage across multiple systems. Needs mocking strategies and edge case identification."
 		},
 		{
 			"taskId": 12,
-			"taskTitle": "Polish UI and Add Final Integration Testing",
-			"complexityScore": 6,
-			"recommendedSubtasks": 5,
-			"expansionPrompt": "Expand into: (1) Apply consistent Tailwind styling and color scheme, (2) Ensure responsive design and accessibility, (3) Add loading states and animations, (4) Implement error boundaries and handling, (5) Conduct comprehensive integration and end-to-end testing.",
-			"reasoning": "Final polish and integration testing require attention to detail across UI, UX, and stability, involving multiple disciplines and thorough validation."
+			"taskTitle": "Integration Testing and System Validation",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide into: end-to-end combat scenario testing, acceptance criteria validation suite, component integration verification, and performance/responsiveness testing.",
+			"reasoning": "High complexity requiring coordination of all system components. Involves both automated and manual testing strategies with performance considerations."
 		}
 	]
 }

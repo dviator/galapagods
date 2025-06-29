@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Implement Player Units (Bear, Tiger, Eagle)
+# Status: pending
+# Dependencies: 2, 3, 4
+# Priority: high
+# Description: Create the three player units with their unique attacks and character sheets
+# Details:
+Implement Bear unit with Slash attack (targets enemy in front), Tiger with Pounce attack (targets enemy in front), and Eagle with Swoop attack (targets enemy one to the right). Each unit should have distinct base stats in their character sheets. Define attack damage calculations and ensure proper integration with targeting system. Store attack names for UI display.
+
+# Test Strategy:
+Test each unit's attack targeting and damage calculation, verify character sheet stats are correctly applied, test attack execution in various battlefield scenarios, and ensure attack names are properly stored and accessible

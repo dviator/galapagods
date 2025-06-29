@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GamePhase } from './types';
-import { PhaseContext } from './phaseContextBase';
+import type { GamePhase } from '../../types';
+import { PhaseContext } from './PhaseContext';
 
 export const PhaseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentPhase, setCurrentPhase] = useState<GamePhase>('combat');

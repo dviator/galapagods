@@ -1,0 +1,37 @@
+# Task ID: 2
+# Title: Implement Unit Factory and Registry System
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create a factory pattern for unit creation and a registry system to manage available units and attacks
+# Details:
+Implement UnitFactory class with methods like createPlayerUnit(type) and createEnemyUnit(type). Create UnitRegistry to store unit templates and AttackRegistry for attack definitions. Use enum or constants for unit types (BEAR, TIGER, EAGLE, GOOBER). Factory should instantiate units with proper character sheets and attacks based on type. Registry should support easy addition of new unit types without modifying existing code.
+
+# Test Strategy:
+Test factory creation of all unit types, verify registry contains expected units/attacks, ensure factory throws appropriate errors for invalid types, and validate that created units have correct default stats and attacks
+
+# Subtasks:
+## 1. Implement unit type constants and enums with validation logic [pending]
+### Dependencies: None
+### Description: Create comprehensive enums and constants for unit types, attributes, and properties. Include validation methods to ensure data integrity and type safety across the unit system.
+### Details:
+Define UnitType enum, AttributeType enum, unit property constants, and validation functions for unit parameters. Include error handling for invalid unit configurations and type checking utilities.
+
+## 2. Develop AttackRegistry for attack definitions and management [pending]
+### Dependencies: 2.1
+### Description: Create a registry system to store, retrieve, and manage attack definitions including damage types, effects, and attack patterns. Implement methods for attack registration and lookup.
+### Details:
+Build AttackRegistry class with methods for registering attacks, retrieving attack data, validating attack definitions, and managing attack templates. Include support for different damage types and special effects.
+
+## 3. Build UnitRegistry system for storing unit templates [pending]
+### Dependencies: 2.1
+### Description: Implement a registry pattern to store and manage unit templates with efficient lookup and retrieval mechanisms. Include template validation and error handling for missing or invalid templates.
+### Details:
+Create UnitRegistry class with template storage, retrieval methods, template validation, and caching mechanisms. Support for template inheritance and composition patterns.
+
+## 4. Create UnitFactory class with unit creation methods [pending]
+### Dependencies: 2.2, 2.3
+### Description: Implement the factory pattern for unit creation using registered templates and attack definitions. Include methods for creating units with proper initialization and dependency injection.
+### Details:
+Build UnitFactory class with createUnit methods, template-based instantiation, attack assignment, unit initialization, and error handling for creation failures. Integrate with both registries for complete unit assembly.
+

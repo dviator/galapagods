@@ -1,0 +1,11 @@
+# Task ID: 10
+# Title: Implement Dev-Only Unit and Attack Preview Panel
+# Status: pending
+# Dependencies: 2, 4
+# Priority: low
+# Description: Create a development tool that displays all available units, attacks, targeting rules, and sample stats
+# Details:
+Create a dev-only component or console output that lists all registered units and attacks. Display targeting rules, sample stats, and attack descriptions. Include toggle or environment variable to show/hide this panel. Format output clearly for debugging and verification purposes. Consider both UI panel and console.log options.
+
+# Test Strategy:
+Verify dev panel shows all registered units and attacks, test that targeting rules are correctly displayed, ensure panel only appears in development environment, and validate that information is accurate and helpful for debugging

@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Implement Enemy Unit (Goober)
+# Status: pending
+# Dependencies: 2, 3, 4
+# Priority: medium
+# Description: Create the Goober enemy unit with its Slam attack and appropriate stats
+# Details:
+Implement Goober enemy unit with Slam attack that targets enemy in front. Define appropriate base stats for enemy balance. Ensure Goober integrates properly with the unit factory and targeting system. Consider enemy-specific behavior patterns if needed for future AI implementation.
+
+# Test Strategy:
+Test Goober creation through factory, verify Slam attack targeting and damage, ensure proper integration with combat system, and test enemy unit behavior in combat scenarios

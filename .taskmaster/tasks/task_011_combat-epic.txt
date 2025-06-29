@@ -1,0 +1,11 @@
+# Task ID: 11
+# Title: Implement Core Combat Unit Tests
+# Status: pending
+# Dependencies: 7
+# Priority: medium
+# Description: Write comprehensive unit tests for the core combat logic, targeting system, and character sheet calculations
+# Details:
+Create test suites for: unit factory and registry, character sheet stat calculations, targeting rule execution, combat engine turn management, and attack damage calculations. Use testing framework like Jest or Vitest. Mock UI components to test core logic in isolation. Achieve reasonable code coverage for critical combat paths.
+
+# Test Strategy:
+Ensure all tests pass consistently, verify code coverage meets minimum requirements, test edge cases and error conditions, and validate that tests properly isolate core logic from UI components

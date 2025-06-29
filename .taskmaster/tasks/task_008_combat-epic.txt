@@ -1,0 +1,11 @@
+# Task ID: 8
+# Title: Implement Run Initialization System
+# Status: pending
+# Dependencies: 5
+# Priority: medium
+# Description: Create the system that initializes each run with Bear, Tiger, and Eagle as the starting team
+# Details:
+Implement RunManager or GameInitializer class that creates a new run with the default team composition. Use the unit factory to create Bear, Tiger, and Eagle instances. Set up initial team positioning and ensure proper integration with combat system. Prepare foundation for future team customization features.
+
+# Test Strategy:
+Test run initialization creates correct starting team, verify all three units are properly instantiated with correct stats and attacks, and ensure team is ready for combat engagement

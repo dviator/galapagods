@@ -1,0 +1,11 @@
+# Task ID: 9
+# Title: Update Combat UI to Display Attack Names
+# Status: pending
+# Dependencies: 7
+# Priority: medium
+# Description: Modify the combat screen UI to show each unit's attack name in their character card stats section
+# Details:
+Update character card components to display attack names from unit data. Ensure attack names are fetched from the unit's attack property and displayed in the stats section. Maintain clean separation between UI components and combat logic. Consider responsive design for different screen sizes.
+
+# Test Strategy:
+Visual testing to ensure attack names appear correctly on character cards, test with all unit types, verify UI updates when units change, and ensure proper responsive behavior across different screen sizes

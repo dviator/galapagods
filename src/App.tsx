@@ -1,32 +1,45 @@
 import React, { useState } from "react";
-import { usePhaseContext } from "./usePhaseContext";
+import { usePhaseContext } from "./contexts/phase";
 import CombatScreen from "./screens/CombatScreen";
 import ShopScreen from "./screens/ShopScreen";
 import DeathScreen from "./screens/DeathScreen";
 import LabScreen from "./screens/LabScreen";
-import type { Character } from "./types";
+import type { Unit } from "./types";
 import cloneDeep from "lodash.clonedeep";
-import { createCharacter } from './utils/units/createCharacter';
+import { createUnit } from './utils/units/createCharacter';
 import GameLayout from './components/GameLayout';
 import bearImg from './assets/units/bear.png';
 import eagleImg from './assets/units/eagle.png';
 import tigerImg from './assets/units/tiger.png';
+import {
+  bearSheet,
+  tigerSheet,
+  eagleSheet,
+  gooberSheet
+} from './data/characterSheets';
+import {
+  slashAttack,
+  pounceAttack,
+  swoopAttack,
+  slamAttack
+} from './data/attacks';
 
-const initialPlayerTeam: Character[] = [
-  createCharacter("A1", 3, 10, 5, eagleImg),
-  createCharacter("A2", 2, 8, 3, bearImg),
-  createCharacter("A3", 4, 6, 7, tigerImg),
+// --- Initial Teams using new Unit type for both player and enemy ---
+const initialPlayerTeam: Unit[] = [
+  createUnit("bear-1", "Bear", "character", bearImg, bearSheet, 12, 3, slashAttack),
+  createUnit("tiger-1", "Tiger", "character", tigerImg, tigerSheet, 10, 5, pounceAttack),
+  createUnit("eagle-1", "Eagle", "character", eagleImg, eagleSheet, 8, 7, swoopAttack),
 ];
-const initialEnemyTeam: Character[] = [
-  createCharacter("B1", 2, 12, 4),
-  createCharacter("B2", 3, 9, 6),
-  createCharacter("B3", 1, 6, 2),
+const initialEnemyTeam: Unit[] = [
+  createUnit("goober-1", "Goob1", "enemy", undefined, gooberSheet, 10, 2, slamAttack),
+  createUnit("goober-2", "Goob2", "enemy", undefined, gooberSheet, 10, 4, slamAttack),
+  createUnit("goober-3", "Goob3", "enemy", undefined, gooberSheet, 10, 3, slamAttack),
 ];
 
 const App: React.FC = () => {
   const { currentPhase, transitionToCombat, transitionToLab } = usePhaseContext();
-  const [playerTeam, setPlayerTeam] = useState<Character[]>(cloneDeep(initialPlayerTeam));
-  const [enemyTeam, setEnemyTeam] = useState<Character[]>(cloneDeep(initialEnemyTeam));
+  const [playerTeam, setPlayerTeam] = useState<Unit[]>(cloneDeep(initialPlayerTeam));
+  const [enemyTeam, setEnemyTeam] = useState<Unit[]>(cloneDeep(initialEnemyTeam));
   const [round, setRound] = useState(1);
   const [runNumber, setRunNumber] = useState(1);
   // Local state for combat log

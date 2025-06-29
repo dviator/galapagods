@@ -1,0 +1,99 @@
+# PRD: Combat System Epic (Phase 2 – Foundational Unit & Attack System)
+
+## Overview
+
+This phase focuses on building a robust, extensible foundation for unique character types and attack mechanics in the combat system. The goal is to implement three distinct player units (Bear, Tiger, Eagle) and one enemy type (Goober), each with a unique attack and targeting rule. The system should support future expansion with new units, attacks, and targeting logic.
+
+## Goals
+- Implement Bear, Tiger, and Eagle as player units, each with a unique attack
+- Implement Goober as the initial enemy type
+- Establish a character sheet system for player units, storing base stats that feed into active combat stats (attack, initiative, etc.)
+- Cleanly organize attack and targeting logic for easy extensibility
+- Display each unit's attack name in the stats section of their character card on the combat screen
+- Ensure the player starts each run with Bear, Tiger, and Eagle
+- Document the data model for units, attacks, and targeting rules
+- Implement a basic factory or registry for creating units and attacks
+- Write minimal unit tests for core combat logic
+- Maintain clear separation between core combat logic and UI components
+- Provide a simple dev-only panel or console output listing all available units and attacks, their targeting rules, and sample stats
+
+---
+
+## Functional Requirements
+
+### 1. Player Units & Attacks
+- Implement three player units:
+  - **Bear**: Attack = Slash (damages enemy in front)
+  - **Tiger**: Attack = Pounce (damages enemy in front)
+  - **Eagle**: Attack = Swoop (damages enemy one to the right of their position)
+- Each attack should have a clearly defined targeting rule, with code organized for future extensibility (e.g., new targeting patterns)
+- At the start of a new run, the player receives Bear, Tiger, and Eagle as their team
+- The attack name should be displayed in the stats section of each character card during combat
+- Document the data model for units, attacks, and targeting rules (in code comments or a short markdown file)
+- Implement a basic factory or registry pattern for creating units and attacks
+
+### 2. Enemy Units
+- Implement one enemy type:
+  - **Goober**: Attack = Slam (damages enemy in front)
+
+### 3. Character Sheet System
+- Create a character sheet for each player unit, storing base stats (e.g., strength, agility, etc.)
+- Active combat stats (attack, initiative, etc.) are derived from the character sheet
+- (Future: Randomize some stats and persist units across runs)
+
+### 4. Code Organization & Extensibility
+- All code for units, attacks, and targeting rules should be modular and designed for easy addition of new types in future phases
+- Maintain clear separation between core combat logic and UI components
+
+### 5. Error Handling for Missed Attacks
+- If an attack misses (e.g., Eagle's swoop with no valid target), the system should move to the next unit to the left
+
+### 6. Minimal Test Coverage
+- Write minimal unit tests for core attack/targeting logic and character sheet calculations
+
+### 7. Dev-Only Unit/Attack Preview
+- Provide a simple dev-only panel or console output that lists all available units and attacks, their targeting rules, and sample stats. This should help with debugging and verifying extensibility as the system grows.
+
+---
+
+## Non-Functional Requirements
+- Maintain code modularity and extensibility for future mechanics
+- Ensure UI remains responsive and accessible
+- Optimize for performance during combat
+
+---
+
+## Out of Scope (for this phase)
+- Analytics, advanced AI, and combat balance
+- Additional enemy or player unit types
+- Persistent save/load and stat randomization (planned for future phases)
+- Shop, Lab, or progression system changes
+- Art asset overhaul
+- Combat animations
+- Stat/attack tooltips (future improvement)
+
+---
+
+## Acceptance Criteria
+- Bear, Tiger, and Eagle are implemented as player units, each with a unique attack and targeting rule
+- Goober is implemented as the enemy type with its own attack
+- Character sheet system is in place and used to derive active combat stats
+- Attack names are displayed on character cards during combat
+- Player starts each run with Bear, Tiger, and Eagle
+- Code is modular and ready for future expansion of units, attacks, and targeting logic
+- Data model for units, attacks, and targeting rules is documented
+- Factory/registry pattern is used for unit and attack creation
+- Minimal unit tests exist for core combat logic
+- Core combat logic and UI components are clearly separated
+- Missed attacks are handled by moving to the next unit to the left
+- A dev-only panel or console output lists all available units and attacks, their targeting rules, and sample stats
+
+---
+
+## Future Improvements
+- Stat/attack tooltips on character cards
+- Combat animations
+- Advanced AI and combat balance
+- Persistent save/load and stat randomization
+- Additional unit and enemy types
+- Analytics and combat outcome tracking

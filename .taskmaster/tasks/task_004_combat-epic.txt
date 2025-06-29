@@ -1,0 +1,43 @@
+# Task ID: 4
+# Title: Implement Core Targeting System
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Build the targeting rule engine that determines valid targets for different attack types
+# Details:
+Create TargetingEngine class with methods for different targeting patterns: targetInFront(), targetOneRight(), etc. Implement position-based targeting logic considering unit positions on battlefield. Create TargetingRule interface with execute(attacker, battlefield) method. Support for 'no valid target' scenarios. Make system extensible for future targeting patterns like area-of-effect, random target, etc.
+
+# Test Strategy:
+Test each targeting rule with various battlefield configurations, verify correct target selection, test edge cases like no valid targets, and ensure targeting works correctly with different unit positions
+
+# Subtasks:
+## 1. Design TargetingEngine Class Structure [pending]
+### Dependencies: None
+### Description: Create the main TargetingEngine class with core architecture for managing targeting operations, rule registration, and target validation
+### Details:
+Implement TargetingEngine class with methods for rule registration, target calculation, battlefield state management, and coordinate system handling. Include constructor for battlefield dimensions and unit positioning.
+
+## 2. Define TargetingRule Interface [pending]
+### Dependencies: 4.1
+### Description: Create the TargetingRule interface with standardized execution methods for all targeting patterns
+### Details:
+Design interface with methods like execute(), validateTarget(), calculateTargets(), and getTargetPositions(). Include parameters for source position, battlefield state, and targeting constraints.
+
+## 3. Implement Individual Targeting Rule Classes [pending]
+### Dependencies: 4.2
+### Description: Create concrete implementations for directional targeting rules (front, right, left, back, diagonal, etc.)
+### Details:
+Implement FrontTargetingRule, RightTargetingRule, LeftTargetingRule, BackTargetingRule, and DiagonalTargetingRule classes. Each should handle position calculations, range validation, and obstacle detection.
+
+## 4. Develop Position-Based Battlefield Logic [pending]
+### Dependencies: 4.1
+### Description: Implement battlefield coordinate system, position validation, and spatial relationship calculations
+### Details:
+Create BattlefieldGrid class with coordinate mapping, distance calculations, line-of-sight algorithms, and position validation. Include methods for checking valid moves and target accessibility.
+
+## 5. Implement Edge Case Handling and Validation [pending]
+### Dependencies: 4.3, 4.4
+### Description: Add comprehensive error handling for invalid targets, out-of-bounds positions, and edge battlefield scenarios
+### Details:
+Implement validation for null targets, boundary checking, friendly fire prevention, obstacle collision detection, and invalid rule combinations. Include exception handling and fallback targeting strategies.
+

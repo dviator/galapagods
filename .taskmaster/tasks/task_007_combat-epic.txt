@@ -1,0 +1,49 @@
+# Task ID: 7
+# Title: Implement Combat Logic and Turn Management
+# Status: pending
+# Dependencies: 5, 6
+# Priority: high
+# Description: Build the core combat engine that manages turn order, attack execution, and missed attack handling
+# Details:
+Create CombatEngine class to manage turn-based combat flow. Implement initiative-based turn order using derived stats. Handle attack execution by calling targeting system and applying damage. Implement missed attack logic: when no valid target exists, move to next unit to the left. Manage combat state transitions and victory/defeat conditions.
+
+# Test Strategy:
+Test turn order calculation based on initiative, verify attack execution and damage application, test missed attack handling with various scenarios, and ensure proper combat state management throughout battles
+
+# Subtasks:
+## 1. CombatEngine class structure [pending]
+### Dependencies: None
+### Description: Design and implement the core CombatEngine class with proper initialization, state variables, and method organization for managing combat flow
+### Details:
+Create the main CombatEngine class with constructor, private/public methods for combat orchestration, state management variables, and integration points for other combat systems. Include proper error handling and logging mechanisms.
+
+## 2. Initiative-based turn order calculation [pending]
+### Dependencies: 7.1
+### Description: Implement the initiative system that determines combat turn order based on unit stats and random factors
+### Details:
+Develop algorithm to calculate initiative values for all combat participants, sort units by initiative, handle tie-breaking scenarios, and maintain turn order queue throughout combat rounds.
+
+## 3. Attack execution and damage application logic [pending]
+### Dependencies: 7.1
+### Description: Create the core attack resolution system that processes attacks and applies damage to targets
+### Details:
+Implement hit/miss calculations, damage computation based on attacker/defender stats, critical hit mechanics, damage type considerations, and health reduction with proper validation and bounds checking.
+
+## 4. Missed attack handling with unit repositioning [pending]
+### Dependencies: 7.3
+### Description: Develop system for handling missed attacks including potential unit movement and positioning changes
+### Details:
+Create logic for miss consequences, unit repositioning mechanics when attacks fail, collision detection for movement, and updating unit positions on the battlefield grid while maintaining combat flow.
+
+## 5. Combat state management [pending]
+### Dependencies: 7.1, 7.2
+### Description: Implement comprehensive combat state tracking and transition management system
+### Details:
+Design state machine for combat phases (initialization, turn execution, resolution), track active effects, manage unit status conditions, handle state persistence, and ensure proper state transitions with validation.
+
+## 6. Victory/defeat condition detection [pending]
+### Dependencies: 7.3, 7.5
+### Description: Create system to detect and handle combat end conditions including victory, defeat, and draw scenarios
+### Details:
+Implement win/loss condition checking after each action, handle multiple victory conditions (elimination, objectives, time limits), trigger appropriate end-game events, and clean up combat state upon completion.
+

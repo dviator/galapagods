@@ -1,24 +1,32 @@
-import type { Character } from '../../types';
+import type { Unit, CharacterSheet, CombatStatus, Attack, } from '../../types';
 
-export function createCharacter(
+// New general unit creation function for both characters and enemies
+export function createUnit(
+  id: string,
   name: string,
-  attack: number,
-  health: number,
+  type: 'character' | 'enemy',
+  image: string | undefined,
+  characterSheet: CharacterSheet,
+  maxHealth: number,
   baseInitiative: number,
-  image?: string
-): Character {
-  return {
-    id: crypto.randomUUID(),
-    name,
-    health,
-    maxHealth: health,
-    attack,
-    defense: 0,
-    abilities: [],
-    upgrades: [],
-    baseInitiative,
-    initiative: 0,
+  attack: Attack,
+  upgrades?: string[]
+): Unit {
+  const combatStatus: CombatStatus = {
     alive: true,
-    image,
+    health: maxHealth,
+    initiative: 0,
   };
+  return {
+    id,
+    name,
+    type,
+    image,
+    characterSheet,
+    maxHealth,
+    baseInitiative,
+    attack,
+    combatStatus,
+    ...(type === 'character' && upgrades ? { upgrades } : {}),
+  } as Unit;
 }
