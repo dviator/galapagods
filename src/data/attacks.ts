@@ -1,4 +1,4 @@
-import type { Attack } from '../../types';
+import type { Attack } from '../types';
 import { frontTargetingRule, rightTargetingRule } from '../utils/units/attackTargeting';
 
 export const slashAttack: Attack = {
