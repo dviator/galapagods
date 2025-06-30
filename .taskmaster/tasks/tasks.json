@@ -791,11 +791,22 @@
         ],
         "priority": "medium",
         "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Add Precommit Hook for Build Validation",
+        "description": "Implement a precommit hook that automatically validates the project builds successfully before allowing commits to prevent broken code from entering the repository.",
+        "details": "Set up a precommit hook using tools like husky or pre-commit to automatically run build validation before each commit. The hook should execute the project's build command (e.g., npm run build, yarn build, or equivalent) and prevent the commit if the build fails. Configure the hook to run quickly by potentially using incremental builds or build caching. Include proper error messaging to guide developers when builds fail. Consider adding additional checks like linting, type checking, or basic unit tests alongside the build validation. Ensure the hook works across different development environments and doesn't interfere with emergency hotfix workflows. Document the setup process and provide instructions for developers to install and configure the hook locally. Handle edge cases like partial commits, merge commits, and CI/CD integration scenarios.",
+        "testStrategy": "Verify the precommit hook is properly installed and configured by attempting commits with both valid and invalid code changes. Test that successful builds allow commits to proceed normally while build failures prevent commits with appropriate error messages. Validate the hook works across different development environments (Windows, macOS, Linux) and with different Git clients. Test performance to ensure the hook doesn't significantly slow down the commit process. Verify the hook can be bypassed in emergency situations using appropriate Git flags. Test integration with existing CI/CD pipelines to ensure no conflicts. Confirm that the hook properly handles edge cases like empty commits, merge commits, and rebase operations.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-06-29T03:01:22.079Z",
-      "updated": "2025-06-29T04:22:28.083Z",
+      "updated": "2025-06-30T00:59:58.681Z",
       "description": "Tasks for combat-epic context"
     }
   },
