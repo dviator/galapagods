@@ -348,13 +348,87 @@
         "description": "Integrate the stat system with character attributes and combat mechanics, ensuring all attacks scale with appropriate stats and core attributes like health and initiative are stat-based.",
         "details": "Create comprehensive stat-to-mechanic linking system by extending existing type definitions and combat logic:\n\n**Type System Updates:**\n- Extend Character interface in /src/types/character.ts to include statModifiers and baseStats properties\n- Update CombatUnit interface to reference character stats for health, initiative, and damage calculations\n- Create StatScaling interface defining multipliers for each stat-to-mechanic relationship\n\n**Stat-to-Mechanic Mappings:**\n- Link max health calculation: baseHealth + (Survival * healthPerSurvival)\n- Link initiative calculation: baseInitiative + (Quickness * initiativePerQuickness)  \n- Link attack damage: baseDamage + (Ferocity * damagePerFerocity) for physical attacks\n- Link speed-based attacks: baseDamage + (Quickness * speedDamageMultiplier)\n- Link XP gain: baseXP * (1 + Instinct * xpMultiplier)\n- Link ability power: basePower + (Instinct * abilityPowerPerInstinct)\n\n**Implementation Files:**\n- Update /src/utils/statCalculations.ts with functions: calculateMaxHealth(), calculateInitiative(), calculateAttackDamage(), calculateXPGain()\n- Modify /src/utils/combat.ts to use stat-based calculations instead of hardcoded values\n- Update character creation logic in /src/utils/characterGeneration.ts to properly initialize stat-based attributes\n- Create /src/config/statScaling.ts with configurable scaling coefficients\n\n**Integration Points:**\n- Refactor existing combat damage calculations to use new stat-based system\n- Update character leveling logic to recalculate derived stats when base stats change\n- Ensure UI components display stat-influenced values correctly",
         "testStrategy": "Create comprehensive unit tests for stat calculation functions with various stat combinations and verify scaling produces expected results. Test edge cases including zero stats, maximum stats, and stat changes during combat. Verify character creation properly initializes all stat-based attributes. Test combat integration ensures attacks use correct stat scaling and health/initiative calculations are accurate. Create integration tests verifying stat changes immediately update derived values like max health and attack damage. Test XP gain scaling with different Instinct values and ability power calculations for various ability types.",
-        "status": "pending",
+        "status": "in-progress",
         "dependencies": [
           27,
           37
         ],
         "priority": "high",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Update Type Definitions for Stat-Based System",
+            "description": "Extend existing type definitions to support stat-based calculations for character attributes and combat mechanics.",
+            "dependencies": [],
+            "details": "Extend Character interface in /src/types/character.ts to include statModifiers and baseStats properties. Update CombatUnit interface to reference character stats for health, initiative, and damage calculations. Create StatScaling interface defining multipliers for each stat-to-mechanic relationship. Add types for stat calculation functions and scaling coefficients.",
+            "status": "pending",
+            "testStrategy": "Verify type definitions compile correctly and all existing code still type-checks after interface extensions."
+          },
+          {
+            "id": 2,
+            "title": "Create Stat Scaling Configuration System",
+            "description": "Implement configurable scaling coefficients that define how stats influence various game mechanics.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create /src/config/statScaling.ts with configurable scaling coefficients including healthPerSurvival, initiativePerQuickness, damagePerFerocity, speedDamageMultiplier, xpMultiplier, and abilityPowerPerInstinct. Define default values and export scaling configuration object. Ensure coefficients are easily adjustable for game balance.",
+            "status": "pending",
+            "testStrategy": "Test that scaling configuration loads correctly and all coefficient values are accessible and properly typed."
+          },
+          {
+            "id": 3,
+            "title": "Implement Core Stat Calculation Functions",
+            "description": "Create utility functions that calculate derived attributes from base stats using the scaling configuration.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Update /src/utils/statCalculations.ts with functions: calculateMaxHealth(character, scaling), calculateInitiative(character, scaling), calculateAttackDamage(character, attackType, scaling), calculateXPGain(baseXP, character, scaling), and calculateAbilityPower(character, scaling). Each function should take character stats and scaling config as parameters and return calculated values.",
+            "status": "pending",
+            "testStrategy": "Unit test each calculation function with various stat combinations to ensure correct mathematical operations and edge case handling."
+          },
+          {
+            "id": 4,
+            "title": "Refactor Character Creation and Initialization",
+            "description": "Update character generation logic to properly initialize stat-based attributes and remove hardcoded values.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Modify /src/utils/characterGeneration.ts to use stat calculation functions when creating new characters. Initialize baseStats and statModifiers properties. Calculate initial health, initiative, and other derived stats using the new calculation functions. Remove any hardcoded attribute values and replace with stat-based calculations.",
+            "status": "pending",
+            "testStrategy": "Test character creation with different stat distributions to verify all derived attributes are calculated correctly and no hardcoded values remain."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Stat-Based Combat Mechanics",
+            "description": "Refactor combat system to use stat-based calculations for damage, initiative, and other combat-related mechanics.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Modify /src/utils/combat.ts to use stat-based calculations instead of hardcoded values. Update damage calculation logic to scale with Ferocity for physical attacks and Quickness for speed-based attacks. Implement initiative calculation using Quickness stat. Update ability power calculations using Instinct stat. Ensure all combat mechanics reference character stats through calculation functions.",
+            "status": "pending",
+            "testStrategy": "Test combat scenarios with characters having different stat distributions to verify damage scaling, initiative ordering, and ability effectiveness work correctly."
+          },
+          {
+            "id": 6,
+            "title": "Update Character Leveling and Stat Recalculation",
+            "description": "Implement system to recalculate all derived stats when base stats change through leveling or other means.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "details": "Update character leveling logic to recalculate derived stats (health, initiative, damage modifiers) whenever base stats change. Create a recalculateCharacterStats() function that updates all stat-influenced values. Ensure UI components display updated stat-influenced values correctly. Implement stat change event handling to trigger recalculations when needed.",
+            "status": "pending",
+            "testStrategy": "Test character leveling scenarios to verify all derived stats update correctly when base stats increase. Verify UI displays updated values and no stale data persists."
+          }
+        ]
       },
       {
         "id": 39,
@@ -370,12 +444,117 @@
         ],
         "priority": "high",
         "subtasks": []
+      },
+      {
+        "id": 40,
+        "title": "Implement Phase Management System",
+        "description": "Create a centralized phase management system to handle game state transitions between combat, shop, death, and lab phases",
+        "details": "Create a PhaseManager class or context that manages the current phase state ('combat', 'shop', 'death', 'lab'). Implement phase transition logic with automatic progression: Combat → Shop (when all enemies dead) → Combat (after continue) → Death (when all players dead) → Lab → new run. Use React Context or state management to provide phase state globally. Include methods for transitioning between phases and validating transitions.",
+        "testStrategy": "Unit tests for phase transition logic, integration tests for automatic transitions based on game state changes, manual testing of complete game loop cycle",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 41,
+        "title": "Create Phase Tracker UI Component",
+        "description": "Build a persistent phase tracker component that displays on the left side of the screen showing current phase and overall game loop progress",
+        "details": "Create a PhaseTracker component using React and Tailwind CSS. Position it as a fixed left sidebar that shows: current phase indicator, visual representation of the game loop (Combat → Shop → Combat → Death → Lab), progress indicators for current run. Style with modern UI design, ensure it's always visible regardless of current phase screen. Use icons or visual elements to make phases easily identifiable.",
+        "testStrategy": "Visual regression tests for UI consistency, functional tests to verify phase indicator updates correctly, responsive design testing across different screen sizes",
+        "priority": "high",
+        "dependencies": [
+          40
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 42,
+        "title": "Refactor Combat Phase Integration",
+        "description": "Integrate existing combat simulator into the new phase system and ensure proper transitions to shop phase",
+        "details": "Refactor existing combat code to work within the phase system. Ensure combat automatically transitions to shop phase when all enemies are defeated. Modify Reset button to only reset current combat, not entire run. Integrate with phase manager for state transitions. Preserve all existing combat functionality while making it phase-aware.",
+        "testStrategy": "Regression tests for existing combat functionality, integration tests for phase transitions, manual testing of reset button behavior",
+        "priority": "high",
+        "dependencies": [
+          40
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 43,
+        "title": "Implement Shop Phase Component",
+        "description": "Create a shop interface where players can purchase upgrades for characters and the lab between combat rounds",
+        "details": "Build Shop component with React and Tailwind CSS. Display placeholder upgrades for characters (health boost, attack boost, etc.) and lab upgrades. Implement mock purchase system (no real currency yet). Add Continue button that transitions to next combat phase with increased difficulty. Create responsive grid layout for upgrade items with clear pricing and descriptions. Style consistently with overall game design.",
+        "testStrategy": "Component tests for shop functionality, integration tests for phase transitions, UI tests for purchase interactions and continue button",
+        "priority": "medium",
+        "dependencies": [
+          40
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 44,
+        "title": "Create Death and Lab Phase Components",
+        "description": "Implement death screen for run completion and placeholder lab component for future evolution system",
+        "details": "Create Death component that displays when all player characters die. Show game over message/image with automatic or manual transition to Lab phase after delay. Create Lab component as placeholder showing 'Lab/Evolution phase coming soon' message with button to start new run. Implement new run logic that resets upgrades and generates fresh team. Style both components with appropriate theming (somber for death, scientific for lab).",
+        "testStrategy": "Component tests for both phases, integration tests for transitions and new run logic, manual testing of complete death → lab → new run cycle",
+        "priority": "medium",
+        "dependencies": [
+          40
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 45,
+        "title": "Implement Main App Layout and Routing",
+        "description": "Create the main application layout that renders appropriate phase components and manages overlay systems",
+        "details": "Refactor main.tsx to focus on high-level app structure. Create layout container that hosts phase tracker on left and main content area on right. Implement phase-based component rendering that switches between Combat, Shop, Death, and Lab components. Design overlay system for future persistent UI elements. Use CSS Grid or Flexbox for responsive layout. Ensure clean separation between layout management and phase-specific logic.",
+        "testStrategy": "Layout tests for responsive design, integration tests for phase component rendering, visual tests for overlay system functionality",
+        "priority": "high",
+        "dependencies": [
+          41,
+          42,
+          43,
+          44
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 46,
+        "title": "Structural Code Refactoring",
+        "description": "Reorganize codebase into logical modules separating components, types, and utilities for better maintainability",
+        "details": "Create organized file structure: /components (Combat, Shop, Death, Lab, PhaseTracker), /types (interfaces and type definitions), /utils (combat logic, enemy generation, game utilities), /context (phase management, game state). Move existing code into appropriate modules. Ensure clear imports/exports and documented interfaces. Maintain backward compatibility while improving code organization. Use TypeScript for type safety across modules.",
+        "testStrategy": "Module import/export tests, type checking validation, regression tests to ensure no functionality breaks during refactor",
+        "priority": "medium",
+        "dependencies": [
+          45
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 47,
+        "title": "Implement Extensible Architecture and Documentation",
+        "description": "Finalize extensible architecture patterns and create comprehensive documentation for future feature additions",
+        "details": "Establish clear patterns for adding new phases, components, and features. Create plugin-like architecture for easy extension. Document component interfaces, phase management patterns, and overlay system usage. Implement example of how to add new phase or upgrade type. Consider implementing Immer for efficient state updates as mentioned in PRD. Create developer documentation with examples and best practices for extending the system.",
+        "testStrategy": "Architecture validation through example extensions, documentation review, performance testing of state update patterns, developer experience testing",
+        "priority": "medium",
+        "dependencies": [
+          46
+        ],
+        "status": "pending",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-06-29T03:01:22.079Z",
-      "updated": "2025-07-01T18:59:12.002Z",
-      "description": "Tasks for combat-epic context"
+      "updated": "2025-07-01T19:05:17.161Z",
+      "description": "Tasks for master context"
     }
   }
 }
