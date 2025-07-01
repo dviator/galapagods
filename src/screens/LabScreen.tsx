@@ -1,32 +1,16 @@
-import React, { useEffect, useContext } from 'react';
-import { ControlPanelContext } from '../components/ControlPanelContext';
+import React from 'react';
 
-type LabScreenProps = {
-  onStartNewRun: () => void;
-};
+export const LabControlPanelButton: React.FC<{ onStartNewRun: () => void }> = ({ onStartNewRun }) => (
+  <button
+    className="flex-1 w-full text-2xl px-4 py-8 bg-purple-600 text-white rounded-lg font-bold shadow hover:bg-purple-700 transition-all duration-200"
+    onClick={onStartNewRun}
+    style={{ minHeight: '4rem' }}
+  >
+    Start New Run
+  </button>
+);
 
-const LabScreen: React.FC<LabScreenProps> = ({ onStartNewRun }) => {
-  const ctx = useContext(ControlPanelContext);
-  const setControlPanel = ctx?.setControlPanel;
-  const clearControlPanel = ctx?.clearControlPanel;
-
-  useEffect(() => {
-    if (setControlPanel) {
-      setControlPanel(
-        <button
-          className="flex-1 w-full text-2xl px-4 py-8 bg-purple-600 text-white rounded-lg font-bold shadow hover:bg-purple-700 transition-all duration-200"
-          onClick={onStartNewRun}
-          style={{ minHeight: '4rem' }}
-        >
-          Start New Run
-        </button>
-      );
-    }
-    return () => {
-      if (clearControlPanel) clearControlPanel();
-    };
-  }, [setControlPanel, clearControlPanel, onStartNewRun]);
-
+const LabScreen: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full w-full p-8">
       <h2 className="text-2xl font-bold mb-4">Lab Phase</h2>

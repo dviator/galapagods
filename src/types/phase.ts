@@ -1,5 +1,4 @@
-import { createContext } from 'react';
-import type { GamePhase } from '../../types';
+export type GamePhase = 'combat' | 'shop' | 'death' | 'lab';
 
 export interface PhaseContextType {
   currentPhase: GamePhase;
@@ -11,5 +10,3 @@ export interface PhaseContextType {
   transitionToCombat: () => void;
   startNewRun: () => void;
 }
-
-export const PhaseContext = createContext<PhaseContextType | undefined>(undefined);

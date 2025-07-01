@@ -1,350 +1,70 @@
-import React, { useEffect, useState, useContext } from "react";
-import type { Unit } from "../types";
-import { usePhaseContext } from "../contexts/phase";
-import cloneDeep from 'lodash.clonedeep';
-import { ControlPanelContext } from '../components/ControlPanelContext';
-import type { Team } from "../types";
-import { TeamEnum } from "../types";
+import React, { useEffect } from "react";
+import UnitCard from '../components/UnitCard';
+import XPSummary from '../components/XPSummary';
+import InitiativeDisplay from '../components/InitiativeDisplay';
+import { useXPSummary } from '../hooks/useXPSummary';
+import { useGameState } from '../contexts/useGameState';
+import { TeamEnum } from '../types/unit';
 
-// Use new Unit type for both teams
+const CombatScreen: React.FC = () => {
+  const {
+    playerTeam,
+    setPlayerTeam,
+    enemyTeam,
+    round,
+    initiativeOrder,
+    currentTurn,
+    phase,
+    transitionToDeath
+  } = useGameState();
 
-type InitiativeEntry = {
-  team: Team; // TeamEnum.Player for playerTeam, TeamEnum.Enemy for enemyTeam
-  index: number;
-  initiative: number;
-};
+  // XP summary state
+  const { xpSummary } = useXPSummary(playerTeam, setPlayerTeam, enemyTeam);
 
-interface BattleState {
-  initiativeOrder: InitiativeEntry[];
-  currentTurn: number;
-}
+  const allEnemiesDead = enemyTeam.every(e => !e.combatStatus.alive);
+  const allPlayersDead = playerTeam.every(e => !e.combatStatus.alive);
 
-type CombatScreenProps = {
-  playerTeam: Unit[];
-  setPlayerTeam: React.Dispatch<React.SetStateAction<Unit[]>>;
-  enemyTeam: Unit[];
-  setEnemyTeam: React.Dispatch<React.SetStateAction<Unit[]>>;
-  round: number;
-  combatLog: string[];
-  setCombatLog: React.Dispatch<React.SetStateAction<string[]>>;
-};
+  // Compute highlight/targeted logic
+  let currentTargetIndices: number[] = [];
+  let currentTargetTeam: 'player' | 'enemy' | null = null;
+  const currentEntry = initiativeOrder[currentTurn];
 
-// Unified UnitCard for both characters and enemies
-const UnitCard: React.FC<{ entity: Unit; highlight?: boolean }> = ({
-  entity,
-  highlight,
-}) => (
-  <div
-    className={`w-[32rem] h-32 ${
-      highlight
-        ? "border-8 border-yellow-400 shadow-xl"
-        : "border-2 border-black"
-    } rounded-lg bg-white flex overflow-hidden relative`}
-  >
-    <div className="w-32 h-full flex items-center justify-center bg-gray-200">
-      {entity.image ? (
-        <img src={entity.image} alt={entity.name} className="object-cover w-full h-full" />
-      ) : (
-        <span className="text-4xl font-bold text-gray-700">{entity.name}</span>
-      )}
-    </div>
-    <div className="h-full w-1 bg-black" />
-    <div className="flex-[3] h-full flex flex-col items-center justify-center gap-2 bg-white relative">
-      <div className="absolute top-0 left-0 w-full" style={{ height: '33%' }}>
-        <HealthBar hp={entity.combatStatus.health} maxHp={entity.maxHealth} />
-      </div>
-      <div className="flex-1 flex flex-col justify-end gap-2 w-full pb-3 pl-4" style={{ height: '67%' }}>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="text-base font-semibold text-gray-600">ATK</span>
-            <span className="text-base font-bold text-black">{entity.attack.name}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-base font-semibold text-gray-600">INIT</span>
-            <span className="text-base font-bold text-black">{entity.baseInitiative}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+  // Debug logs for initiative and teams
+  console.debug('--- CombatScreen Render ---');
+  console.debug('Round:', round);
+  console.debug('Current Phase:', phase);
+  console.debug('Current Turn:', currentTurn);
+  console.debug('Initiative Order:', initiativeOrder);
+  console.debug('Current Entry:', currentEntry);
+  console.debug('Player Team:', playerTeam);
+  console.debug('Enemy Team:', enemyTeam);
 
-const HealthBar: React.FC<{ hp: number; maxHp: number }> = ({ hp, maxHp }) => {
-  const frac = Math.max(0, hp) / maxHp;
-  const color = frac > 0.3 ? "bg-green-700" : "bg-red-500";
-  const barBg = frac === 0 ? "bg-gray-700" : "bg-gray-200";
-  return (
-    <div className={`w-full h-10 ${barBg} rounded flex items-center relative`} style={{ minHeight: '2.5rem' }}>
-      <div
-        className={`h-10 rounded transition-all duration-300 ${color}`}
-        style={{ width: `${Math.round(frac * 100)}%`, minWidth: frac > 0 ? '2.5rem' : 0 }}
-      />
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className="w-full text-center font-bold text-white drop-shadow-sm">{hp} / {maxHp}</span>
-      </div>
-    </div>
-  );
-};
-
-function rollInitiative(teamA: Unit[], teamB: Unit[]): InitiativeEntry[] {
-  const entries: InitiativeEntry[] = [];
-  teamA.forEach((e, i) => {
-    if (e.combatStatus.alive) {
-      e.combatStatus.initiative = Math.floor(Math.random() * 100) + 1 + e.baseInitiative;
-      entries.push({ team: TeamEnum.Player, index: i, initiative: e.combatStatus.initiative });
-    }
-  });
-  teamB.forEach((e, i) => {
-    if (e.combatStatus.alive) {
-      e.combatStatus.initiative = Math.floor(Math.random() * 100) + 1 + e.baseInitiative;
-      entries.push({ team: TeamEnum.Enemy, index: i, initiative: e.combatStatus.initiative });
-    }
-  });
-  entries.sort((a, b) => b.initiative - a.initiative);
-  return entries;
-}
-
-function findTarget(attackerIndex: number, opposingTeam: Unit[]): number | null {
-  if (opposingTeam[attackerIndex]?.combatStatus.alive) return attackerIndex;
-  for (let offset = 1; offset < opposingTeam.length; offset++) {
-    if (
-      attackerIndex - offset >= 0 &&
-      opposingTeam[attackerIndex - offset]?.combatStatus.alive
-    )
-      return attackerIndex - offset;
-    if (
-      attackerIndex + offset < opposingTeam.length &&
-      opposingTeam[attackerIndex + offset]?.combatStatus.alive
-    )
-      return attackerIndex + offset;
-  }
-  return null;
-}
-
-function attack(
-  attacker: Unit,
-  target: Unit
-): string {
-  // TODO: Use attack logic from Attack object, not just .damage
-  if (!attacker.combatStatus.alive || !target.combatStatus.alive) return "";
-  const damage = attacker.attack?.damage ?? 1;
-  target.combatStatus.health -= damage;
-  if (target.combatStatus.health <= 0) {
-    target.combatStatus.health = 0;
-    target.combatStatus.alive = false;
-    return `${attacker.name} attacks ${target.name} for ${damage} and defeats them!`;
-  }
-  return `${attacker.name} attacks ${target.name} for ${damage}. (${target.combatStatus.health} HP left)`;
-}
-
-// Extracted CombatControlPanel component
-const CombatControlPanel: React.FC<{
-  allEnemiesDead: boolean;
-  onShop: () => void;
-  onNextAttack: () => void;
-  onNextRound: () => void;
-  onReset: () => void;
-}> = ({ allEnemiesDead, onShop, onNextAttack, onNextRound, onReset }) => (
-  <div className="flex flex-col gap-3 w-full h-full justify-start items-stretch">
-    {allEnemiesDead ? (
-      <button
-        className="flex-1 min-h-[56px] px-4 py-2 bg-yellow-400 text-white font-bold rounded hover:bg-yellow-500 w-full text-lg shadow-none"
-        onClick={onShop}
-      >
-        SHOP
-      </button>
-    ) : (
-      <>
-        <button
-          className="flex-1 min-h-[56px] px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full text-lg shadow-none"
-          onClick={onNextAttack}
-        >
-          Next Attack
-        </button>
-        <button
-          className="flex-1 min-h-[56px] px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 w-full text-lg shadow-none"
-          onClick={onNextRound}
-        >
-          Next Round
-        </button>
-        <button
-          className="flex-1 min-h-[56px] px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 w-full text-lg shadow-none"
-          onClick={onReset}
-        >
-          Reset
-        </button>
-      </>
-    )}
-  </div>
-);
-
-const CombatScreen: React.FC<CombatScreenProps> = ({ playerTeam, setPlayerTeam, enemyTeam, setEnemyTeam, round, combatLog, setCombatLog }) => {
-  const { currentPhase, transitionToShop, transitionToDeath } = usePhaseContext();
-  const ctx = useContext(ControlPanelContext);
-  const setControlPanel = ctx?.setControlPanel;
-  const clearControlPanel = ctx?.clearControlPanel;
-
-  const [state, setState] = useState<BattleState>({
-    initiativeOrder: [],
-    currentTurn: 0,
-  });
-
-  useEffect(() => {
-    const initiativeOrder = rollInitiative(playerTeam, enemyTeam);
-    setState({
-      initiativeOrder,
-      currentTurn: 0,
-    });
-    setCombatLog([`--- Round ${round} (Initiative rolled) ---`]);
-  }, [playerTeam, enemyTeam, round, setCombatLog]);
-
-  // Helper: Start next round
-  const startNextRound = React.useCallback(
-    (
-      teamA: Unit[],
-      teamB: Unit[],
-      prevLog: string[],
-      prevRound: number
-    ) => {
-      const newInitiativeOrder = rollInitiative(teamA, teamB);
-      setState({
-        initiativeOrder: newInitiativeOrder,
-        currentTurn: 0,
-      });
-      setCombatLog([
-        ...prevLog,
-        `--- Round ${prevRound + 1} (Initiative rolled) ---`,
-      ]);
-    },
-    [setState, setCombatLog]
-  );
-
-  // Next Attack
-  const handleNextAttack = React.useCallback(() => {
-    if (state.currentTurn >= state.initiativeOrder.length) {
-      // If round is over, start next round
-      const newPlayerTeam = cloneDeep(playerTeam);
-      const newEnemyTeam = cloneDeep(enemyTeam);
-      startNextRound(newPlayerTeam, newEnemyTeam, combatLog, round);
-      setPlayerTeam(newPlayerTeam);
-      setEnemyTeam(newEnemyTeam);
-      return;
-    }
-    const entry = state.initiativeOrder[state.currentTurn];
-    const attackerTeam = entry.team === TeamEnum.Player ? playerTeam : enemyTeam;
-    const defenderTeam = entry.team === TeamEnum.Player ? enemyTeam : playerTeam;
-    const attacker = attackerTeam[entry.index];
-    if (!attacker.combatStatus.alive) {
-      setState((prev: BattleState) => ({
-        ...prev,
-        currentTurn: prev.currentTurn + 1,
-      }));
-      return;
-    }
-    const targetIndex = findTarget(entry.index, defenderTeam);
-    let logMsg = "";
-    if (targetIndex !== null) {
-      const target = defenderTeam[targetIndex];
-      logMsg = attack(attacker, target);
-    } else {
-      logMsg = `${attacker.name} has no valid targets.`;
-    }
-    setState((prev: BattleState) => ({
-      ...prev,
-      currentTurn: prev.currentTurn + 1,
-    }));
-    setCombatLog(prev => [...prev, logMsg]);
-  }, [state, playerTeam, enemyTeam, startNextRound, combatLog, round, setPlayerTeam, setEnemyTeam, setCombatLog]);
-
-  // Next Round
-  const handleNextRound = React.useCallback(() => {
-    const { initiativeOrder, currentTurn } = cloneDeep(state);
-    // Finish all remaining attacks
-    let turn = currentTurn;
-    const logCopy = [...combatLog];
-    while (turn < initiativeOrder.length) {
-      const entry = initiativeOrder[turn];
-      const attackerTeam = entry.team === TeamEnum.Player ? playerTeam : enemyTeam;
-      const defenderTeam = entry.team === TeamEnum.Player ? enemyTeam : playerTeam;
-      const attacker = attackerTeam[entry.index];
-      if (attacker.combatStatus.alive) {
-        const targetIndex = findTarget(entry.index, defenderTeam);
-        let logMsg = "";
-        if (targetIndex !== null) {
-          const target = defenderTeam[targetIndex];
-          logMsg = attack(attacker, target);
-        } else {
-          logMsg = `${attacker.name} has no valid targets.`;
-        }
-        logCopy.push(logMsg);
+  if (currentEntry) {
+    const attackerTeam = currentEntry.team === TeamEnum.Player ? playerTeam : enemyTeam;
+    const defenderTeam = currentEntry.team === TeamEnum.Player ? enemyTeam : playerTeam;
+    const attacker = attackerTeam[currentEntry.index];
+    console.debug('Attacker Team:', currentEntry.team, attackerTeam);
+    console.debug('Defender Team:', currentEntry.team === TeamEnum.Player ? TeamEnum.Enemy : TeamEnum.Player, defenderTeam);
+    console.debug('Attacker:', attacker);
+    if (attacker && attacker.attack && attacker.attack.targetingRule) {
+      currentTargetIndices = attacker.attack.targetingRule.getTargets(attacker, attackerTeam, defenderTeam);
+      console.debug('Targeting Rule:', attacker.attack.targetingRule.name);
+      console.debug('Target Indices:', currentTargetIndices);
+      console.debug('Defender Team Length:', defenderTeam.length);
+      if (currentTargetIndices.some(idx => idx < 0 || idx >= defenderTeam.length)) {
+        console.warn('Target index out of bounds:', currentTargetIndices, 'Defender team length:', defenderTeam.length);
       }
-      turn++;
     }
-    // Start new round
-    startNextRound(playerTeam, enemyTeam, logCopy, round);
-  }, [state, playerTeam, enemyTeam, combatLog, round, startNextRound]);
-
-  // Reset
-  const handleReset = React.useCallback(() => {
-    const newPlayerTeam = cloneDeep(playerTeam);
-    const newEnemyTeam = cloneDeep(enemyTeam);
-    const newInitiativeOrder = rollInitiative(newPlayerTeam, newEnemyTeam);
-    setState({
-      initiativeOrder: newInitiativeOrder,
-      currentTurn: 0,
-    });
-    setCombatLog([`--- Round ${round} (Initiative rolled) ---`]);
-    setPlayerTeam(newPlayerTeam);
-    setEnemyTeam(newEnemyTeam);
-  }, [playerTeam, enemyTeam, round, setPlayerTeam, setEnemyTeam, setCombatLog]);
-
-  // Initiative order display
-  const initiativeDisplay = state.initiativeOrder.map((entry: InitiativeEntry, i: number) => {
-    const team = entry.team === TeamEnum.Player ? playerTeam : enemyTeam;
-    const char = team[entry.index];
-    const isActive = i === state.currentTurn;
-    return (
-      <div
-        key={i}
-        className={`grid grid-cols-2 items-center px-2 py-1 rounded w-full ${
-          isActive
-            ? "bg-yellow-100 font-bold border-4 border-yellow-400 shadow-lg"
-            : "bg-gray-100 border border-transparent"
-        }`}
-        style={{ minWidth: '10rem' }}
-      >
-        <span className="text-left text-lg font-extrabold text-gray-800 pl-1">{char.name}</span>
-        <span className="text-right text-xl font-bold text-blue-700 pr-1">{char.combatStatus.initiative}</span>
-      </div>
-    );
-  });
-
-  const allEnemiesDead = enemyTeam.every((e: Unit) => !e.combatStatus.alive);
-  const allPlayersDead = playerTeam.every((e: Unit) => !e.combatStatus.alive);
+    currentTargetTeam = currentEntry.team === TeamEnum.Player ? 'enemy' : 'player';
+    console.debug('Current Target Team:', currentTargetTeam);
+  }
 
   // Automatic phase transitions
   useEffect(() => {
-    if (currentPhase === 'combat' && allPlayersDead) {
+    if (phase === 'combat' && allPlayersDead) {
       transitionToDeath();
     }
-  }, [currentPhase, allPlayersDead, transitionToDeath]);
-
-  React.useEffect(() => {
-    if (setControlPanel) {
-      setControlPanel(
-        <CombatControlPanel
-          allEnemiesDead={allEnemiesDead}
-          onShop={transitionToShop}
-          onNextAttack={handleNextAttack}
-          onNextRound={handleNextRound}
-          onReset={handleReset}
-        />
-      );
-    }
-    return () => {
-      if (clearControlPanel) clearControlPanel();
-    };
-  }, [allEnemiesDead, transitionToShop, handleNextAttack, handleNextRound, handleReset, setControlPanel, clearControlPanel]);
+  }, [phase, allPlayersDead, transitionToDeath]);
 
   return (
     <div className="p-4 font-mono">
@@ -357,20 +77,31 @@ const CombatScreen: React.FC<CombatScreenProps> = ({ playerTeam, setPlayerTeam, 
             <UnitCard
               key={e.id}
               entity={e}
-              highlight={
-                state.initiativeOrder[state.currentTurn]?.team === TeamEnum.Player &&
-                state.initiativeOrder[state.currentTurn]?.index === i
-              }
+              highlight={initiativeOrder[currentTurn]?.team === TeamEnum.Player && initiativeOrder[currentTurn]?.index === i}
+              targeted={currentTargetTeam === 'player' && currentTargetIndices.includes(i)}
+              xpGained={xpSummary[e.id]?.xp}
+              leveledUp={xpSummary[e.id]?.leveledUp}
             />
           ))}
         </div>
-        {/* Initiative Order and Round Indicator */}
+        {/* Initiative Order and Round Indicator or XP Summary */}
         <div className="flex flex-col items-center w-64">
           <div className="text-lg font-bold mb-2">Round {round}</div>
-          <div className="text-2xl font-bold mb-2">Initiative</div>
-          <div className="flex flex-col gap-1 mb-4 w-full border-2 border-blue-400 rounded-xl p-3 items-center bg-white shadow-sm">
-            {initiativeDisplay}
-          </div>
+          {allEnemiesDead ? (
+            <XPSummary playerTeam={playerTeam} xpSummary={xpSummary} />
+          ) : (
+            <>
+              <div className="text-2xl font-bold mb-2">Initiative</div>
+              <div className="flex flex-col gap-1 mb-4 w-full border-2 border-blue-400 rounded-xl p-3 items-center bg-white shadow-sm">
+                <InitiativeDisplay
+                  initiativeOrder={initiativeOrder}
+                  playerTeam={playerTeam}
+                  enemyTeam={enemyTeam}
+                  currentTurn={currentTurn}
+                />
+              </div>
+            </>
+          )}
         </div>
         {/* Enemy Team */}
         <div className="flex flex-col gap-4">
@@ -379,10 +110,8 @@ const CombatScreen: React.FC<CombatScreenProps> = ({ playerTeam, setPlayerTeam, 
             <UnitCard
               key={e.id}
               entity={e}
-              highlight={
-                state.initiativeOrder[state.currentTurn]?.team === TeamEnum.Enemy &&
-                state.initiativeOrder[state.currentTurn]?.index === i
-              }
+              highlight={initiativeOrder[currentTurn]?.team === TeamEnum.Enemy && initiativeOrder[currentTurn]?.index === i}
+              targeted={currentTargetTeam === 'enemy' && currentTargetIndices.includes(i)}
             />
           ))}
         </div>

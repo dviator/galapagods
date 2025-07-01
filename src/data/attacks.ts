@@ -1,23 +1,32 @@
 import type { Attack } from '../types';
-import { frontTargetingRule, rightTargetingRule } from '../utils/units/attackTargeting';
+import { frontTargetingRule, rightTargetingRule, aoeTargetingRule } from '../utils/units/attackTargeting';
+import { AttackDirection } from '../types';
 
 export const slashAttack: Attack = {
   name: "Slash",
-  damage: 3,
-  targetingRule: frontTargetingRule,
+  baseDmg: 1,
+  bonusAbilityDmg: () => 0,
+  direction: AttackDirection.Forward,
+  targetingRule: aoeTargetingRule,
 };
 export const pounceAttack: Attack = {
   name: "Pounce",
-  damage: 4,
+  baseDmg: 4,
+  bonusAbilityDmg: () => 0,
+  direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
 };
 export const swoopAttack: Attack = {
   name: "Swoop",
-  damage: 2,
+  baseDmg: 2,
+  bonusAbilityDmg: () => 0,
+  direction: AttackDirection.Side,
   targetingRule: rightTargetingRule,
 };
 export const slamAttack: Attack = {
   name: "Slam",
-  damage: 2,
+  baseDmg: 2,
+  bonusAbilityDmg: () => 0,
+  direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
 };

@@ -89,3 +89,114 @@ For future scalability, consider using shallow updates or the [Immer](https://im
 - The codebase is refactored into logical modules/files.
 - The UI is clean and consistent.
 - The Reset button resets only the current combat, not the whole run.
+
+---
+
+# Phase 2: Advanced Systems & Progression
+
+## Overview
+
+Building on the core game loop, Phase 2 introduces advanced mechanics to deepen gameplay, progression, and strategic variety. This phase focuses on unique unit abilities, stat and evolution systems, expanded shop and lab features, and new phase mechanics that enhance replayability and player agency.
+
+## Goals
+- Add unique abilities and passives for each unit type (Tiger, Bear, Eagle)
+- Implement a robust stat and level progression system, including gene grades
+- Introduce an evolution system with persistent and randomized growth
+- Expand the Shop and Lab with new items, upgrades, and genetic engineering
+- Add new phase mechanics (income, death consequences, benching, etc.)
+- Build UI for bench and character placement
+- Build UI for Shop
+- Build UI for Lab
+- Build UI for Characters and Gene Editing
+
+---
+
+## Functional Requirements
+
+### 1. Unit Abilities & Passives
+- **Tiger**: Specializes in damage; can attack twice per round or gains a bonus for acting first in initiative order.
+- **Bear**: Has an area-of-effect (AOE) ability and damage reduction passive.
+- **Eagle**: Can attack sideways and provides a utility buff to the team's initiative at the end step.
+- **Passive Abilities**: Some passives can trigger at the end step (e.g., heal 1 HP) or after initiative is rolled.
+
+### 2. Stat System & Progression
+- **Stats:**
+  - Ferocity: Affects attack damage
+  - Quickness: Determines initiative
+  - Survival: Governs health
+  - Instinct: Influences XP gain or ability power (buffs passives like Bear's damage reduction, Eagle's initiative buff, Tiger's damage boost, etc.)
+  - Gene-stat (TBD): Provides benefits for evolving and reproducing
+- **Leveling:**
+  - Each stat is tied to a gene grade (A, B, C, D, F)
+  - When a creature levels up (via XP from defeating enemies), the grade determines stat growth:
+    - S: 7-8
+    - A: 5-6
+    - B: 4-5
+    - C: 3-4
+    - D: 1-2
+    - F: 0-1
+  - Leveling strength is tied to gene grade
+
+### 3. Evolution System
+- Stat growth in each category is randomized per creature and tied to a base grade that persists
+- Base attack damage can differentiate characters
+- System to display player abilities and evolution progress
+
+### 4. Shop Expansion
+- **Income Mechanics:**
+  - "Save the Wildlife Fund": Earn more money as you progress
+  - Earn income for each enemy defeated
+  - Additional income for surviving creatures
+- **Items:**
+  - Health Potion
+  - Attack Booster
+  - Income Boosts
+  - Evolution Progression Items
+  - Items to boost base or random gene grades (improve behind-the-scenes base stats, persistent across runs)
+  - New animal unlocks
+
+### 5. Lab Expansion
+- **Phases:**
+  - Heal up to 2 creatures per session
+  - Display which creatures are on the bench (aging mechanics)
+  - Recruit 1 new creature (maybe 2 after the first round)
+  - Genetically engineer 2 creatures (1 slot at first, unlock more over time)
+  - Upgrade facilities, create items, upgrade units
+  - Team setup and bench management
+
+### 6. Phase Mechanics & Death Consequences
+- Earn income for each enemy defeated and for surviving creatures
+- If a creature dies, it is benched for the next X runs (duration increases with repeated deaths)
+- Recruit new creatures every run; bench damaged ones
+- Consequences and management of death and benching
+
+### 7. Implementation Tasks
+- Build bench and character placement panel
+- UI for displaying abilities, stats, and evolution progress
+- Shop and Lab UI/logic for new items and upgrades
+- Systems for stat progression, gene grades, and evolution
+- Passive and triggered ability systems (end step, initiative roll, etc.)
+
+---
+
+## Non-Functional Requirements (Phase 2 Additions)
+- Maintain extensibility for future units, abilities, and shop/lab features
+- Ensure new UI components are consistent with existing design
+- All new systems should be modular and testable
+
+---
+
+## Out of Scope (for this phase)
+- Persistent save/load (unless required for progression testing)
+- Advanced enemy AI or new enemy types (focus is on player units and systems)
+- Multiplayer or online features
+
+---
+
+## Acceptance Criteria
+- Each unit type has unique abilities and passives implemented
+- Stat, level, and evolution systems are functional and visible to the player
+- Shop and Lab support new items, upgrades, and genetic engineering
+- Phase mechanics (income, death/benching, recruitment) are operational
+- UI for bench, placement, and progression is present and usable
+- All new features are integrated into the main game loop and phase tracker
