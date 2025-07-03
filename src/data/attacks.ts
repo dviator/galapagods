@@ -1,32 +1,37 @@
 import type { Attack } from '../types';
 import { frontTargetingRule, rightTargetingRule, aoeTargetingRule } from '../utils/units/attackTargeting';
 import { AttackDirection } from '../types';
+import type { Unit } from '../types/unit';
+
+export function ferocityBonusDmg(unit: Unit) {
+  return Math.ceil(unit.character.characterSheet.ferocity * 0.33);
+}
 
 export const slashAttack: Attack = {
   name: "Slash",
   baseDmg: 1,
-  bonusAbilityDmg: () => 0,
+  bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Forward,
   targetingRule: aoeTargetingRule,
 };
 export const pounceAttack: Attack = {
   name: "Pounce",
   baseDmg: 4,
-  bonusAbilityDmg: () => 0,
+  bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
 };
 export const swoopAttack: Attack = {
   name: "Swoop",
   baseDmg: 2,
-  bonusAbilityDmg: () => 0,
+  bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Side,
   targetingRule: rightTargetingRule,
 };
 export const slamAttack: Attack = {
   name: "Slam",
   baseDmg: 2,
-  bonusAbilityDmg: () => 0,
+  bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
 };

@@ -73,7 +73,19 @@ const UnitCard: React.FC<UnitCardProps> = ({
         <div className="flex flex-col items-end gap-1">
           <div className="flex items-center gap-2">
             <span className="text-base font-semibold text-gray-600">ATK</span>
-            <span className="text-base font-bold text-black">{entity.attack.name} <span className="text-sm text-gray-500">({entity.attack.baseDmg})</span></span>
+            {(() => {
+              const base = entity.attack.baseDmg;
+              const bonus = entity.attack.bonusAbilityDmg ? entity.attack.bonusAbilityDmg(entity) : 0;
+              const total = base + bonus;
+              return (
+                <span className="text-base font-bold text-black">
+                  {entity.attack.name}
+                  <span className="text-sm text-gray-500 ml-1">
+                    Total {total} ({base} + {bonus})
+                  </span>
+                </span>
+              );
+            })()}
           </div>
           <div className="flex items-center gap-2">
             <span className="text-base font-semibold text-gray-600">INIT</span>
