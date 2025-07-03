@@ -7,20 +7,36 @@ export interface Genome {
   instinct: GeneGrade; // Grade for instinct stat
 }
 
-export interface LevelProgression {
-  level: number; // Current level
-  xp: number; // Current XP
-  xpToNext: number; // XP required for next level
+// Stat value type for each stat
+export type StatName = 'ferocity' | 'quickness' | 'survival' | 'instinct';
+export type StatBlock = Record<StatName, number>;
+
+// Stat scaling coefficients for each stat-to-mechanic relationship
+export interface StatScaling {
+  healthPerSurvival: number;
+  initiativePerQuickness: number;
+  damagePerFerocity: number;
+  speedDamageMultiplier: number;
+  xpMultiplier: number;
+  abilityPowerPerInstinct: number;
 }
 
-export function getStatGrowth(grade: GeneGrade): number {
-  switch (grade) {
-    case GeneGrade.S: return Math.floor(Math.random() * 3) + 8; // 8-10
-    case GeneGrade.A: return Math.floor(Math.random() * 3) + 6; // 6-8
-    case GeneGrade.B: return Math.floor(Math.random() * 2) + 4; // 4-5
-    case GeneGrade.C: return Math.floor(Math.random() * 2) + 3; // 3-4
-    case GeneGrade.D: return 2;
-    case GeneGrade.F: return 1;
-    default: return 1;
-  }
+// Stat calculation function types
+export type CalculateMaxHealth = (baseHealth: number, survival: number, scaling: StatScaling) => number;
+export type CalculateInitiative = (baseInitiative: number, quickness: number, scaling: StatScaling) => number;
+export type CalculateAttackDamage = (baseDamage: number, ferocity: number, quickness: number, scaling: StatScaling) => number;
+export type CalculateXPGain = (baseXP: number, instinct: number, scaling: StatScaling) => number;
+export type CalculateAbilityPower = (basePower: number, instinct: number, scaling: StatScaling) => number;
+
+// Effective stat types (base stat + modifiers)
+export type EffectiveFerocity = number;
+export type EffectiveQuickness = number;
+export type EffectiveSurvival = number;
+export type EffectiveInstinct = number;
+
+export interface EffectiveStatBlock {
+  ferocity: EffectiveFerocity;
+  quickness: EffectiveQuickness;
+  survival: EffectiveSurvival;
+  instinct: EffectiveInstinct;
 }

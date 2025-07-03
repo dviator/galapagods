@@ -202,7 +202,7 @@
           16,
           17
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -329,20 +329,6 @@
         "subtasks": []
       },
       {
-        "id": 37,
-        "title": "Link Attack Bonus Damage to Stats",
-        "description": "Implement logic so that attack damage calculations take into account relevant unit stats (e.g., Ferocity, Quickness, etc.), allowing for stat-based scaling of attack power.",
-        "details": "Create stat-based damage calculation system in /src/utils/combat.ts. Extend existing damage calculation functions to incorporate unit stats: base damage + (Ferocity * 0.5) + (Quickness * 0.3) for physical attacks. Define stat scaling coefficients in /src/config/statScaling.ts with different multipliers per stat type and attack type. Update DamageCalculation interface to include statModifiers property. Implement calculateStatBonus() function that takes unit stats and returns damage modifier. Modify existing combat functions like executeAttack() to use new stat-based calculations. Add support for different scaling formulas per creature type (Tiger might scale more with Ferocity, Eagle with Quickness). Update type definitions in /src/types/combat.ts to include StatDamageModifier interface. Consider diminishing returns for very high stats using logarithmic scaling: Math.log(1 + stat) * multiplier. Ensure backwards compatibility with existing combat system.",
-        "testStrategy": "Create unit tests for stat damage calculations with various stat combinations and verify scaling formulas produce expected results. Test edge cases like zero stats, maximum stats, and negative modifiers. Verify different creature types apply correct stat scaling coefficients. Test combat integration by simulating battles with high-stat vs low-stat units and confirming damage differences. Ensure existing combat functionality remains unaffected and damage calculations are consistent across different attack types.",
-        "status": "pending",
-        "dependencies": [
-          26,
-          17
-        ],
-        "priority": "high",
-        "subtasks": []
-      },
-      {
         "id": 38,
         "title": "Link Stats to Characters and Combat Mechanics",
         "description": "Integrate the stat system with character attributes and combat mechanics, ensuring all attacks scale with appropriate stats and core attributes like health and initiative are stat-based.",
@@ -350,8 +336,7 @@
         "testStrategy": "Create comprehensive unit tests for stat calculation functions with various stat combinations and verify scaling produces expected results. Test edge cases including zero stats, maximum stats, and stat changes during combat. Verify character creation properly initializes all stat-based attributes. Test combat integration ensures attacks use correct stat scaling and health/initiative calculations are accurate. Create integration tests verifying stat changes immediately update derived values like max health and attack damage. Test XP gain scaling with different Instinct values and ability power calculations for various ability types.",
         "status": "in-progress",
         "dependencies": [
-          27,
-          37
+          27
         ],
         "priority": "high",
         "subtasks": [
@@ -439,8 +424,7 @@
         "status": "pending",
         "dependencies": [
           32,
-          26,
-          37
+          26
         ],
         "priority": "high",
         "subtasks": []
@@ -453,7 +437,7 @@
         "testStrategy": "Unit tests for phase transition logic, integration tests for automatic transitions based on game state changes, manual testing of complete game loop cycle",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -466,7 +450,7 @@
         "dependencies": [
           40
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -479,7 +463,7 @@
         "dependencies": [
           40
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -521,7 +505,7 @@
           43,
           44
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -534,7 +518,7 @@
         "dependencies": [
           45
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -549,11 +533,194 @@
         ],
         "status": "pending",
         "subtasks": []
+      },
+      {
+        "id": 48,
+        "title": "Update Team Size from 3 to 4 Units",
+        "description": "Change the default player team size to 4 units and update all related logic, UI components, and type definitions to support the new team size across all game phases.",
+        "details": "Update core type definitions to change TEAM_SIZE constant from 3 to 4. Modify character generation logic to create 4-unit teams instead of 3. Update combat positioning and formation logic to accommodate the additional unit, including grid layouts and targeting systems. Adjust UI layouts in all phases: Combat phase character positioning, Shop phase team display, Lab phase team management. Update CSS grid classes from grid-cols-3 to grid-cols-4 or implement responsive grids (grid-cols-2 md:grid-cols-4). Modify drag-and-drop functionality in character management to handle 4 positions. Adjust combat balance parameters including enemy scaling, damage calculations, and difficulty progression to account for the additional unit. Update any hardcoded arrays, loops, or calculations that assume 3-unit teams. Ensure phase transitions properly handle the new team size. Test all existing combat mechanics, shop interactions, and character progression with 4-unit teams.",
+        "testStrategy": "Unit tests for team generation creating exactly 4 characters. Combat simulation tests with 4-unit teams vs various enemy configurations. UI layout tests ensuring proper display of 4 characters across all screen sizes. Integration tests for phase transitions with 4-unit teams. Balance testing to verify combat difficulty remains appropriate. Regression tests for all existing functionality including drag-and-drop, character stats, and progression systems. Manual testing of complete game loops with 4-unit teams to ensure smooth gameplay experience.",
+        "status": "pending",
+        "dependencies": [
+          28,
+          42,
+          45
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 49,
+        "title": "Implement Octopus Character with AOE Attack System",
+        "description": "Add a new Octopus character with unique area-of-effect attack capabilities, including character sheet, combat integration, and UI support for team selection and AOE targeting.",
+        "details": "**Character Implementation:**\n- Create Octopus character definition in /src/types/character.ts with unique stats optimized for AOE damage (moderate health, high Ferocity for damage scaling)\n- Add Octopus to character creation system with appropriate base stats and growth rates\n- Design character sprite/artwork and integrate into character selection UI\n\n**AOE Attack System:**\n- Extend attack system in /src/utils/combat.ts to support area-of-effect targeting\n- Create AOEAttack interface extending base Attack with properties: targetType ('all-enemies', 'adjacent-enemies'), damageReduction (0.8 for balanced AOE), visualEffect\n- Implement calculateAOEDamage() function that applies damage to multiple targets with potential damage falloff\n- Add AOE attack validation to ensure proper target selection and range checking\n\n**Combat Integration:**\n- Update combat turn system to handle AOE attacks affecting multiple units simultaneously\n- Integrate with existing stat scaling system (Task 37/38) so AOE damage scales with Octopus stats\n- Implement AOE attack animations and visual feedback showing affected targets\n- Add combat log entries for multi-target attacks\n\n**UI and Selection Updates:**\n- Update character selection interface to include Octopus as selectable team member\n- Modify combat UI to show AOE attack targeting indicators\n- Add visual cues for AOE range and affected enemies during attack selection\n- Update character card display to show AOE attack information and cooldowns\n\n**Balance Considerations:**\n- Set AOE damage at 70-80% of single-target attacks to maintain balance\n- Implement cooldown system for AOE attacks to prevent spam\n- Consider mana/energy cost system for powerful AOE abilities",
+        "testStrategy": "**Unit Testing:**\n- Test Octopus character creation with correct base stats and abilities\n- Verify AOE damage calculations with various stat combinations and target counts\n- Test AOE targeting logic with different enemy formations and positions\n\n**Integration Testing:**\n- Test Octopus selection in team composition interface\n- Verify AOE attacks integrate properly with existing combat flow and turn system\n- Test stat scaling integration with AOE damage calculations\n- Validate combat log correctly records multi-target attacks\n\n**Balance Testing:**\n- Test AOE damage output compared to single-target attacks for balance\n- Verify cooldown system prevents overpowered AOE spam\n- Test various combat scenarios with Octopus vs different enemy compositions\n\n**UI Testing:**\n- Test AOE targeting indicators display correctly during combat\n- Verify character selection UI properly includes Octopus option\n- Test visual feedback for AOE attacks affects all intended targets\n- Ensure character card displays AOE ability information clearly\n\n**End-to-End Testing:**\n- Complete game runs using Octopus character from selection through multiple combat rounds\n- Test Octopus performance in various team compositions\n- Verify AOE attacks work correctly in different combat scenarios and enemy formations",
+        "status": "pending",
+        "dependencies": [
+          38
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 50,
+        "title": "Update Goob Enemy Base Health to 6",
+        "description": "Modify the Goob enemy character definition to have 6 base health instead of the current value, ensuring all new Goob instances spawn with the updated health value and display correctly in combat UI.",
+        "details": "**Character Definition Updates:**\n- Locate Goob enemy definition in /src/types/character.ts or enemy configuration files\n- Update baseHealth property from current value to 6 in the Goob character/enemy definition\n- Ensure the change applies to the character creation/spawning logic so all new Goob enemies start with 6 health\n\n**Combat System Integration:**\n- Verify that existing combat mechanics in /src/utils/combat.ts properly use the updated base health value\n- Ensure health calculations, damage resolution, and victory conditions work correctly with the new health value\n- Test that health scaling (if any stat modifiers apply to enemies) still functions properly\n\n**UI Component Updates:**\n- Update any hardcoded health displays or references in combat UI components\n- Ensure HealthBar component in /src/components/Combat/HealthBar.tsx displays the correct maximum health\n- Verify UnitCard component shows accurate health information for Goob enemies\n- Check that any enemy information panels or tooltips reflect the updated health value\n\n**Data Consistency:**\n- Update any enemy data files, configuration objects, or constants that reference Goob's health\n- Ensure no cached or hardcoded values remain that would override the base health change\n- Verify that enemy generation logic uses the updated character definition",
+        "testStrategy": "**Unit Testing:**\n- Test Goob enemy creation to verify new instances spawn with exactly 6 health\n- Verify health calculations and maximum health display correctly in combat scenarios\n- Test damage application to ensure health decreases properly from the new base value\n\n**Integration Testing:**\n- Run combat scenarios with Goob enemies to ensure they behave correctly with 6 health\n- Test UI components display the correct health values and health bar proportions\n- Verify victory conditions trigger appropriately when Goob health reaches 0\n\n**Visual Testing:**\n- Manually inspect combat UI to confirm health bars show correct maximum values\n- Check that enemy information displays show 6 as the base health\n- Ensure no visual glitches or incorrect health percentages appear in the UI\n\n**Regression Testing:**\n- Verify other enemy types are unaffected by the Goob health change\n- Test that existing combat mechanics and stat scaling still work properly\n- Confirm no breaking changes to combat flow or phase transitions",
+        "status": "done",
+        "dependencies": [
+          36,
+          38
+        ],
+        "priority": "low",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Update Goob Character Definition Base Health",
+            "description": "Locate and modify the Goob enemy character definition to set baseHealth property to 6",
+            "dependencies": [],
+            "details": "Find the Goob enemy definition in /src/types/character.ts or enemy configuration files. Update the baseHealth property from its current value to 6. Ensure this change is made in the primary character definition object that serves as the template for all Goob instances.",
+            "status": "done",
+            "testStrategy": "Verify the character definition object has baseHealth: 6 and that importing/accessing this definition returns the correct value"
+          },
+          {
+            "id": 2,
+            "title": "Verify Character Creation and Spawning Logic",
+            "description": "Ensure that enemy spawning and character creation systems properly use the updated base health value from the character definition",
+            "dependencies": [
+              1
+            ],
+            "details": "Review character creation/spawning logic to confirm it reads from the updated character definition. Check that new Goob instances are initialized with 6 health and that no hardcoded values override the base health during instantiation.",
+            "status": "done",
+            "testStrategy": "Create new Goob enemy instances and verify they spawn with exactly 6 health points"
+          },
+          {
+            "id": 3,
+            "title": "Update Combat System Integration",
+            "description": "Verify combat mechanics in /src/utils/combat.ts work correctly with the new health value and update any health-related calculations",
+            "dependencies": [
+              2
+            ],
+            "details": "Review combat.ts to ensure damage calculations, health scaling, and victory conditions properly handle the new base health value. Check that any stat modifiers or health scaling formulas still function correctly with the updated base value.",
+            "status": "done",
+            "testStrategy": "Run combat scenarios with Goob enemies to verify damage calculations, health scaling, and defeat conditions work properly with 6 base health"
+          },
+          {
+            "id": 4,
+            "title": "Update Combat UI Components",
+            "description": "Update HealthBar and UnitCard components to display correct maximum health for Goob enemies",
+            "dependencies": [
+              3
+            ],
+            "details": "Review /src/components/Combat/HealthBar.tsx and UnitCard component to ensure they display accurate health information. Remove any hardcoded health values and verify components read from the character definition. Update enemy information panels or tooltips that show health values.",
+            "status": "done",
+            "testStrategy": "Display Goob enemies in combat UI and verify health bars show correct maximum health of 6 and that unit cards display accurate health information"
+          },
+          {
+            "id": 5,
+            "title": "Ensure Data Consistency Across All Files",
+            "description": "Update any remaining enemy data files, configuration objects, or constants that reference Goob's health to maintain consistency",
+            "dependencies": [
+              4
+            ],
+            "details": "Search for any additional references to Goob's health in enemy data files, configuration objects, constants, or cached values. Update these references to match the new base health of 6. Ensure no conflicting values exist that could override the character definition.",
+            "status": "done",
+            "testStrategy": "Perform a comprehensive search for Goob health references and verify all instances reflect the updated value of 6, with no conflicting or cached values remaining"
+          }
+        ]
+      },
+      {
+        "id": 51,
+        "title": "Add Unit Tests for Core Game Flow Logic",
+        "description": "Create comprehensive unit tests for phase transitions, round handling, and combat resolution to ensure game flow logic remains correct and prevent regressions from future changes.",
+        "details": "Implement comprehensive test suites using Jest and React Testing Library to cover core game flow mechanics:\n\n**Phase Transition Tests:**\n- Test automatic transitions: Combat → Shop (when all enemies defeated), Shop → Combat (on continue), Combat → Death (when all players dead), Death → Lab, Lab → new run\n- Verify phase state management and validation of valid/invalid transitions\n- Test edge cases like attempting invalid transitions or multiple rapid transitions\n\n**Round Handling Tests:**\n- Test round advancement logic and difficulty scaling between combat rounds\n- Verify enemy generation with proper stat scaling: `baseStats * (1 + runNumber * 0.2)`\n- Test run progression tracking and reset functionality for new runs\n\n**Combat Resolution Tests:**\n- Test combat state machine phases: INITIATIVE, PLAYER_TURN, ENEMY_TURN, RESOLUTION\n- Verify damage calculations, turn order management, and victory/defeat detection\n- Test combat completion triggers and proper cleanup\n\n**Integration Tests:**\n- Test complete game loop cycles from combat through all phases back to new combat\n- Verify state persistence and cleanup between phases\n- Test reset functionality only affects current combat, not entire run\n\nCreate test files:\n- `/src/tests/gameFlow/phaseTransitions.test.ts`\n- `/src/tests/gameFlow/roundHandling.test.ts`\n- `/src/tests/gameFlow/combatResolution.test.ts`\n- `/src/tests/integration/gameLoop.test.ts`\n\nUse mocking for UI components to focus on logic testing. Implement test utilities for setting up game states and simulating phase transitions.",
+        "testStrategy": "**Test Coverage Verification:**\n- Achieve 90%+ code coverage for phase management, combat logic, and round handling modules\n- Use Jest coverage reports to identify untested code paths\n\n**Automated Test Execution:**\n- Run test suite in CI/CD pipeline to catch regressions\n- Include tests in pre-commit hooks to prevent broken commits\n\n**Test Validation:**\n- Manually verify each test scenario matches actual game behavior\n- Test with various game states (different round numbers, character configurations, enemy types)\n- Validate test mocks accurately represent real component behavior\n\n**Regression Testing:**\n- Run full test suite after any changes to phase management or combat systems\n- Create specific regression tests for any bugs found in game flow logic\n- Test edge cases like rapid user interactions and unexpected state changes\n\n**Performance Testing:**\n- Ensure test suite runs quickly (under 30 seconds) for developer productivity\n- Profile test execution to identify slow tests that need optimization",
+        "status": "pending",
+        "dependencies": [
+          40,
+          42,
+          36,
+          23
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 52,
+        "title": "Enhance Combat Interface for Visual Clarity and Usability",
+        "description": "Improve the battle interface by fixing round indicators, adding visual feedback for dead units, and implementing cleaner end-of-round handling to make combat more engaging and easier to test.",
+        "details": "**Round Indicator Consistency:**\n- Update PhaseTracker component to display current round from global game state instead of local state\n- Modify combat header in CombatScreen.tsx to show consistent round numbering\n- Ensure combat log entries include accurate round information from centralized state\n- Create a useRoundState() custom hook to manage round state consistently across components\n\n**Dead Unit Visual Feedback:**\n- Extend UnitCard component to display red X overlay when unit health <= 0\n- Implement CSS overlay using absolute positioning with red X icon (react-icons FaTimes)\n- Add opacity and grayscale filters to dead units for visual distinction\n- Modify InitiativeDisplay component to show dead units with visual indicators\n- Update turn management logic to automatically skip dead units without user interaction\n- Add isDead computed property to unit objects and use throughout UI components\n\n**End-of-Round Handling:**\n- Implement round completion detection logic in combat state management\n- Create isRoundComplete() function that checks if all living units have acted\n- Transform \"Next Attack\" button to \"Next Round\" button when round is complete\n- Add visual indicator (different color, icon change) for round completion state\n- Prepare infrastructure for future end-of-round effects (healing, status effects, etc.)\n- Ensure clean state reset when transitioning to new round\n\n**State Management Improvements:**\n- Centralize round tracking in global game state\n- Add round completion status to combat state\n- Implement proper state validation for round transitions\n- Use React's useReducer for complex combat state management\n- Add debugging utilities for combat state inspection",
+        "testStrategy": "**Round Indicator Testing:**\n- Verify round numbers are consistent across PhaseTracker, combat header, and combat log\n- Test round incrementation when transitioning between rounds\n- Validate round state persists correctly during combat actions\n\n**Dead Unit Visual Testing:**\n- Test red X overlay appears immediately when unit health reaches 0\n- Verify dead units are visually distinguished (opacity, grayscale effects)\n- Confirm dead units are automatically skipped in turn order without user input\n- Test initiative tracker correctly shows dead unit status\n\n**End-of-Round Testing:**\n- Verify \"Next Attack\" button changes to \"Next Round\" when all living units have acted\n- Test round completion detection with various unit death scenarios\n- Ensure proper state reset when starting new round\n- Validate button state and visual indicators update correctly\n\n**Integration Testing:**\n- Test complete combat flow with multiple rounds and unit deaths\n- Verify state consistency during rapid user interactions\n- Test edge cases like all units dying simultaneously\n- Ensure no memory leaks or state corruption during extended combat sessions",
+        "status": "pending",
+        "dependencies": [
+          36,
+          18
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Consistent Round Indicators Across Combat UI",
+            "description": "Centralize round tracking by updating the PhaseTracker and CombatScreen components to display the current round from the global game state, ensuring all round indicators and combat log entries reflect accurate, synchronized round information. Develop a useRoundState() custom hook for consistent round state management.",
+            "dependencies": [],
+            "details": "Refactor round indicator logic to pull from a single source of truth in the global state. Update UI components and logs to use this centralized value. Ensure the custom hook is reusable and integrates with state management patterns such as useReducer.",
+            "status": "pending",
+            "testStrategy": "Verify round indicators and combat logs display the correct round number across all relevant screens and after state transitions. Test with simulated round changes and edge cases."
+          },
+          {
+            "id": 2,
+            "title": "Enhance Initiative Tracker with Dead Unit Visuals and Auto-Skip Logic",
+            "description": "Extend the UnitCard and InitiativeDisplay components to visually mark dead units with a red X overlay, opacity, and grayscale filters. Implement logic to automatically skip dead units during turn management, using an isDead computed property throughout the UI.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add visual overlays using CSS and react-icons. Update turn management to check isDead before allowing actions. Ensure all relevant UI components reflect dead status consistently.",
+            "status": "done",
+            "testStrategy": "Simulate unit deaths and confirm visual feedback appears instantly. Test turn progression to ensure dead units are skipped without user input."
+          },
+          {
+            "id": 3,
+            "title": "Refactor End-of-Round UI and Logic with Next Round Button and Indicator",
+            "description": "Implement logic to detect round completion, transforming the 'Next Attack' button into a 'Next Round' button when all living units have acted. Add a distinct visual indicator for round completion and ensure clean state reset when transitioning to a new round.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Develop an isRoundComplete() function and update UI elements accordingly. Change button appearance and behavior based on round state. Ensure state is reset and ready for the next round.",
+            "status": "pending",
+            "testStrategy": "Test end-of-round scenarios to confirm UI updates and state resets correctly. Validate that the button and indicator change only when appropriate."
+          },
+          {
+            "id": 4,
+            "title": "Prepare Infrastructure for Future End-of-Round Effects",
+            "description": "Design and implement extensible infrastructure to support future end-of-round effects such as healing and status changes, ensuring these can be triggered cleanly at round transitions.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create hooks or middleware to allow easy addition of new end-of-round effects. Ensure the system is modular and testable.",
+            "status": "deferred",
+            "testStrategy": "Add mock end-of-round effects and verify they trigger at the correct time without interfering with existing logic."
+          },
+          {
+            "id": 5,
+            "title": "General Visual Clarity and User Feedback Improvements",
+            "description": "Audit and enhance the combat interface for overall visual clarity and user feedback, including consistent iconography, improved color contrast, and responsive feedback for user actions.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Review UI components for clarity and accessibility. Standardize icon usage and color schemes. Add subtle animations or highlights for key actions and state changes.",
+            "status": "deferred",
+            "testStrategy": "Conduct usability testing and gather feedback on visual clarity. Use accessibility tools to ensure compliance with standards."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-06-29T03:01:22.079Z",
-      "updated": "2025-07-01T19:05:17.161Z",
+      "updated": "2025-07-02T16:27:57.625Z",
       "description": "Tasks for master context"
     }
   }

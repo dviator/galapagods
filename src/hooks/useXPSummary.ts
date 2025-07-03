@@ -1,27 +1,28 @@
 import { useEffect, useState, useRef } from 'react';
-import type { Unit } from '../types';
 import { awardXPAndLevelUp } from '../utils/units/leveling';
+import { useGameState } from '../contexts/useGameState';
 
-export function useXPSummary(playerTeam: Unit[], setPlayerTeam: (t: Unit[]) => void, enemyTeam: Unit[], dependencies: unknown[] = []) {
+export function useXPSummary() {
   const [xpSummary, setXpSummary] = useState<{ [unitId: string]: { xp: number; leveledUp: boolean } }>({});
   const [pendingXP, setPendingXP] = useState(false);
+  const { playerTeam, setPlayerTeam, enemyTeam }  = useGameState()
   const playerTeamRef = useRef(playerTeam);
   playerTeamRef.current = playerTeam;
 
   useEffect(() => {
     if (enemyTeam.every(e => !e.combatStatus.alive) && !pendingXP && Object.keys(xpSummary).length === 0) {
       const defeatedEnemies = enemyTeam;
-      const totalXP = defeatedEnemies.reduce((sum, enemy) => sum + (enemy.levelProgression.level * 10), 0);
+      const totalXP = defeatedEnemies.reduce((sum, enemy) => sum + (enemy.character.levelProgression.level * 10), 0);
       const livingTeammates = playerTeamRef.current.filter(u => u.combatStatus.alive);
       const xpPerUnit = livingTeammates.length > 0 ? Math.floor(totalXP / livingTeammates.length) + 7 : 0;
       const summary: { [unitId: string]: { xp: number; leveledUp: boolean } } = {};
       const updatedTeam = playerTeamRef.current.map(unit => {
         if (unit.combatStatus.alive) {
-          const prevLevel = unit.levelProgression.level;
+          const prevLevel = unit.character.levelProgression.level;
           const newUnit = awardXPAndLevelUp({ ...unit }, xpPerUnit);
           summary[unit.id] = {
             xp: xpPerUnit,
-            leveledUp: newUnit.levelProgression.level > prevLevel,
+            leveledUp: newUnit.character.levelProgression.level > prevLevel,
           };
           return newUnit;
         }
@@ -35,7 +36,7 @@ export function useXPSummary(playerTeam: Unit[], setPlayerTeam: (t: Unit[]) => v
       setXpSummary({});
       setPendingXP(false);
     }
-  }, [enemyTeam, pendingXP, ...dependencies]);
+  }, [enemyTeam, pendingXP, xpSummary, setPlayerTeam]);
 
   const resetXPSummary = () => {
     setXpSummary({});

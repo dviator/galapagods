@@ -1,4 +1,4 @@
-import type { CharacterSheet } from '../types';
+import type { CharacterSheet } from '../types/character';
 
 export const bearSheet: CharacterSheet = { ferocity: 3, quickness: 2, survival: 6, instinct: 3 };
 export const tigerSheet: CharacterSheet = { ferocity: 4, quickness: 5, survival: 3, instinct: 2 };

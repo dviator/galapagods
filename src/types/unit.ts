@@ -1,28 +1,19 @@
 import type { Attack, CombatStatus } from './combat';
-import type { PassiveAbility } from './abilities';
-import type { Genome, LevelProgression } from './stats';
-
-export interface CharacterSheet {
-  ferocity: number; // Affects basic attack damage
-  quickness: number; // Affects initiative
-  survival: number; // Affects base HP (and possibly HP regen)
-  instinct: number; // Reserved for future use
-}
+import type { PassiveAbility } from './combat';
+import type { Character } from './character';
 
 export interface Unit {
   id: string;
   name: string;
   type: 'character' | 'enemy';
   image?: string;
-  characterSheet: CharacterSheet;
+  character: Character;
   maxHealth: number;
   baseInitiative: number;
   attack: Attack;
   combatStatus: CombatStatus;
   upgrades?: string[];
   passives?: PassiveAbility[];
-  genome: Genome;
-  levelProgression: LevelProgression;
 }
 
 export enum TeamEnum {

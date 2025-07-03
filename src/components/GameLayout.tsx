@@ -1,11 +1,10 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import ControlPanel from './ControlPanel';
+import GameTracker from './GameTracker';
 
 interface GameLayoutProps {
   children: ReactNode;
-  runNumber: number;
-  roundNumber: number;
   logArea?: ReactNode; // Optional log area to render to the right of the control panel
 }
 
@@ -17,15 +16,11 @@ const LogArea: React.FC<{ children?: ReactNode }> = ({ children }) => (
   </div>
 );
 
-const GameLayout: React.FC<GameLayoutProps> = ({ children, runNumber, roundNumber, logArea }) => {
+const GameLayout: React.FC<GameLayoutProps> = ({ children, logArea }) => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-mono">
       {/* Persistent Phase Tracker Header */}
-      <header className="w-full bg-gray-200 px-4 py-2 flex justify-center items-center shadow">
-        <div className="text-lg font-bold text-gray-700">
-          Run #{runNumber} &nbsp;|&nbsp; Round {roundNumber}
-        </div>
-      </header>
+      <GameTracker />
       {/* Main Content Area */}
       <main className="flex-1 overflow-auto p-0 m-0">
         {children}

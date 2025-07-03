@@ -9,7 +9,6 @@ import { TeamEnum } from '../types/unit';
 const CombatScreen: React.FC = () => {
   const {
     playerTeam,
-    setPlayerTeam,
     enemyTeam,
     round,
     initiativeOrder,
@@ -19,8 +18,7 @@ const CombatScreen: React.FC = () => {
   } = useGameState();
 
   // XP summary state
-  const { xpSummary } = useXPSummary(playerTeam, setPlayerTeam, enemyTeam);
-
+  const { xpSummary } = useXPSummary();
   const allEnemiesDead = enemyTeam.every(e => !e.combatStatus.alive);
   const allPlayersDead = playerTeam.every(e => !e.combatStatus.alive);
 

@@ -1,4 +1,7 @@
-import type { Unit, CharacterSheet, CombatStatus, Attack, LevelProgression } from '../../types';
+import type { CharacterSheet } from '../../types/character';
+import type { Unit } from '../../types/unit';
+import type { Attack } from '../../types/combat';
+import { getCharacter } from './leveling';
 
 // New general unit creation function for both characters and enemies
 export function createUnit(
@@ -6,30 +9,25 @@ export function createUnit(
   name: string,
   type: 'character' | 'enemy',
   image: string | undefined,
-  characterSheet: CharacterSheet,
   maxHealth: number,
   baseInitiative: number,
   attack: Attack,
-  levelProgression: LevelProgression,
-  upgrades?: string[],
+  characterSheet?: CharacterSheet,
 ): Unit {
-  const combatStatus: CombatStatus = {
-    alive: true,
-    health: maxHealth,
-    initiative: 0,
-  };
-  return {
-    id,
-    name,
-    type,
-    image,
-    characterSheet,
-    maxHealth,
-    baseInitiative,
-    attack,
-    combatStatus,
-    levelProgression,
-    genome: { ferocity: 'C', quickness: 'C', survival: 'C', instinct: 'C' },
-    ...(type === 'character' && upgrades ? { upgrades } : {}),
-  } as Unit;
+  const unit: Unit = {
+    id: id,
+    name: name,
+    type: type,
+    image: image ? image : undefined,
+    character: getCharacter({ characterSheet: characterSheet }),
+    maxHealth: maxHealth,
+    baseInitiative: baseInitiative,
+    attack: attack,
+    combatStatus: {
+      alive: true,
+      health: maxHealth,
+      initiative: 0,
+    },
+  }
+  return unit;
 }

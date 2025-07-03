@@ -42,3 +42,30 @@ export interface BattleState {
   initiativeOrder: InitiativeEntry[];
   currentTurn: number;
 }
+
+// Ability types grouped here
+export enum AbilityTrigger {
+  OnAttack = 'onAttack',
+  OnDefend = 'onDefend',
+  EndStep = 'endStep',
+  InitiativeRoll = 'initiativeRoll',
+}
+
+export interface PassiveAbility {
+  name: string;
+  description: string;
+  trigger: AbilityTrigger;
+  effect: (unit: Unit, context?: unknown) => void;
+  icon?: string;
+}
+
+// Represents the full state of a combat encounter
+export interface CombatState {
+  playerTeam: Unit[];
+  enemyTeam: Unit[];
+  initiativeOrder: InitiativeEntry[];
+  currentTurn: number;
+  round: number;
+  combatLog: string[];
+  isRoundComplete: boolean;
+}

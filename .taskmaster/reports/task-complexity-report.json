@@ -1,9 +1,9 @@
 {
 	"meta": {
-		"generatedAt": "2025-06-29T03:32:52.695Z",
-		"tasksAnalyzed": 12,
-		"totalTasks": 12,
-		"analysisCount": 12,
+		"generatedAt": "2025-07-02T16:05:55.664Z",
+		"tasksAnalyzed": 22,
+		"totalTasks": 37,
+		"analysisCount": 34,
 		"thresholdScore": 5,
 		"projectName": "Taskmaster",
 		"usedResearch": false
@@ -104,6 +104,182 @@
 			"recommendedSubtasks": 4,
 			"expansionPrompt": "Divide into: end-to-end combat scenario testing, acceptance criteria validation suite, component integration verification, and performance/responsiveness testing.",
 			"reasoning": "High complexity requiring coordination of all system components. Involves both automated and manual testing strategies with performance considerations."
+		},
+		{
+			"taskId": 27,
+			"taskTitle": "Implement Stat System and Gene Grades",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the stat system implementation into: 1) Define core stat types and interfaces, 2) Implement gene grade system with weighted random generation, 3) Create StatManager utility class with calculation methods, 4) Integrate stat growth with character leveling, 5) Add persistence layer for character stat data",
+			"reasoning": "Complex system requiring multiple interconnected components (types, calculations, persistence, integration). Medium-high complexity due to mathematical calculations and data persistence requirements."
+		},
+		{
+			"taskId": 28,
+			"taskTitle": "Build Character Progression and Evolution UI",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Split UI development into: 1) Create CharacterCard component with stat displays, 2) Build CharacterDetails component with expandable information, 3) Implement drag-and-drop functionality for character management, 4) Add visual progress bars and gene grade color coding",
+			"reasoning": "UI-heavy task with multiple components and interactions. Moderate complexity due to React Beautiful DND integration and visual design requirements."
+		},
+		{
+			"taskId": 29,
+			"taskTitle": "Expand Shop with Advanced Items and Income System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Decompose shop expansion into: 1) Implement base income calculation system, 2) Create item rarity and pricing systems, 3) Build dynamic shop inventory management, 4) Add progression-based item unlocks, 5) Create economy utility functions, 6) Integrate with existing shop UI",
+			"reasoning": "High complexity due to economic balancing, dynamic systems, and multiple interconnected features. Requires careful design for game balance and progression."
+		},
+		{
+			"taskId": 30,
+			"taskTitle": "Implement Bench System and Death Consequences",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down bench system into: 1) Design bench state management and data structures, 2) Implement death consequence escalation logic, 3) Create BenchManager UI component, 4) Add recruitment system for new creatures, 5) Implement persistence across game sessions",
+			"reasoning": "Complex state management with persistent data and escalating consequences. Medium-high complexity due to timing systems and cross-session persistence."
+		},
+		{
+			"taskId": 31,
+			"taskTitle": "Expand Lab with Healing and Genetic Engineering",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Divide lab expansion into: 1) Create healing mechanics and resource costs, 2) Implement recruitment system with creature generation, 3) Build genetic engineering UI and logic, 4) Add facility upgrade system, 5) Create tabbed interface with Headless UI, 6) Integrate with existing lab placeholder",
+			"reasoning": "High complexity due to multiple distinct systems (healing, recruitment, genetic engineering) with complex UI requirements and resource management."
+		},
+		{
+			"taskId": 33,
+			"taskTitle": "Integrate All Systems and Polish Game Loop",
+			"complexityScore": 9,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Structure final integration as: 1) System integration testing and validation, 2) Add transition animations and loading states, 3) Implement error boundaries and error handling, 4) Performance optimization with React patterns, 5) Add development tools and debug modes, 6) Polish UI consistency and styling, 7) Comprehensive testing and bug fixes",
+			"reasoning": "Highest complexity as it requires integrating all previous systems, performance optimization, and comprehensive testing. Critical for overall system stability."
+		},
+		{
+			"taskId": 34,
+			"taskTitle": "Design and Implement Shop and Lab Item Type System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Structure type system development as: 1) Define base item interfaces and enums, 2) Create item category and effect type systems, 3) Implement ItemRegistry and requirement checking, 4) Add item persistence and extensibility patterns",
+			"reasoning": "Moderate complexity focused on type definitions and architecture. Well-defined scope but requires careful design for extensibility."
+		},
+		{
+			"taskId": 35,
+			"taskTitle": "Design and Implement Types for Bench and Team Management",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Organize team management types as: 1) Define core bench and team state interfaces, 2) Create aging and death consequence type systems, 3) Implement team management configuration types, 4) Add future-ready interfaces for extensibility",
+			"reasoning": "Moderate complexity with focus on type safety and future extensibility. Clear scope but requires integration with existing systems."
+		},
+		{
+			"taskId": 37,
+			"taskTitle": "Link Attack Bonus Damage to Stats",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down stat-damage linking into: 1) Create stat scaling configuration and calculation functions, 2) Update combat damage calculation system, 3) Integrate with existing combat flow and test scaling formulas",
+			"reasoning": "Moderate complexity with clear mathematical requirements. Well-defined scope with existing combat system integration."
+		},
+		{
+			"taskId": 38,
+			"taskTitle": "Link Stats to Characters and Combat Mechanics",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Already well-structured with 6 subtasks covering type updates, scaling configuration, calculation functions, character creation refactoring, combat integration, and stat recalculation systems",
+			"reasoning": "High complexity due to comprehensive system integration affecting multiple core systems. Well-planned subtask structure already in place."
+		},
+		{
+			"taskId": 39,
+			"taskTitle": "Implement Passive and Unit-Specific Abilities System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Structure ability system as: 1) Define PassiveAbility interfaces and trigger types, 2) Create PassiveAbilityManager class, 3) Implement unit-specific abilities (Tiger, Bear, Eagle), 4) Build trigger system with event architecture, 5) Integrate with combat system trigger points, 6) Add ability testing utilities",
+			"reasoning": "High complexity due to event-driven architecture and integration with multiple systems. Requires careful design for extensibility and performance."
+		},
+		{
+			"taskId": 40,
+			"taskTitle": "Implement Phase Management System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Structure phase management as: 1) Create PhaseManager class with state transitions, 2) Implement phase validation and automatic progression logic, 3) Add React Context for global phase state, 4) Create phase transition event system",
+			"reasoning": "Moderate complexity with clear state management requirements. Central to game flow but well-defined scope."
+		},
+		{
+			"taskId": 41,
+			"taskTitle": "Create Phase Tracker UI Component",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down UI component into: 1) Create PhaseTracker component structure and styling, 2) Implement visual phase indicators and progress display, 3) Add responsive design and accessibility features",
+			"reasoning": "Lower complexity UI component with clear requirements. Straightforward implementation with existing design patterns."
+		},
+		{
+			"taskId": 42,
+			"taskTitle": "Refactor Combat Phase Integration",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Structure combat integration as: 1) Refactor existing combat code for phase awareness, 2) Implement automatic phase transitions from combat, 3) Update reset functionality and preserve existing features",
+			"reasoning": "Moderate complexity requiring careful refactoring of existing systems. Risk of breaking existing functionality requires thorough testing."
+		},
+		{
+			"taskId": 43,
+			"taskTitle": "Implement Shop Phase Component",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide shop component into: 1) Create Shop UI layout and upgrade display, 2) Implement mock purchase system and interactions, 3) Add phase transition logic and difficulty scaling",
+			"reasoning": "Lower complexity UI component with mock functionality. Clear requirements and straightforward implementation."
+		},
+		{
+			"taskId": 44,
+			"taskTitle": "Create Death and Lab Phase Components",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Structure phase components as: 1) Create Death component with game over display, 2) Build Lab placeholder component, 3) Implement new run logic and state reset",
+			"reasoning": "Lower complexity with placeholder components. Clear requirements for basic functionality and transitions."
+		},
+		{
+			"taskId": 47,
+			"taskTitle": "Implement Extensible Architecture and Documentation",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Structure architecture work as: 1) Establish extension patterns and plugin architecture, 2) Create comprehensive developer documentation, 3) Implement example extensions and best practices, 4) Add performance optimization patterns",
+			"reasoning": "Moderate complexity focused on architecture and documentation. Important for maintainability but clear scope."
+		},
+		{
+			"taskId": 48,
+			"taskTitle": "Update Team Size from 3 to 4 Units",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Structure team size update as: 1) Update core constants and type definitions, 2) Modify UI layouts and grid systems for 4-unit display, 3) Adjust combat balance and enemy scaling, 4) Update all game phases and interactions",
+			"reasoning": "Moderate complexity with wide-reaching changes across multiple systems. Requires careful testing to ensure no regressions."
+		},
+		{
+			"taskId": 49,
+			"taskTitle": "Implement Octopus Character with AOE Attack System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Structure Octopus implementation as: 1) Create Octopus character definition and stats, 2) Implement AOE attack system and interfaces, 3) Integrate with combat system and stat scaling, 4) Build AOE targeting UI and visual feedback, 5) Add character selection integration, 6) Balance testing and cooldown systems",
+			"reasoning": "High complexity due to new attack system mechanics and extensive UI integration. Requires new combat mechanics and careful balance testing."
+		},
+		{
+			"taskId": 50,
+			"taskTitle": "Update Goob Enemy Base Health to 6",
+			"complexityScore": 2,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Already well-structured with 5 subtasks covering character definition updates, spawning logic verification, combat integration, UI updates, and data consistency checks",
+			"reasoning": "Low complexity with straightforward value change. Well-planned subtask structure already covers all necessary updates and testing."
+		},
+		{
+			"taskId": 51,
+			"taskTitle": "Add Unit Tests for Core Game Flow Logic",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Structure testing implementation as: 1) Create phase transition test suites, 2) Implement round handling and difficulty scaling tests, 3) Build combat resolution test coverage, 4) Add integration tests for complete game loops, 5) Set up test utilities and CI/CD integration",
+			"reasoning": "High complexity due to comprehensive test coverage requirements. Critical for system stability but requires extensive mock setup and integration testing."
+		},
+		{
+			"taskId": 52,
+			"taskTitle": "Enhance Combat Interface for Visual Clarity and Usability",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Already well-structured with 5 subtasks covering round indicators, dead unit visuals, end-of-round handling, future infrastructure, and general visual improvements",
+			"reasoning": "Moderate complexity with multiple UI improvements and state management updates. Well-planned subtask structure addresses all major enhancement areas."
 		}
 	]
 }
