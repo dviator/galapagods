@@ -2,6 +2,7 @@ import type { Unit } from '../../types';
 import type { Character, CharacterSheet, StatModifiers, LevelProgression } from '../../types/character';
 import { StatModifiersDefault, CharacterSheetDefault, LevelProgressionDefault, GenomeDefault } from '../../types/character';
 import type { Genome } from '../../types/stats';
+import { statScaling } from '../../config/statScaling';
 
 // Returns stat growth value based on gene grade
 export function getStatGrowth(grade: import('../../types').GeneGrade): number {
@@ -27,6 +28,7 @@ export function gainLevel(unit: Unit): Unit {
       genome: { ...unit.character.genome },
       statModifiers: { ...unit.character.statModifiers },
     },
+    combatStatus: { ...unit.combatStatus },
   };
   // Increase level and xp
   newUnit.character.levelProgression.level += 1;
@@ -38,6 +40,14 @@ export function gainLevel(unit: Unit): Unit {
   newUnit.character.characterSheet.quickness += getStatGrowth(newUnit.character.genome.quickness);
   newUnit.character.characterSheet.survival += getStatGrowth(newUnit.character.genome.survival);
   newUnit.character.characterSheet.instinct += getStatGrowth(newUnit.character.genome.instinct);
+
+  // Recalculate max health based on Survival stat and scaling config
+  const prevMaxHealth = unit.maxHealth ?? statScaling.baseHealth;
+  const survival = newUnit.character.characterSheet.survival;
+  const newMaxHealth = Math.floor(statScaling.baseHealth + survival * statScaling.healthPerSurvival);
+  const healthIncrease = newMaxHealth - prevMaxHealth;
+  newUnit.maxHealth = newMaxHealth;
+  newUnit.combatStatus.health = Math.min(newUnit.combatStatus.health + healthIncrease, newMaxHealth);
 
   return newUnit;
 }
