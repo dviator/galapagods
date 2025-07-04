@@ -57,6 +57,7 @@ interface GameState {
   transitionToCombat: () => void;
   phase: string;
   setPhase: React.Dispatch<React.SetStateAction<string>>;
+  combatCount: number;
 }
 
 const initialPlayerTeam: Unit[] = [
@@ -79,6 +80,7 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
   const [runNumber, setRunNumber] = useState(1);
   const [phase, setPhase] = useState('combat');
+  const [combatCount, setCombatCount] = useState(0);
 
   // Handlers using the new combat state helpers
   const handleNextAttack = useCallback(() => {
@@ -97,10 +99,17 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const handleNewRun = useCallback(() => {
     setRunNumber(prev => prev + 1);
     handleReset();
+    setCombatCount(0);
   }, [handleReset]);
 
-  const transitionToShop = useCallback(() => setPhase('shop'), []);
-  const transitionToDeath = useCallback(() => setPhase('death'), []);
+  const transitionToShop = useCallback(() => {
+    setCombatCount(prev => prev + 1);
+    setPhase('shop');
+  }, []);
+  const transitionToDeath = useCallback(() => {
+    setCombatCount(prev => prev + 1);
+    setPhase('death');
+  }, []);
 
   // Helper to create a new goober enemy team (not stateful)
   const createEnemyGooberTeam = () => [1, 2, 3].map(i =>
@@ -166,6 +175,7 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       resetInitiativeOrder: () => setCombatState(prev => ({ ...prev, initiativeOrder: [] })),
       transitionToCombat,
       phase, setPhase,
+      combatCount,
     }}>
       {children}
     </GameStateContext.Provider>
