@@ -14,13 +14,19 @@ const CombatScreen: React.FC = () => {
     initiativeOrder,
     currentTurn,
     phase,
-    transitionToDeath
+    transitionToDeath,
+    gold,
   } = useGameState();
 
   // XP summary state
   const { xpSummary } = useXPSummary();
   const allEnemiesDead = enemyTeam.every(e => !e.combatStatus.alive);
   const allPlayersDead = playerTeam.every(e => !e.combatStatus.alive);
+
+  // Calculate gold earned this level (after combat)
+  const goldEarned = enemyTeam
+    .filter(e => !e.combatStatus.alive)
+    .reduce((sum, enemy) => sum + (enemy.character?.levelProgression?.level || 1), 0);
 
   // Compute highlight/targeted logic
   let currentTargetIndices: number[] = [];
@@ -70,7 +76,6 @@ const CombatScreen: React.FC = () => {
       <div className="flex justify-center items-start gap-8 mt-2">
         {/* Player Team */}
         <div className="flex flex-col gap-4">
-          <h2 className="font-semibold text-center mb-2 text-blue-700">Player Team</h2>
           {playerTeam.map((e, i) => (
             <UnitCard
               key={e.id}
@@ -86,7 +91,7 @@ const CombatScreen: React.FC = () => {
         <div className="flex flex-col items-center w-64">
           <div className="text-lg font-bold mb-2">Round {round}</div>
           {allEnemiesDead ? (
-            <XPSummary playerTeam={playerTeam} xpSummary={xpSummary} />
+            <XPSummary playerTeam={playerTeam} xpSummary={xpSummary} goldEarned={goldEarned} totalGold={gold + goldEarned} />
           ) : (
             <>
               <div className="text-2xl font-bold mb-2">Initiative</div>
@@ -103,7 +108,6 @@ const CombatScreen: React.FC = () => {
         </div>
         {/* Enemy Team */}
         <div className="flex flex-col gap-4">
-          <h2 className="font-semibold text-center mb-2 text-red-700">Enemy Team</h2>
           {enemyTeam.map((e, i) => (
             <UnitCard
               key={e.id}

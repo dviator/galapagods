@@ -24,6 +24,7 @@ import {
   combatRollInitiative
 } from './combatState';
 import type { CombatState } from '../types/combat';
+import type { StatName } from '../types/stats';
 
 interface InitiativeEntry {
   team: Team;
@@ -58,6 +59,10 @@ interface GameState {
   phase: string;
   setPhase: React.Dispatch<React.SetStateAction<string>>;
   combatCount: number;
+  gold: number;
+  setGold: React.Dispatch<React.SetStateAction<number>>;
+  geneticPopup: { unitId: string; stat: StatName; grade: string } | null;
+  showGeneticPopup: (unitId: string, stat: StatName, grade: string) => void;
 }
 
 const initialPlayerTeam: Unit[] = [
@@ -81,6 +86,10 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [runNumber, setRunNumber] = useState(1);
   const [phase, setPhase] = useState('combat');
   const [combatCount, setCombatCount] = useState(0);
+  // Gold state management
+  const [gold, setGold] = useState(0);
+  // Genetic popup state
+  const [geneticPopup, setGeneticPopup] = useState<{ unitId: string; stat: StatName; grade: string } | null>(null);
 
   // Handlers using the new combat state helpers
   const handleNextAttack = useCallback(() => {
@@ -102,10 +111,18 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCombatCount(0);
   }, [handleReset]);
 
+  // Award gold after combat: 1 gold per level of enemy defeated
+  const awardGoldAfterCombat = useCallback(() => {
+    const defeatedEnemies = combatState.enemyTeam.filter(e => !e.combatStatus.alive);
+    const goldEarned = defeatedEnemies.reduce((sum, enemy) => sum + (enemy.character?.levelProgression?.level || 1), 0);
+    setGold(prev => prev + goldEarned);
+  }, [combatState.enemyTeam]);
+
   const transitionToShop = useCallback(() => {
     setCombatCount(prev => prev + 1);
+    awardGoldAfterCombat();
     setPhase('shop');
-  }, []);
+  }, [awardGoldAfterCombat]);
   const transitionToDeath = useCallback(() => {
     setCombatCount(prev => prev + 1);
     setPhase('death');
@@ -139,6 +156,12 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCombatState(combatReset(pTeam, eTeam));
     setPhase('combat');
   }, [combatState.playerTeam, combatState.enemyTeam]);
+
+  // Genetic popup method
+  const showGeneticPopup = (unitId: string, stat: StatName, grade: string) => {
+    setGeneticPopup({ unitId, stat, grade });
+    setTimeout(() => setGeneticPopup(null), 2500);
+  };
 
   // Context value now exposes combatState and setCombatState, plus other handlers
   return (
@@ -176,6 +199,10 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       transitionToCombat,
       phase, setPhase,
       combatCount,
+      gold,
+      setGold,
+      geneticPopup,
+      showGeneticPopup,
     }}>
       {children}
     </GameStateContext.Provider>

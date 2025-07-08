@@ -37,11 +37,14 @@ export function gainLevel(unit: Unit): Unit {
 
   // Increase stats based on genome
   newUnit.character.characterSheet.ferocity += getStatGrowth(newUnit.character.genome.ferocity);
-  newUnit.character.characterSheet.quickness += getStatGrowth(newUnit.character.genome.quickness);
+  newUnit.character.characterSheet.alacrity += getStatGrowth(newUnit.character.genome.alacrity);
   newUnit.character.characterSheet.survival += getStatGrowth(newUnit.character.genome.survival);
   newUnit.character.characterSheet.instinct += getStatGrowth(newUnit.character.genome.instinct);
 
-  // Recalculate max health based on Survival stat and scaling config
+  // Calc Initiative based on alacrity and statScaling
+  newUnit.baseInitiative = Math.floor(newUnit.character.characterSheet.alacrity * statScaling.initiativePerAlacrity);
+
+  //Calc Health
   const prevMaxHealth = unit.maxHealth ?? statScaling.baseHealth;
   const survival = newUnit.character.characterSheet.survival;
   const newMaxHealth = Math.floor(statScaling.baseHealth + survival * statScaling.healthPerSurvival);

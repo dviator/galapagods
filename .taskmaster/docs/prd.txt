@@ -18,6 +18,7 @@ The UI should always display a phase tracker on the left, indicating the current
 - Provide a clear, extensible structure for future features (e.g., evolution, new enemy types, advanced combat).
 - Maintain a consistent layout with a persistent phase tracker.
 - Keep the Reset button for development, which restarts the current combat.
+- Implement a UI drag-and-drop system for player interaction with the bench, team sheet, and shop. Shop items should be immediately applied to characters by dragging them over the character card.
 
 ---
 
@@ -32,12 +33,14 @@ The UI should always display a phase tracker on the left, indicating the current
 - Use the existing combat simulator as the Combat phase.
 - When all enemies are dead, automatically transition to the Shop phase.
 - The Reset button should only reset the current combat (for development/testing).
+- Implement drag-and-drop: Shop items can be dragged onto character cards to apply effects immediately.
 
 ### 3. Shop Phase
 - Create a Shop screen/component.
 - Display a list of placeholder upgrades for characters and the Lab.
 - Allow the player to "buy" upgrades (no need for real currency or inventory yet; just simulate the action).
 - After the player clicks a "Continue" button, transition to the next Combat phase with more difficult enemies.
+- Implement drag-and-drop: Shop items can be dragged onto character cards to apply effects immediately.
 
 ### 4. Death Phase
 - When all player characters are dead, transition to the Death phase.
@@ -64,6 +67,10 @@ The UI should always display a phase tracker on the left, indicating the current
 
 #### Future Technical Improvement: Efficient State Updates
 For future scalability, consider using shallow updates or the [Immer](https://immerjs.github.io/immer/) library for efficient immutable state updates. Shallow updates and Immer only copy the parts of the state that change, making updates much faster and more memory-efficient for large or deeply nested game states, compared to deep cloning the entire state. This approach is used in modern React/Redux apps and scales better as the game grows.
+
+### 4. Team & Bench Management
+- 4 active, 4 bench units; swap only between runs
+- Implement drag-and-drop: Player can drag units between the team and bench using a visual interface.
 
 ---
 
@@ -200,3 +207,156 @@ Building on the core game loop, Phase 2 introduces advanced mechanics to deepen 
 - Phase mechanics (income, death/benching, recruitment) are operational
 - UI for bench, placement, and progression is present and usable
 - All new features are integrated into the main game loop and phase tracker
+
+---
+
+# Phase 3: Playable Prototype (V1)
+
+## Overview
+
+Phase 3 delivers the first fully playable prototype of Galapagods, integrating and expanding on previous phases. The focus is on a robust, automated combat sim, modular unit management, and a persistent, extensible game loop. This phase merges all incomplete tasks from Phase 2 and introduces new features and requirements from the 7/7 design review.
+
+**Note:** The phase management system is already implemented in `GameStateContext.tsx` and `combatState.ts`. Future work should focus on extending or refactoring this system only as needed for new features.
+
+## Versioning Convention
+- Minor version changes for tweaks and incremental improvements
+- Major version changes for milestone features or overhauls
+
+## Goals
+- Complete all pending Phase 2 tasks (see below)
+- Implement a fully automated combat simulator (no player choices in combat)
+- Expand team and bench management (4 active, 4 bench units; swap only between runs)
+- Add Octopus character with unique AOE attack
+- Implement modular passive ability system (unique per unit, but extensible for future sharing/swapping)
+- Integrate Gold/Income system and Shop upgrades
+- Add Petri Dish item to Shop (for future Lab integration)
+- Implement permanent Genetic Potential upgrades (stat grade boosts)
+- Enable Cloning and Combining in Lab (once per run, with random stat grade mutation)
+- Polish UI for all phases, following current design cues
+- Track run length (combats survived); no win state yet (add in V2)
+- Merge all incomplete Phase 2 tasks into this phase
+- Implement a UI drag-and-drop system for player interaction with the bench, team sheet, and shop. Shop items should be immediately applied to characters by dragging them over the character card.
+
+## Functional Requirements
+
+### 1. Combat Phase
+- Fully automated combat: player has no choices during combat
+- 4-unit team, initiative-based attacks, defeat detection
+- Octopus character with AOE attack
+- Modular passive ability system (unique per unit, extensible for future sharing)
+- Bench system: 4 bench slots, swap only between runs
+- Track run length (combats survived)
+
+### 2. Shop Phase
+- Gold/income system: earn gold after combat, spend in shop
+- Items: Health Potions, HP items, Petri Dish (for future Lab), Genetic Potential (permanent stat grade boost)
+- Shop UI: purchase logic, inventory management
+- Implement drag-and-drop: Shop items can be dragged onto character cards to apply effects immediately.
+
+### 3. Lab Phase
+- Cloning: copy a unit with a small chance of random stat grade mutation (once per run)
+- Combining: merge two units, combine stats/abilities with randomization (once per run)
+- Lab capacity: 1 slot for each action, expandable in future
+- Gene visibility: reveal stat grades (S/A/B/C/D/F)
+- Prepare for future gene editing (V1.1+)
+
+### 4. Progression & Structure
+- No win state (yet); runs are endless, track number of combats survived
+- UI/UX follows current design cues (major redesign in V2)
+- All new features are modular and extensible
+
+### 5. Technical/Polish
+- Bug-free core loop
+- Codebase ready for V1.1+ expansion
+- Add unit tests for core game flow logic
+
+## Roadmap: Incomplete Phase 2 Tasks to Complete in Phase 3
+- Build Character Progression and Evolution UI
+- Expand Shop with Advanced Items and Income System
+- Implement Bench System and Death Consequences
+- Expand Lab with Healing and Genetic Engineering
+- Integrate All Systems and Polish Game Loop
+- Design and Implement Shop and Lab Item Type System
+- Design and Implement Types for Bench and Team Management
+- Link Stats to Characters and Combat Mechanics (and all subtasks)
+- Implement Passive and Unit-Specific Abilities System
+- Implement Shop Phase Component
+- Create Death and Lab Phase Components
+- Implement Extensible Architecture and Documentation
+- Update Team Size from 3 to 4 Units
+- Implement Octopus Character with AOE Attack System
+- Add Unit Tests for Core Game Flow Logic
+- Enhance Combat Interface for Visual Clarity and Usability (and all subtasks)
+- Refactor core game logic into service modules, keeping UI components pure.
+- Increase unit/integration test coverage and set up CI for automated testing.
+
+## Out of Scope (for this phase)
+- Aging system (deferred to V2)
+- Advanced gene editing (cross-species, passives transfer)
+- Variety/randomized enemies
+- Win state (add in V2)
+- Persistent save/load
+- Major UI redesign (V2)
+- Complex enemy AI (never in scope)
+
+## Acceptance Criteria
+- All features above are implemented and integrated
+- All incomplete Phase 2 tasks are completed
+- Technical notes are updated to reflect current architecture
+- UI is clean, consistent, and follows current design cues
+- Codebase is modular and extensible for future phases
+
+---
+
+# Technical Notes (Architecture & Design)
+
+## Major Architectural Decisions
+- **Automated Combat**: Combat is fully automated; no player input during combat. All logic is handled by the combat engine.
+- **Phase Management**: Centralized phase state and transitions using React context. All phase transitions are automatic and robust.
+- **Team & Bench Management**: Team and bench are managed in global state. Bench capacity is limited and only swappable between runs.
+- **Modular Unit & Ability System**: Units, attacks, and passives are defined as modular, extensible objects. Passive abilities are designed to be unique per unit but can be swapped/shared in future.
+- **Stat System**: All core attributes (health, initiative, etc.) are stat-based and configurable. Stat scaling is managed via a central config.
+- **Shop & Lab Extensibility**: Shop and Lab are designed for easy addition of new items, upgrades, and genetic mechanics. Petri Dish item is implemented in Shop for future Lab integration.
+- **UI Structure**: Persistent phase tracker, modular phase screens, and clear separation of concerns between UI and logic. All UI follows current design cues for clarity and legibility.
+- **Testing & Extensibility**: Core logic is covered by unit tests. Architecture is documented and ready for future expansion (aging, gene editing, win state, etc.).
+
+## Versioning
+- Minor version: Tweaks and incremental improvements
+- Major version: Milestone features or overhauls
+
+---
+
+# Non-Functional Requirements
+- Use React and Tailwind CSS for all UI.
+- Maintain a clean, modern, and consistent UI.
+- Ensure all navigation between phases is automatic and robust.
+- Code should be easy to read, maintain, and extend.
+
+---
+
+# Out of Scope (for this phase)
+- Actual upgrade effects, currency, or inventory management.
+- Real enemy variety or advanced combat mechanics.
+- Lab/evolution mechanics (just a placeholder for now).
+- Persistent save/load.
+
+---
+
+# Acceptance Criteria
+- The game cycles through Combat → Shop → Combat → ... → Death → Lab → new run, with all transitions working automatically.
+- The phase tracker is always visible and accurately reflects the current phase.
+- The codebase is refactored into logical modules/files.
+- The UI is clean and consistent.
+- The Reset button resets only the current combat, not the whole run.
+
+# Phase 4: Future Roadmap (V2 and Beyond)
+
+## Planned Major Features
+- Aging system
+- Advanced gene editing (cross-species, passives transfer)
+- Variety/randomized enemies
+- Win state
+- Persistent save/load
+- Major UI redesign
+- Move unit, attack, and item definitions to data/config files for data-driven design.
+- Design state for future save/load and persistence features.

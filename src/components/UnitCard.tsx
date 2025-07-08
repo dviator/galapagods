@@ -8,6 +8,7 @@ export interface UnitCardProps {
   targeted?: boolean;
   xpGained?: number;
   leveledUp?: boolean;
+  healed?: boolean;
 }
 
 const UnitCard: React.FC<UnitCardProps> = ({
@@ -16,10 +17,13 @@ const UnitCard: React.FC<UnitCardProps> = ({
   targeted,
   xpGained,
   leveledUp,
+  healed,
 }) => (
   <div
-    className={`w-[32rem] h-32 ${
-      targeted
+    className={`w-[32rem] h-[10.6rem] ${
+      healed
+        ? 'border-8 border-green-400 shadow-2xl'
+        : targeted
         ? 'border-8 border-red-500 shadow-2xl'
         : highlight
         ? 'border-8 border-yellow-400 shadow-xl'
@@ -27,7 +31,8 @@ const UnitCard: React.FC<UnitCardProps> = ({
     } rounded-lg bg-white flex overflow-hidden relative`}
     style={entity.combatStatus.alive ? {} : { filter: 'grayscale(1)', opacity: 0.5 }}
   >
-    <div className="w-32 h-full flex items-center justify-center bg-gray-200">
+    <div className="w-32 h-full flex flex-col items-center justify-center bg-gray-200">
+      {/* Portrait area, fixed height, vertically centered as before */}
       <div className="relative w-full h-full flex items-center justify-center">
         {entity.image ? (
           <>
@@ -55,6 +60,7 @@ const UnitCard: React.FC<UnitCardProps> = ({
           </>
         )}
       </div>
+      {/* Remove border and stat list from left column */}
     </div>
     <div className="h-full w-1 bg-black" />
     <div className="flex-[3] h-full flex flex-col justify-center gap-2 bg-white relative">
@@ -89,9 +95,21 @@ const UnitCard: React.FC<UnitCardProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <span className="text-base font-semibold text-gray-600">INIT</span>
-            <span className="text-base font-bold text-black">{entity.baseInitiative}</span>
+            <span className="text-base font-bold text-black">
+              {entity.baseInitiative}
+              {typeof entity.combatStatus.initiative === 'number' && entity.combatStatus.initiative !== entity.baseInitiative && (
+                <span className="text-gray-500 text-sm font-normal ml-2">→ {entity.combatStatus.initiative}</span>
+              )}
+            </span>
           </div>
         </div>
+      </div>
+      {/* Add horizontal stat row here */}
+      <div className="w-full flex flex-row items-center justify-start gap-4 pl-4 mt-0">
+        <span className="text-xs font-bold text-black">FRCT: <span className="text-base font-extrabold text-black align-middle">{entity.character.characterSheet.ferocity}{entity.character.statModifiers.ferocity ? <span className='ml-1 text-green-600 font-bold text-xs align-middle'>+{entity.character.statModifiers.ferocity}</span> : null} <span className='font-extrabold text-black'>({entity.character.genome.ferocity})</span></span></span>
+        <span className="text-xs font-bold text-black">SRVL: <span className="text-base font-extrabold text-black align-middle">{entity.character.characterSheet.survival}{entity.character.statModifiers.survival ? <span className='ml-1 text-green-600 font-bold text-xs align-middle'>+{entity.character.statModifiers.survival}</span> : null} <span className='font-extrabold text-black'>({entity.character.genome.survival})</span></span></span>
+        <span className="text-xs font-bold text-black">ALCY: <span className="text-base font-extrabold text-black align-middle">{entity.character.characterSheet.alacrity}{entity.character.statModifiers.alacrity ? <span className='ml-1 text-green-600 font-bold text-xs align-middle'>+{entity.character.statModifiers.alacrity}</span> : null} <span className='font-extrabold text-black'>({entity.character.genome.alacrity})</span></span></span>
+        <span className="text-xs font-bold text-black">INST: <span className="text-base font-extrabold text-black align-middle">{entity.character.characterSheet.instinct}{entity.character.statModifiers.instinct ? <span className='ml-1 text-green-600 font-bold text-xs align-middle'>+{entity.character.statModifiers.instinct}</span> : null} <span className='font-extrabold text-black'>({entity.character.genome.instinct})</span></span></span>
       </div>
       <div className="flex-1 flex flex-col justify-end gap-2 w-full pb-3 pl-4" style={{ height: '67%' }}>
         {/* Additional stats or info can go here */}

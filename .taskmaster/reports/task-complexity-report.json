@@ -1,12 +1,12 @@
 {
 	"meta": {
-		"generatedAt": "2025-07-02T16:05:55.664Z",
-		"tasksAnalyzed": 22,
-		"totalTasks": 37,
-		"analysisCount": 34,
+		"generatedAt": "2025-07-07T19:13:06.439Z",
+		"tasksAnalyzed": 12,
+		"totalTasks": 12,
+		"analysisCount": 46,
 		"thresholdScore": 5,
 		"projectName": "Taskmaster",
-		"usedResearch": false
+		"usedResearch": true
 	},
 	"complexityAnalysis": [
 		{
@@ -280,6 +280,102 @@
 			"recommendedSubtasks": 5,
 			"expansionPrompt": "Already well-structured with 5 subtasks covering round indicators, dead unit visuals, end-of-round handling, future infrastructure, and general visual improvements",
 			"reasoning": "Moderate complexity with multiple UI improvements and state management updates. Well-planned subtask structure addresses all major enhancement areas."
+		},
+		{
+			"taskId": 54,
+			"taskTitle": "Implement Phase Management System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the implementation of the phase management system into subtasks such as: designing the phase state model, creating the React context provider, implementing transition logic for each phase, adding validation for transitions, integrating useReducer with actions, and writing unit/integration tests.",
+			"reasoning": "This task involves designing a centralized state management system with complex transition logic, validation, and integration with React context and reducers. It requires careful handling of state, multiple transition scenarios, and robust testing, making it a high-complexity foundational task."
+		},
+		{
+			"taskId": 55,
+			"taskTitle": "Create Phase Tracker UI Component",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Expand this task into subtasks such as: designing the UI layout, implementing phase display with icons and colors, subscribing to phase context, and adding transition animations and responsive styles.",
+			"reasoning": "The UI component is moderately complex, involving persistent layout, visual indicators, and context subscription, but does not require deep logic or algorithms."
+		},
+		{
+			"taskId": 56,
+			"taskTitle": "Refactor Combat System into Separate Module",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide the refactor into subtasks: extracting combat logic to utils, creating the Combat component, integrating with phase management, implementing the Reset button, and updating/exporting TypeScript interfaces.",
+			"reasoning": "Refactoring existing logic into modular components and ensuring seamless integration with the new phase system introduces significant complexity, especially with state and interface management."
+		},
+		{
+			"taskId": 57,
+			"taskTitle": "Implement Shop Phase Component",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down into subtasks: building the Shop UI, implementing placeholder upgrades, simulating purchase logic, and handling phase transition on continue.",
+			"reasoning": "The Shop component is a standard UI with mock logic and phase integration, requiring moderate effort but not deep technical complexity."
+		},
+		{
+			"taskId": 58,
+			"taskTitle": "Create Death Phase Component",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Expand into subtasks: building the Death screen UI, implementing automatic and manual transitions, and displaying run statistics.",
+			"reasoning": "This is a straightforward UI component with simple transition logic and minimal state management."
+		},
+		{
+			"taskId": 59,
+			"taskTitle": "Create Lab Phase Placeholder Component",
+			"complexityScore": 3,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide into subtasks: creating the Lab UI, implementing the new run button with state reset, and preparing placeholder sections for future features.",
+			"reasoning": "As a placeholder with basic UI and reset logic, this task is low in complexity and scope."
+		},
+		{
+			"taskId": 60,
+			"taskTitle": "Create Main App Layout and Routing System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down into subtasks: designing the main layout, implementing phase-based routing, integrating the phase tracker, ensuring overlay support, and testing responsiveness.",
+			"reasoning": "This task requires architectural planning, integration of multiple components, and robust routing logic, making it complex and central to the app."
+		},
+		{
+			"taskId": 61,
+			"taskTitle": "Create Types and Interfaces Module",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Expand into subtasks: extracting existing types, defining new interfaces and utility types, and updating imports across modules.",
+			"reasoning": "While important for maintainability, this is a standard TypeScript organization task with limited complexity."
+		},
+		{
+			"taskId": 62,
+			"taskTitle": "Create Utility Functions Module",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down into subtasks: extracting combat utilities, implementing helper functions for phase and game state, ensuring pure function design, and adding documentation.",
+			"reasoning": "This involves refactoring and organizing logic into reusable, testable functions, requiring moderate effort and attention to functional programming practices."
+		},
+		{
+			"taskId": 63,
+			"taskTitle": "Implement Extensible Architecture Foundation",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Expand into subtasks: designing base classes/interfaces, implementing plugin architecture, creating event system, setting up configuration objects, separating concerns in code structure, and writing extensibility documentation.",
+			"reasoning": "Designing for extensibility and future-proofing the architecture is highly complex, requiring advanced patterns, modularity, and thorough documentation."
+		},
+		{
+			"taskId": 64,
+			"taskTitle": "Implement Efficient State Management with Immer",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Divide into subtasks: installing and configuring Immer, refactoring state management hooks, and updating state update logic for immutability.",
+			"reasoning": "Integrating Immer is a focused technical improvement with limited scope, though it touches core state logic."
+		},
+		{
+			"taskId": 65,
+			"taskTitle": "Polish UI and Implement Consistent Design System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down into subtasks: defining design tokens and Tailwind config, creating reusable UI components, implementing responsive layouts, adding transitions/animations, and ensuring accessibility.",
+			"reasoning": "Building a design system and ensuring UI consistency across the app involves multiple disciplines (design, accessibility, responsiveness), making it moderately complex."
 		}
 	]
 }
