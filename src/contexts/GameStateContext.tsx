@@ -13,7 +13,7 @@ import {
 import type { CombatState } from '../types/combat';
 import type { StatName } from '../types/stats';
 import { worlds } from '../data/worlds';
-import { getWorldProgressionManager } from '../utils/worldProgression';
+import { useWorldProgressionManager } from './worldProgressionHooks';
 import type { World, WorldState } from '../types/world';
 
 interface InitiativeEntry {
@@ -81,10 +81,13 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [gold, setGold] = useState(0);
   // Genetic popup state
   const [geneticPopup, setGeneticPopup] = useState<{ unitId: string; stat: StatName; grade: string } | null>(null);
-  // World progression state
-  const manager = React.useMemo(() => getWorldProgressionManager(worlds), []);
-  const [worldState, setWorldState] = useState<WorldState>(manager.getState());
-  const [currentWorld, setCurrentWorld] = useState<World>(manager.getCurrentWorld());
+  // World progression state (now managed by hook)
+  const {
+    worldState,
+    currentWorld,
+    completeWorldLevel,
+    resetWorldProgression,
+  } = useWorldProgressionManager(worlds);
 
   // Handlers using the new combat state helpers
   const handleNextAttack = useCallback(() => {
@@ -111,13 +114,11 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   // On new run, reset world progression state in memory (not localStorage)
   const handleNewRun = useCallback(() => {
     setRunNumber(prev => prev + 1);
-    manager.resetProgression();
-    setWorldState(manager.getState());
-    setCurrentWorld(manager.getCurrentWorld());
+    resetWorldProgression();
     setCombatState(combatReset(initialPlayerTeam, createEnemyTeamForCurrentLevel()));
     setPhase(Phase.Combat);
     setCombatCount(0);
-  }, [manager]);
+  }, [resetWorldProgression]);
 
   // Award gold after combat: 1 gold per level of enemy defeated
   const awardGoldAfterCombat = useCallback(() => {
@@ -129,18 +130,15 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const transitionToShop = useCallback(() => {
     setCombatCount(prev => prev + 1);
     awardGoldAfterCombat();
-    manager.completeLevel();
-    setWorldState(manager.getState());
-    setCurrentWorld(manager.getCurrentWorld());
+    completeWorldLevel();
     setPhase(Phase.Shop);
-  }, [awardGoldAfterCombat, manager]);
+  }, [awardGoldAfterCombat, completeWorldLevel]);
+
   const transitionToDeath = useCallback(() => {
     setCombatCount(prev => prev + 1);
-    manager.resetProgression();
-    setWorldState(manager.getState());
-    setCurrentWorld(manager.getCurrentWorld());
+    resetWorldProgression();
     setPhase(Phase.Death);
-  }, [manager]);
+  }, [resetWorldProgression]);
 
   // Centralized transition to combat phase (no args)
   const transitionToCombat = useCallback(() => {

@@ -1,0 +1,11 @@
+# Task ID: 61
+# Title: Create Types and Interfaces Module
+# Status: done
+# Dependencies: None
+# Priority: medium
+# Description: Extract all TypeScript types and interfaces into dedicated types module for better code organization and reusability.
+# Details:
+Create src/types/index.ts with all game-related interfaces: Character, Enemy, Phase, GameState, ShopItem, LabUpgrade, CombatResult, etc. Define union types for phases: type Phase = 'combat' | 'shop' | 'death' | 'lab'. Include utility types for state management and component props. Export all types from single index file. Use strict TypeScript configuration with proper type definitions for all game entities and state structures.
+
+# Test Strategy:
+TypeScript compilation tests, verify all components use proper types, test type safety across modules

@@ -1,0 +1,11 @@
+# Task ID: 67
+# Title: Implement Modular World System with Roguelike Progression
+# Status: done
+# Dependencies: 54, 56, 66
+# Priority: medium
+# Description: Create a modular world system with sequential stages where players progress through World 1 (9 levels with minibosses and boss), advance to subsequent worlds on completion, and return to World 1 on death.
+# Details:
+Create src/types/world.ts with interfaces: World, Level, Boss, Miniboss. Implement WorldManager class in src/utils/worldManager.ts with methods: getCurrentWorld(), advanceToNextWorld(), resetToWorld1(), generateLevelEnemies(). Design World 1 structure: levels 1-2 (normal enemies), level 3 (Supergoob miniboss: AOE attack, 18 HP, center position), levels 4-5 (normal), level 6 (Supergoob), levels 7-8 (normal), level 9 (Goober Supreme boss: left/right attacks for 5 damage, 24 HP, center with goob sidekicks). Create world configuration objects with enemy spawn patterns, level progression rules, and boss definitions. Implement world state persistence and progression tracking. Integrate with existing phase system to handle world transitions. Design extensible architecture for adding new worlds with different enemy types, level counts, and boss mechanics. Include world-specific scaling formulas and reward multipliers. Create world selection/display UI components showing current world and level progress.
+
+# Test Strategy:
+Unit tests for WorldManager methods including world progression, level generation, and reset functionality. Test world state persistence across game sessions. Verify correct enemy spawning for each level type (normal, miniboss, boss). Integration tests for world transitions with phase system. Test boss and miniboss mechanics (AOE attacks, positioning, HP values). Validate world reset on player death returns to World 1 level 1. Test extensibility by creating a mock World 2 configuration.

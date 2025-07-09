@@ -1,0 +1,49 @@
+# Task ID: 57
+# Title: Implement Shop Phase Component
+# Status: done
+# Dependencies: 54, 56
+# Priority: medium
+# Description: Create Shop screen component with placeholder upgrades for characters and Lab, including purchase simulation and continue functionality.
+# Details:
+Create src/components/Shop.tsx with placeholder upgrade items. Display upgrades in grid layout using Tailwind: grid grid-cols-2 gap-4. Include character upgrades (health boost, damage boost) and Lab upgrades (facility improvements). Implement mock purchase logic - no real currency yet, just simulate buying. Add Continue button that triggers transition to next Combat phase with increased difficulty. Style with consistent UI: bg-gray-100 p-6 rounded-lg shadow-md for upgrade cards.
+
+# Test Strategy:
+Component tests for Shop rendering, test purchase simulation, verify Continue button triggers correct phase transition
+
+# Subtasks:
+## 1. Implement Gold/Income System [done]
+### Dependencies: None
+### Description: Create the core economic system for the shop phase including gold tracking, income calculation, and currency management
+### Details:
+Develop gold state management, income calculation based on previous battle performance, gold display components, and currency validation logic. Include methods for adding/subtracting gold and persisting gold state across phases.
+
+## 2. Build Shop UI Layout and Item Display [done]
+### Dependencies: 57.1
+### Description: Create the visual shop interface with item grid, categories, and responsive layout
+### Details:
+Design and implement shop container, item grid layout, item cards with images/descriptions/prices, category filters, and responsive design. Include hover effects and visual feedback for interactive elements.
+
+## 3. Implement Purchase Logic and Validation [done]
+### Dependencies: 57.1, 57.2
+### Description: Create the core purchase mechanics including item selection, price validation, and transaction processing
+### Details:
+Develop purchase validation (sufficient gold, item availability), transaction processing, purchase confirmation dialogs, error handling for failed purchases, and update gold balance after successful purchases.
+
+## 4. Create Inventory Management System [done]
+### Dependencies: 57.3
+### Description: Implement inventory storage, item tracking, and inventory UI components
+### Details:
+Build inventory data structure, purchased items storage, inventory display panel, item stacking logic for consumables, and inventory capacity management. Include visual indicators for inventory status.
+
+## 5. Implement Drag-and-Drop for Item Application [done]
+### Dependencies: 57.4
+### Description: Create drag-and-drop functionality to apply items from inventory to character cards
+### Details:
+Implement draggable inventory items, drop zones on character cards, drag preview components, item application logic, visual feedback during drag operations, and validation for item-character compatibility.
+
+## 6. Handle Shop Phase Transition and Continue Logic [done]
+### Dependencies: 57.5
+### Description: Implement phase transition mechanics and continue button functionality to exit shop phase
+### Details:
+Create continue button with proper state validation, save shop state before transition, implement phase transition logic to next game phase, handle cleanup of shop-specific UI elements, and ensure proper state persistence.
+

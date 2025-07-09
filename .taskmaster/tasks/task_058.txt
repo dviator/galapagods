@@ -1,0 +1,73 @@
+# Task ID: 58
+# Title: Create Death Phase Component
+# Status: pending
+# Dependencies: 54
+# Priority: high
+# Description: Implement comprehensive Death and Lab phase system that handles game over state, transitions to Lab interface, and provides evolution mechanics including cloning, combining, bench management, and team repositioning.
+# Details:
+Multi-phase implementation: (1) Death screen displays when all player characters die with 'Your team has fallen...' message and automatic/manual transition to Lab after 3 seconds, (2) Lab screen with point-and-click interface for unit management across different stations, (3) Cloning station generates new units to bench, (4) Combining station takes 2 characters to create new one and locks them for next run, (5) Bench system for moving units on/off with locked unit tracking, (6) Team repositioning interface to change positional indexes for combat targeting. Style Death with dark theme (bg-red-900 text-white) and Lab with appropriate station-based UI.
+
+# Test Strategy:
+Component tests for Death screen rendering and transitions, Lab interface interactions, cloning/combining mechanics, bench management operations, team repositioning functionality, and integration between all phases
+
+# Subtasks:
+## 1. Create Death Screen Component [pending]
+### Dependencies: None
+### Description: Implement Death.tsx with game over messaging, automatic transition timer, and manual transition button
+### Details:
+
+
+## 2. Create Lab Screen Component [pending]
+### Dependencies: None
+### Description: Implement Lab.tsx with main interface layout and navigation between different stations
+### Details:
+
+
+## 3. Implement Cloning Station [pending]
+### Dependencies: None
+### Description: Create cloning interface that generates new units and adds them to the bench system
+### Details:
+
+
+## 4. Implement Combining Station [pending]
+### Dependencies: None
+### Description: Create combining interface that takes 2 characters, creates new combined unit, and locks source units for next run
+### Details:
+
+
+## 5. Create Bench Management System [pending]
+### Dependencies: None
+### Description: Implement bench interface for moving units on/off bench and tracking locked units from previous combinations
+### Details:
+
+
+## 6. Implement Team Repositioning Interface [pending]
+### Dependencies: None
+### Description: Create drag-and-drop or click-based system for changing unit positional indexes before combat
+### Details:
+
+
+## 7. Add Point-and-Click Navigation [pending]
+### Dependencies: None
+### Description: Implement intuitive point-and-click interface for moving between Lab stations and managing units
+### Details:
+
+
+## 8. Integrate Death-to-Lab Transition [pending]
+### Dependencies: None
+### Description: Connect Death screen to Lab screen with proper state management and data persistence
+### Details:
+
+
+## 9. Add Lab-to-Combat Transition [pending]
+### Dependencies: None
+### Description: Implement transition from Lab back to combat with updated team composition and positioning
+### Details:
+
+
+## 10. Style Lab Interface Components [pending]
+### Dependencies: None
+### Description: Apply consistent styling to all Lab stations and ensure responsive design across different screen sizes
+### Details:
+
+

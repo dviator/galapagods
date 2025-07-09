@@ -5,8 +5,7 @@ import type { Unit } from '../types/unit';
 import tigerImg from '../assets/units/tiger.png';
 import bearImg from '../assets/units/bear.png';
 import eagleImg from '../assets/units/eagle.png';
-import { GeneGrade } from '../types/stats';
-import { level1Progression } from '../types/character';
+import { level1Progression, rollRandomGenome } from '../types/character';
 
 export function createTiger(id?: string): Unit {
   return createUnit({
@@ -21,7 +20,7 @@ export function createTiger(id?: string): Unit {
       levelProgression: level1Progression(),
       characterSheet: tigerSheet,
       statModifiers: { ferocity: 0, survival: 0, alacrity: 0, instinct: 0 },
-      genome: { ferocity: GeneGrade.B, survival: GeneGrade.C, alacrity: GeneGrade.A, instinct: GeneGrade.C },
+      genome: rollRandomGenome(),
     },
   });
 }
@@ -39,7 +38,7 @@ export function createBear(id?: string): Unit {
       levelProgression: level1Progression(),
       characterSheet: bearSheet,
       statModifiers: { ferocity: 0, survival: 0, alacrity: 0, instinct: 0 },
-      genome: { ferocity: GeneGrade.A, survival: GeneGrade.B, alacrity: GeneGrade.D, instinct: GeneGrade.C },
+      genome: rollRandomGenome(),
     },
   });
 }
@@ -57,7 +56,7 @@ export function createEagle(id?: string): Unit {
       levelProgression: level1Progression(),
       characterSheet: eagleSheet,
       statModifiers: { ferocity: 0, survival: 0, alacrity: 0, instinct: 0 },
-      genome: { ferocity: GeneGrade.C, survival: GeneGrade.C, alacrity: GeneGrade.B, instinct: GeneGrade.A },
+      genome: rollRandomGenome(),
     },
   });
 }

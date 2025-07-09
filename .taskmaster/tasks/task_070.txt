@@ -1,0 +1,11 @@
+# Task ID: 70
+# Title: Implement Flexible Bench System for Team Management
+# Status: pending
+# Dependencies: 54, 58
+# Priority: high
+# Description: Create a comprehensive bench system that allows units to be moved on/off the active team, tracks locked units, supports drag-and-drop or point-and-click movement, and integrates with Lab and Death phases for persistent team management.
+# Details:
+Create src/components/BenchSystem.tsx with drag-and-drop functionality using react-beautiful-dnd or native HTML5 drag API. Implement bench state management with interfaces: BenchState { activeTeam: Character[], bench: Character[], lockedUnits: string[] }, BenchActions { moveToTeam, moveToBench, lockUnit, unlockUnit }. Create BenchManager class in src/utils/benchManager.ts with methods: addToBench(), removeFromBench(), swapPositions(), isUnitLocked(), validateTeamSize(). Design UI with two sections: Active Team (max 4 units) and Bench (unlimited storage) using grid layouts. Implement drag zones with visual feedback: drag-over states, drop indicators, and invalid drop prevention. Add point-and-click alternative: click unit to select, click destination to move. Integrate with Lab phase for post-run team management and Death phase for unit recovery. Implement persistence using localStorage or game state context. Add locked unit indicators (lock icon, grayed out appearance) and prevent locked units from being moved. Include team validation: ensure at least 1 active unit, respect position constraints. Style with Tailwind: bg-blue-100 for active team area, bg-gray-100 for bench, hover:bg-blue-200 for interactive elements.
+
+# Test Strategy:
+Unit tests for BenchManager methods including move operations, lock/unlock functionality, and team validation. Component tests for drag-and-drop interactions using @testing-library/react with drag simulation. Test point-and-click movement as fallback option. Verify locked unit restrictions prevent unauthorized moves. Integration tests with Lab and Death phases to ensure proper bench state persistence. Test localStorage persistence across browser sessions. Validate team size constraints and position management. Test UI responsiveness and visual feedback during drag operations.

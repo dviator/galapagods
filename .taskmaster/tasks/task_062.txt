@@ -1,0 +1,11 @@
+# Task ID: 62
+# Title: Create Utility Functions Module
+# Status: pending
+# Dependencies: 61
+# Priority: low
+# Description: Extract remaining combat logic, enemy generation, and other utility functions into dedicated utils module for better code organization. This is a polish task that can be completed after the main game loop is functional.
+# Details:
+Create src/utils/index.ts with remaining combat utilities that haven't been extracted yet: calculateDamage(), generateEnemyWave(), processInitiative(), checkGameOver(). Include helper functions for phase transitions, difficulty scaling, and game state management that aren't already implemented elsewhere. Implement pure functions with no side effects for easy testing. Export functions: { combatUtils, gameUtils, mathUtils }. Use functional programming patterns where appropriate and include JSDoc comments for all functions. This is a refactoring task that can be done incrementally as the codebase stabilizes.
+
+# Test Strategy:
+Comprehensive unit tests for all utility functions, test edge cases and error handling, verify pure function behavior. Focus on testing newly extracted functions rather than duplicating existing tests.

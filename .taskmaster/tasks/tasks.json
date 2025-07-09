@@ -600,11 +600,24 @@
         ],
         "priority": "high",
         "subtasks": []
+      },
+      {
+        "id": null,
+        "title": "Refactor WorldProgressionManager to Functional Pattern",
+        "description": "Replace the WorldProgressionManager class and singleton pattern with plain exported functions for world progression state management, following the combatState.ts pattern with React state instead of classes.",
+        "details": "Create src/utils/worldProgression.ts with exported functions replacing WorldProgressionManager methods: completeLevel(worldId, levelId), resetProgression(), getCurrentWorld(), getCurrentLevel(), advanceWorld(), isWorldUnlocked(worldId), getWorldProgress(). Remove singleton pattern and class-based approach entirely. Implement state management using React hooks pattern similar to combatState.ts - create useWorldProgression() hook that manages world state via useReducer or useState. Define WorldProgressionState interface with properties: currentWorld: number, currentLevel: number, completedLevels: Record<string, boolean>, unlockedWorlds: number[]. Create WorldProgressionActions for state updates: COMPLETE_LEVEL, ADVANCE_WORLD, RESET_PROGRESSION, UNLOCK_WORLD. Update all components and utilities that currently import or use WorldProgressionManager to use the new functional API. Ensure all world state logic flows through React state management with no global singletons. Maintain backward compatibility for existing world progression logic while transitioning to functional approach.",
+        "testStrategy": "Unit tests for all exported functions (completeLevel, resetProgression, getCurrentWorld, etc.) to verify correct state transitions and return values. Test useWorldProgression hook behavior including state updates and action dispatching. Integration tests to ensure all components using world progression (Lab, Combat, Shop phases) work correctly with new functional API. Verify no singleton instances remain in codebase through static analysis. Test world progression state persistence and restoration. Validate that world unlocking logic maintains sequential progression requirements. Test edge cases like completing final level of world, resetting mid-progression, and invalid world/level access attempts.",
+        "status": "pending",
+        "dependencies": [
+          68
+        ],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-06-29T03:01:22.079Z",
-      "updated": "2025-07-09T03:27:27.813Z",
+      "updated": "2025-07-09T04:19:25.353Z",
       "description": "Tasks for master context"
     }
   }

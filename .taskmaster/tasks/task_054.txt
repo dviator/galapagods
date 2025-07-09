@@ -1,0 +1,49 @@
+# Task ID: 54
+# Title: Implement Phase Management System
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Create a centralized phase state management system with possible values: combat, shop, death, lab. Implement automatic phase transitions based on game state.
+# Details:
+Create a React context provider for phase management with state: type Phase = 'combat' | 'shop' | 'death' | 'lab'. Implement transition logic: Combat → Shop (when all enemies dead), Shop → Combat (on continue), Combat → Death (when all players dead), Death → Lab (after delay/click), Lab → Combat (new run). Use useReducer for state management with actions like TRANSITION_TO_SHOP, TRANSITION_TO_DEATH, etc. Include validation to prevent invalid transitions.
+
+# Test Strategy:
+Unit tests for phase transition logic, integration tests for automatic transitions, verify all valid phase combinations work correctly
+
+# Subtasks:
+## 1. Design the Phase State Model [done]
+### Dependencies: None
+### Description: Define the complete phase state structure including all possible phases, their properties, and the data model that will be managed throughout the application lifecycle.
+### Details:
+Create TypeScript interfaces/types for: phase enumeration (e.g., SETUP, ACTIVE, PAUSED, COMPLETED), phase state object with properties like currentPhase, previousPhase, phaseData, timestamps, and metadata. Define the shape of data that each phase will contain and any phase-specific configurations or settings.
+
+## 2. Create the React Context Provider [done]
+### Dependencies: 54.1
+### Description: Implement the React Context provider component that will wrap the application and provide phase state and dispatch functions to child components.
+### Details:
+Create PhaseContext using React.createContext, implement PhaseProvider component that initializes the phase state, provides context value with state and dispatch, and handles context consumer error boundaries. Include proper TypeScript typing for context value and ensure the provider can be easily integrated into the app component tree.
+
+## 3. Implement Transition Logic for Each Phase [done]
+### Dependencies: 54.1
+### Description: Create the core transition logic that handles moving between different phases, including the business rules and conditions for each transition.
+### Details:
+Implement transition functions for each phase change (e.g., setupToActive, activeTopaused, pausedToActive, activeToCompleted). Define transition conditions, side effects, and data transformations that occur during each phase change. Create helper functions to determine valid next phases from current phase and handle any cleanup or initialization required during transitions.
+
+## 4. Add Validation for Transitions [done]
+### Dependencies: 54.1, 54.3
+### Description: Implement comprehensive validation logic to ensure phase transitions are valid and prevent invalid state changes.
+### Details:
+Create validation functions that check: if a transition from current phase to target phase is allowed, if required data/conditions are met before transition, if user permissions allow the transition, and if system state supports the transition. Implement error handling for invalid transitions with descriptive error messages and logging.
+
+## 5. Integrate useReducer with Actions [done]
+### Dependencies: 54.1, 54.3, 54.4
+### Description: Implement the useReducer hook with action creators and reducer function to manage phase state updates in a predictable way.
+### Details:
+Create action types and action creators for all phase operations (TRANSITION_PHASE, UPDATE_PHASE_DATA, RESET_PHASE, etc.). Implement the phase reducer function that handles each action type, applies validation, executes transitions, and returns new state. Integrate the reducer with the context provider and ensure all state updates go through the reducer pattern.
+
+## 6. Write Unit and Integration Tests [done]
+### Dependencies: 54.1, 54.2, 54.3, 54.4, 54.5
+### Description: Create comprehensive test suites covering all aspects of the phase management system including unit tests for individual functions and integration tests for the complete system.
+### Details:
+Write unit tests for: phase state model validation, individual transition functions, validation logic, reducer actions and state updates. Create integration tests for: context provider functionality, complete phase transition flows, error handling scenarios, and edge cases. Include tests for React component integration, mock scenarios, and performance testing for state updates.
+

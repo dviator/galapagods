@@ -41,12 +41,28 @@ export const LevelProgressionDefault: LevelProgression = {
   xpToNext: 10,
 };
 
-export const GenomeDefault: Genome = {
-  ferocity: GeneGrade.C,
-  alacrity: GeneGrade.C,
-  survival: GeneGrade.C,
-  instinct: GeneGrade.C,
-};
+// Roll a random gene grade for a stat (S impossible, A 1/10, others 2/9 each)
+function rollRandomGeneGrade(): GeneGrade {
+  const r = Math.random();
+  if (r < 1/10) return GeneGrade.A;
+  // Remaining 9/10 split among B, C, D, F (2/9 each)
+  const rest = (r - 1/10) / (9/10);
+  if (rest < 2/9) return GeneGrade.B;
+  if (rest < 4/9) return GeneGrade.C;
+  if (rest < 6/9) return GeneGrade.D;
+  return GeneGrade.F;
+}
+
+export function rollRandomGenome(): Genome {
+  return {
+    ferocity: rollRandomGeneGrade(),
+    alacrity: rollRandomGeneGrade(),
+    survival: rollRandomGeneGrade(),
+    instinct: rollRandomGeneGrade(),
+  };
+}
+
+export const GenomeDefault: Genome = rollRandomGenome();
 
 export function level1Progression(): LevelProgression {
   return { level: 1, xp: 0, xpToNext: 10 };

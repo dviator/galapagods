@@ -1,0 +1,11 @@
+# Task ID: 69
+# Title: Refactor Enemy Unit Definitions into Dedicated Data Module
+# Status: done
+# Dependencies: 66, 68
+# Priority: medium
+# Description: Extract all enemy unit definitions including XP awards into a centralized enemies.ts data file and update all world and level definitions to reference these constants for improved maintainability and extensibility.
+# Details:
+Create src/data/enemies.ts with comprehensive enemy definitions using TypeScript interfaces. Define EnemyType interface with properties: id: string, name: string, baseHealth: number, baseDamage: number, baseExperience: number, description?: string, specialAbilities?: string[]. Export enemy constants: BASIC_GOOB = { id: 'basic_goob', name: 'Goob', baseHealth: 8, baseDamage: 2, baseExperience: 10 }, SUPERGOOB = { id: 'supergoob', name: 'Supergoob', baseHealth: 18, baseDamage: 3, baseExperience: 25, specialAbilities: ['aoe_attack'] }, GOOBER_SUPREME = { id: 'goober_supreme', name: 'Goober Supreme', baseHealth: 24, baseDamage: 5, baseExperience: 50, specialAbilities: ['left_right_attack'] }. Create enemy collections by world: WORLD_1_ENEMIES, WORLD_2_ENEMIES, etc. Update src/utils/enemyScaling.ts to import and use these definitions instead of hardcoded values. Modify world and level generation logic in src/utils/worldProgression.ts to reference enemy constants. Ensure all XP calculations use the baseExperience values from enemy definitions. Create helper functions: getEnemyById(id: string), getEnemiesByWorld(worldId: number), calculateScaledStats(enemy: EnemyType, level: number).
+
+# Test Strategy:
+Unit tests for enemy data integrity including validation of all required properties and consistent naming conventions. Test helper functions getEnemyById() and getEnemiesByWorld() return correct enemy definitions. Verify all world and level definitions correctly reference enemy constants instead of hardcoded values. Integration tests ensuring enemy scaling system uses centralized definitions and XP calculations are consistent. Test that removing or modifying enemy definitions doesn't break existing world configurations. Validate that all enemy types have appropriate baseExperience values for balanced progression.

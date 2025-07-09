@@ -1,0 +1,11 @@
+# Task ID: 60
+# Title: Create Main App Layout and Routing System
+# Status: done
+# Dependencies: 54, 55, 56, 57, 58, 59
+# Priority: high
+# Description: Implement main application layout that renders appropriate phase components based on current phase state, with persistent phase tracker.
+# Details:
+Refactor main.tsx to focus on high-level app structure. Create layout with phase tracker on left and main content area on right. Implement phase routing: switch statement or component mapping to render Combat, Shop, Death, or Lab based on current phase. Use CSS Grid or Flexbox: grid-template-columns: 256px 1fr. Ensure overlay UI elements can be rendered above phase screens. Structure: <PhaseProvider><Layout><PhaseTracker /><MainContent /></Layout></PhaseProvider>
+
+# Test Strategy:
+Integration tests for phase routing, verify layout responsiveness, test overlay rendering capabilities

@@ -1,0 +1,11 @@
+# Task ID: 56
+# Title: Refactor Combat System into Separate Module
+# Status: done
+# Dependencies: 54
+# Priority: high
+# Description: Extract existing combat simulator logic into a dedicated Combat component and module, maintaining current functionality while preparing for phase integration.
+# Details:
+Create src/components/Combat.tsx and src/utils/combatLogic.ts. Move combat state management, enemy generation, and battle logic into separate files. Implement Combat component that integrates with phase system - automatically transitions to Shop when all enemies defeated. Keep Reset button for development that only resets current combat. Export combat utilities: generateEnemies(), processCombatRound(), checkVictoryCondition(). Use TypeScript interfaces for all combat entities.
+
+# Test Strategy:
+Unit tests for combat logic functions, integration tests for phase transitions, verify Reset button only affects current combat

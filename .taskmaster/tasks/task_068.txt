@@ -1,0 +1,55 @@
+# Task ID: 68
+# Title: Design and Implement Modular World Progression System
+# Status: in-progress
+# Dependencies: 54, 63, 67
+# Priority: high
+# Description: Create a comprehensive world progression system with modular architecture supporting sequential world advancement, level-based progression, and configurable enemy encounters including minibosses and bosses.
+# Details:
+Create src/types/world.ts with core interfaces: World { id: number, name: string, levels: Level[], unlocked: boolean }, Level { id: number, type: 'normal' | 'miniboss' | 'boss', enemies: EnemyConfig[], completed: boolean }, EnemyConfig { type: string, position: Position, stats: Stats }. Implement WorldProgressionManager class in src/utils/worldProgression.ts with methods: getCurrentWorld(), getCurrentLevel(), completeLevel(), advanceWorld(), resetProgression(), isWorldUnlocked(worldId). Design World 1 structure: 9 levels with minibosses on levels 3,6 (Supergoob: { hp: 18, attack: { type: 'aoe', damage: 3 }, position: 'center' }) and boss on level 9 (Goober Supreme: { hp: 24, attack: { type: 'directional', damage: 5, targets: ['left', 'right'] }, position: 'center', minions: [{ type: 'basic_goob', positions: ['left', 'right'] }] }). Create WorldConfig system for easy expansion with JSON-like configuration objects. Implement progression persistence using localStorage with keys: currentWorld, currentLevel, worldsUnlocked, levelProgress. Integrate with existing phase system to trigger world progression on combat completion. Create hooks: useWorldProgression(), useCurrentWorld(), useLevelProgress() for React components. Ensure clean separation: WorldData (static configs), WorldState (current progress), WorldLogic (progression rules). Include validation for world unlocking sequence and level completion requirements.
+
+# Test Strategy:
+Unit tests for WorldProgressionManager methods including world advancement, level completion tracking, and reset functionality. Test world unlocking logic ensures sequential progression (world 2 only unlocks after world 1 completion). Verify level generation produces correct enemy configurations for normal/miniboss/boss levels. Test persistence layer with localStorage mock to ensure progression survives page refresh. Integration tests with phase system to verify world progression triggers correctly after combat completion. Test edge cases: completing final level of world, death resetting to world 1, attempting to access locked worlds. Validate World 1 specific configuration: miniboss spawning on levels 3,6 with correct stats, boss level 9 with Goober Supreme and minion positioning. Performance tests for world data loading and progression calculations. Test React hooks for proper state updates and re-rendering when world/level changes.
+
+# Subtasks:
+## 1. Design Core Data Structures for Worlds and Levels [done]
+### Dependencies: None
+### Description: Define TypeScript interfaces for World, Level, and EnemyConfig in src/types/world.ts to establish the foundational data schema for modular world and level representation.
+### Details:
+Create interfaces that support extensibility, including fields for world identification, level types (normal, miniboss, boss), enemy configurations, and completion/unlock states.
+
+## 2. Implement Sequential World and Level Progression Logic [done]
+### Dependencies: 68.1
+### Description: Develop the WorldProgressionManager class in src/utils/worldProgression.ts to manage progression, including advancing levels/worlds, unlocking logic, and progression resets.
+### Details:
+Include methods for getting/setting current world and level, completing levels, advancing worlds, resetting progression, and checking unlock status. Ensure logic enforces sequential progression and validates unlock/completion requirements.
+
+## 3. Define World 1 Structure and Enemy Configurations [done]
+### Dependencies: 68.1
+### Description: Design the configuration for World 1, specifying 9 levels with minibosses on levels 3 and 6, and a boss with minions on level 9, using the established data structures.
+### Details:
+Populate World 1 with detailed enemy stats and behaviors for minibosses (Supergoob) and boss (Goober Supreme), including attack types, positions, and minion arrangements.
+
+## 4. Integrate Progression System with Game State and Phase Logic [done]
+### Dependencies: 68.2, 68.3
+### Description: Connect the progression system to the existing game phase system so that world and level advancement triggers appropriately upon combat completion.
+### Details:
+Ensure that progression updates are synchronized with game events, and that state changes (e.g., level completion) are reflected in both the progression manager and the overall game state.
+
+## 5. Implement Persistence for Progression State [deferred]
+### Dependencies: 68.2
+### Description: Enable saving and loading of progression data (currentWorld, currentLevel, worldsUnlocked, levelProgress) using localStorage to maintain player progress across sessions.
+### Details:
+Design a robust persistence layer that serializes and deserializes progression state, handling data integrity and versioning as needed.
+
+## 6. Develop React Hooks for Progression State Access [done]
+### Dependencies: 68.2, 68.5
+### Description: Create custom React hooks (useWorldProgression, useCurrentWorld, useLevelProgress) to provide components with easy access to progression data and updates.
+### Details:
+Ensure hooks encapsulate logic for subscribing to progression changes and expose relevant data and actions for UI components.
+
+## 7. Document System Architecture and Extensibility Guidelines [done]
+### Dependencies: 68.1, 68.2, 68.3, 68.4, 68.5, 68.6
+### Description: Produce comprehensive documentation covering the modular architecture, data structures, progression logic, integration points, and best practices for extending worlds, levels, and enemy types.
+### Details:
+Include diagrams and examples illustrating clean separation of WorldData, WorldState, and WorldLogic, as well as instructions for adding new worlds or enemy types.
+

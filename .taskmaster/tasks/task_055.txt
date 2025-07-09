@@ -1,0 +1,11 @@
+# Task ID: 55
+# Title: Create Phase Tracker UI Component
+# Status: done
+# Dependencies: 54
+# Priority: medium
+# Description: Build a persistent phase tracker component that displays on the left side of the screen, showing current phase and overall game loop progress.
+# Details:
+Create PhaseTracker component using Tailwind CSS with fixed positioning on left side. Display current phase with visual indicators (icons, colors). Show game loop progression with visual breadcrumbs or progress bar. Use React context to subscribe to phase changes. Style with consistent design: bg-gray-800 text-white p-4 fixed left-0 top-0 h-full w-64. Include phase icons and transition animations.
+
+# Test Strategy:
+Visual regression tests, verify tracker updates correctly on phase changes, test responsive design on different screen sizes

@@ -1,0 +1,43 @@
+# Task ID: 63
+# Title: Implement Extensible Architecture Foundation
+# Status: pending
+# Dependencies: 61, 62
+# Priority: medium
+# Description: Design and implement extensible architecture patterns to support future features like evolution mechanics, new enemy types, and advanced combat systems.
+# Details:
+Implement plugin-like architecture for abilities, upgrades, and game mechanics. Create base classes/interfaces for extensibility: BaseAbility, BaseUpgrade, BaseEnemy. Use composition over inheritance patterns. Implement event system for game actions using custom hooks or context. Create configuration objects for easy feature toggling. Structure code with clear separation of concerns: data layer, business logic, UI components. Include comprehensive documentation and examples for extending the system.
+
+# Test Strategy:
+Architecture tests for extensibility patterns, verify new features can be added without breaking existing code, test plugin system
+
+# Subtasks:
+## 1. Design base classes and interfaces for effect system [pending]
+### Dependencies: None
+### Description: Create abstract base classes and interfaces that define the contract for all item effects, including IEffect interface with methods for apply(), getTargetingMechanics(), getUIElements(), and base Effect class with common properties like id, name, description, and validation logic.
+### Details:
+Define TypeScript interfaces and abstract classes that establish the foundation for the plugin architecture. Include methods for effect application, targeting validation, UI state management, and configuration handling.
+
+## 2. Implement plugin architecture for effect registration [pending]
+### Dependencies: 63.1
+### Description: Create an EffectRegistry system that allows effects to be dynamically registered and retrieved, with factory patterns for effect instantiation and dependency injection for shared services like UI state management.
+### Details:
+Build a centralized registry that manages effect lifecycle, handles effect discovery, and provides a clean API for registering new effects without modifying core system code.
+
+## 3. Create global event system and UI state management [pending]
+### Dependencies: 63.1
+### Description: Implement a global event bus and state management system for UI elements like popups and highlights that can be accessed across UnitCard, shop, and combat screens. Include helper functions for showGeneticPopup, setHealedUnitId, and setFlashUnitId.
+### Details:
+Design a reactive state management system that allows effects to trigger UI changes globally without tight coupling. Create exported helper functions that effects can use to manage UI state consistently.
+
+## 4. Refactor existing effects and implement configuration system [pending]
+### Dependencies: 63.2, 63.3
+### Description: Migrate genetic potential effect to use the new architecture with global state for popup display, simplify ShopScreen item handling to single-line team state updates, and create configuration objects for effect properties including targeting mechanics and UI behavior.
+### Details:
+Convert existing effects to the new plugin system, ensuring genetic potential effect demonstrates the global popup functionality. Streamline shop interactions and embed effect-specific logic within configuration objects.
+
+## 5. Separate concerns and write extensibility documentation [pending]
+### Dependencies: 63.4
+### Description: Restructure code to separate effect logic from UI handling and business logic, then create comprehensive documentation covering how to create new effects, register them with the system, and utilize the available UI helpers and targeting mechanics.
+### Details:
+Ensure clean separation between effect implementation, UI management, and core game logic. Provide detailed guides, code examples, and API documentation for developers adding new effects to the system.
+
