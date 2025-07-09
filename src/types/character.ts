@@ -44,13 +44,11 @@ export const LevelProgressionDefault: LevelProgression = {
 // Roll a random gene grade for a stat (S impossible, A 1/10, others 2/9 each)
 function rollRandomGeneGrade(): GeneGrade {
   const r = Math.random();
-  if (r < 1/10) return GeneGrade.A;
-  // Remaining 9/10 split among B, C, D, F (2/9 each)
-  const rest = (r - 1/10) / (9/10);
-  if (rest < 2/9) return GeneGrade.B;
-  if (rest < 4/9) return GeneGrade.C;
-  if (rest < 6/9) return GeneGrade.D;
-  return GeneGrade.F;
+  if (r < 0.05) return GeneGrade.F;         // 0.00 - 0.05
+  if (r < 0.20) return GeneGrade.D;         // 0.05 - 0.20
+  if (r < 0.65) return GeneGrade.C;         // 0.20 - 0.65
+  if (r < 0.95) return GeneGrade.B;         // 0.65 - 0.95
+  return GeneGrade.A;                       // 0.95 - 1.00
 }
 
 export function rollRandomGenome(): Genome {
