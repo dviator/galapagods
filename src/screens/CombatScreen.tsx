@@ -5,6 +5,7 @@ import InitiativeDisplay from '../components/InitiativeDisplay';
 import { useXPSummary } from '../hooks/useXPSummary';
 import { useGameState } from '../contexts/useGameState';
 import { TeamEnum } from '../types/unit';
+import { Phase } from '../types';
 
 const CombatScreen: React.FC = () => {
   const {
@@ -65,7 +66,7 @@ const CombatScreen: React.FC = () => {
 
   // Automatic phase transitions
   useEffect(() => {
-    if (phase === 'combat' && allPlayersDead) {
+    if (phase === Phase.Combat && allPlayersDead) {
       transitionToDeath();
     }
   }, [phase, allPlayersDead, transitionToDeath]);

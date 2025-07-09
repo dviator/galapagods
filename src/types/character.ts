@@ -48,6 +48,10 @@ export const GenomeDefault: Genome = {
   instinct: GeneGrade.C,
 };
 
+export function level1Progression(): LevelProgression {
+  return { level: 1, xp: 0, xpToNext: 10 };
+}
+
 export interface Character {
   characterSheet: CharacterSheet;
   statModifiers: StatModifiers;

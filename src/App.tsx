@@ -7,6 +7,7 @@ import GameLayout from './components/GameLayout';
 import { GameStateProvider } from './contexts/GameStateContext';
 import { useGameState } from './contexts/useGameState';
 import CombatLog from './components/CombatLog';
+import { Phase } from './types';
 
 const AppContent: React.FC = () => {
   const {
@@ -15,17 +16,17 @@ const AppContent: React.FC = () => {
   } = useGameState();
 
   return (
-    <GameLayout logArea={phase === 'combat' ? (
+    <GameLayout logArea={phase === Phase.Combat ? (
       <CombatLog combatLog={combatLog} />
     ) : null}>
-      {phase === "combat" && (
+      {phase === Phase.Combat && (
         <CombatScreen />
       )}
-      {phase === "shop" && (
+      {phase === Phase.Shop && (
         <ShopScreen/>
       )}
-      {phase === "death" && <DeathScreen />}
-      {phase === "lab" && (
+      {phase === Phase.Death && <DeathScreen />}
+      {phase === Phase.Lab && (
         <LabScreen/>
       )}
     </GameLayout>

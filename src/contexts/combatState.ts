@@ -75,7 +75,7 @@ function advanceToNextLivingUnitIndex(initiativeOrder: InitiativeEntry[], player
     const entry = initiativeOrder[idx];
     const team = entry.team === TeamEnum.Player ? playerTeam : enemyTeam;
     const unit = team[entry.index];
-    if (unit && unit.combatStatus.alive) break;
+    if (unit.combatStatus.alive) break;
     idx++;
   }
   return idx;

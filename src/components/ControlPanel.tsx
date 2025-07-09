@@ -3,6 +3,7 @@ import { useGameState } from '../contexts/useGameState';
 import { ShopControlPanelButton } from '../screens/ShopScreen';
 import { LabControlPanelButton } from '../screens/LabScreen';
 import NewRunButton from './NewRunButton';
+import { Phase } from '../types';
 
 const NextAttackButton: React.FC<{ onClick: () => void; disabled?: boolean; children?: React.ReactNode }> = ({ onClick, children }) => (
   <button
@@ -75,19 +76,19 @@ const ControlPanel: React.FC = () => {
     handleNewRun
   } = useGameState();
 
-  if (phase === 'combat') {
+  if (phase === Phase.Combat) {
     return <CombatControlPanel />;
   }
-  if (phase === 'shop') {
+  if (phase === Phase.Shop) {
     return <ShopControlPanelButton onStartNextCombat={transitionToCombat} />;
   }
-  if (phase === 'lab') {
+  if (phase === Phase.Lab) {
     return <LabControlPanelButton onStartNewRun={() => {
       // TODO: Add logic to set up new player team if needed
       transitionToCombat();
     }} />;
   }
-  if (phase === 'death') {
+  if (phase === Phase.Death) {
     return (
       <NewRunButton onClick={handleNewRun} />
     );

@@ -1,21 +1,8 @@
 import React, { createContext, useState, useCallback } from 'react';
 import type { Unit, Team } from '../types';
-import { createUnit } from '../utils/units/createCharacter';
-import bearImg from '../assets/units/bear.png';
-import eagleImg from '../assets/units/eagle.png';
-import tigerImg from '../assets/units/tiger.png';
-import {
-  bearSheet,
-  tigerSheet,
-  eagleSheet,
-  gooberSheet,
-} from '../data/characterSheets';
-import {
-  slashAttack,
-  pounceAttack,
-  swoopAttack,
-  slamAttack
-} from '../data/attacks';
+import { Phase } from '../types';
+import { createTiger, createBear, createEagle } from '../data/characters';
+import { createGoober, } from '../data/enemies';
 import cloneDeep from 'lodash.clonedeep';
 import {
   combatReset,
@@ -25,6 +12,9 @@ import {
 } from './combatState';
 import type { CombatState } from '../types/combat';
 import type { StatName } from '../types/stats';
+import { worlds } from '../data/worlds';
+import { getWorldProgressionManager } from '../utils/worldProgression';
+import type { World, WorldState } from '../types/world';
 
 interface InitiativeEntry {
   team: Team;
@@ -53,27 +43,28 @@ interface GameState {
   startNextRound: (playerTeam: Unit[], enemyTeam: Unit[], prevLog: string[], round: number) => void;
   transitionToShop: () => void;
   transitionToDeath: () => void;
-  spawnNewGooberEnemyTeam: () => Unit[];
   resetInitiativeOrder: () => void;
   transitionToCombat: () => void;
-  phase: string;
-  setPhase: React.Dispatch<React.SetStateAction<string>>;
+  phase: Phase;
+  setPhase: React.Dispatch<React.SetStateAction<Phase>>;
   combatCount: number;
   gold: number;
   setGold: React.Dispatch<React.SetStateAction<number>>;
   geneticPopup: { unitId: string; stat: StatName; grade: string } | null;
   showGeneticPopup: (unitId: string, stat: StatName, grade: string) => void;
+  worldState: WorldState;
+  currentWorld: World;
 }
 
 const initialPlayerTeam: Unit[] = [
-  createUnit("tiger-1", "Tiger", "character", tigerImg, 10, 5, pounceAttack, tigerSheet),
-  createUnit("bear-1", "Bear", "character", bearImg, 12, 3, slashAttack, bearSheet),
-  createUnit("eagle-1", "Eagle", "character", eagleImg, 6, 8, swoopAttack, eagleSheet),
+  createTiger(),
+  createBear(),
+  createEagle(),
 ];
 const initialEnemyTeam: Unit[] = [
-  createUnit("goober-1", "Goob1", "enemy", undefined, 6, 2, slamAttack, gooberSheet),
-  createUnit("goober-2", "Goob2", "enemy", undefined, 6, 4, slamAttack, gooberSheet),
-  createUnit("goober-3", "Goob3", "enemy", undefined, 6, 3, slamAttack, gooberSheet),
+  createGoober(),
+  createGoober(),
+  createGoober(),
 ];
 
 const GameStateContext = createContext<GameState | undefined>(undefined);
@@ -84,12 +75,16 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     combatReset(initialPlayerTeam, initialEnemyTeam)
   );
   const [runNumber, setRunNumber] = useState(1);
-  const [phase, setPhase] = useState('combat');
+  const [phase, setPhase] = useState<Phase>(Phase.Combat);
   const [combatCount, setCombatCount] = useState(0);
   // Gold state management
   const [gold, setGold] = useState(0);
   // Genetic popup state
   const [geneticPopup, setGeneticPopup] = useState<{ unitId: string; stat: StatName; grade: string } | null>(null);
+  // World progression state
+  const manager = React.useMemo(() => getWorldProgressionManager(worlds), []);
+  const [worldState, setWorldState] = useState<WorldState>(manager.getState());
+  const [currentWorld, setCurrentWorld] = useState<World>(manager.getCurrentWorld());
 
   // Handlers using the new combat state helpers
   const handleNextAttack = useCallback(() => {
@@ -102,14 +97,27 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const handleReset = useCallback(() => {
     setCombatState(combatReset(initialPlayerTeam, initialEnemyTeam));
-    setPhase('combat');
+    setPhase(Phase.Combat);
   }, []);
 
+  // Helper to create enemy team for the current level
+  const createEnemyTeamForCurrentLevel = () => {
+    const world = currentWorld;
+    const level = world.levels.find(l => l.id === worldState.currentLevel);
+    if (!level) return [];
+    return level.enemies;
+  };
+
+  // On new run, reset world progression state in memory (not localStorage)
   const handleNewRun = useCallback(() => {
     setRunNumber(prev => prev + 1);
-    handleReset();
+    manager.resetProgression();
+    setWorldState(manager.getState());
+    setCurrentWorld(manager.getCurrentWorld());
+    setCombatState(combatReset(initialPlayerTeam, createEnemyTeamForCurrentLevel()));
+    setPhase(Phase.Combat);
     setCombatCount(0);
-  }, [handleReset]);
+  }, [manager]);
 
   // Award gold after combat: 1 gold per level of enemy defeated
   const awardGoldAfterCombat = useCallback(() => {
@@ -121,41 +129,26 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const transitionToShop = useCallback(() => {
     setCombatCount(prev => prev + 1);
     awardGoldAfterCombat();
-    setPhase('shop');
-  }, [awardGoldAfterCombat]);
+    manager.completeLevel();
+    setWorldState(manager.getState());
+    setCurrentWorld(manager.getCurrentWorld());
+    setPhase(Phase.Shop);
+  }, [awardGoldAfterCombat, manager]);
   const transitionToDeath = useCallback(() => {
     setCombatCount(prev => prev + 1);
-    setPhase('death');
-  }, []);
-
-  // Helper to create a new goober enemy team (not stateful)
-  const createEnemyGooberTeam = () => [1, 2, 3].map(i =>
-    createUnit(
-      `goober-${Date.now()}-${i}`,
-      `Goob${i}`,
-      'enemy',
-      undefined,
-      6,
-      2 + i, // Vary initiative a bit
-      slamAttack,
-      gooberSheet,
-    )
-  );
-
-  // Centralized enemy team reset helper
-  const getOrCreateEnemyTeam = () => {
-    const eTeam = cloneDeep(combatState.enemyTeam);
-    const allEnemiesDead = !eTeam.length || eTeam.every(e => !e.combatStatus.alive);
-    return allEnemiesDead ? createEnemyGooberTeam() : eTeam;
-  };
+    manager.resetProgression();
+    setWorldState(manager.getState());
+    setCurrentWorld(manager.getCurrentWorld());
+    setPhase(Phase.Death);
+  }, [manager]);
 
   // Centralized transition to combat phase (no args)
   const transitionToCombat = useCallback(() => {
     const pTeam = cloneDeep(combatState.playerTeam);
-    const eTeam = getOrCreateEnemyTeam();
+    const eTeam = createEnemyTeamForCurrentLevel();
     setCombatState(combatReset(pTeam, eTeam));
-    setPhase('combat');
-  }, [combatState.playerTeam, combatState.enemyTeam]);
+    setPhase(Phase.Combat);
+  }, [combatState.playerTeam, worldState.currentLevel, currentWorld]);
 
   // Genetic popup method
   const showGeneticPopup = (unitId: string, stat: StatName, grade: string) => {
@@ -194,7 +187,6 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       },
       transitionToShop,
       transitionToDeath,
-      spawnNewGooberEnemyTeam: createEnemyGooberTeam,
       resetInitiativeOrder: () => setCombatState(prev => ({ ...prev, initiativeOrder: [] })),
       transitionToCombat,
       phase, setPhase,
@@ -203,6 +195,8 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setGold,
       geneticPopup,
       showGeneticPopup,
+      worldState,
+      currentWorld,
     }}>
       {children}
     </GameStateContext.Provider>

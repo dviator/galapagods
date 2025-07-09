@@ -16,7 +16,7 @@ export const slashAttack: Attack = {
 };
 export const pounceAttack: Attack = {
   name: "Pounce",
-  baseDmg: 4,
+  baseDmg: 3,
   bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
@@ -34,4 +34,28 @@ export const slamAttack: Attack = {
   bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
+};
+
+export const goobSlapAttack: Attack = {
+  name: "Goob Slap",
+  baseDmg: 3,
+  bonusAbilityDmg: () => 0,
+  direction: AttackDirection.Forward,
+  targetingRule: frontTargetingRule,
+};
+
+export const goobSlamAttack: Attack = {
+  name: "Goob Slam",
+  baseDmg: 5,
+  bonusAbilityDmg: () => 0,
+  direction: AttackDirection.Forward,
+  targetingRule: frontTargetingRule,
+};
+
+export const superAoeAttack: Attack = {
+  name: "Super AOE",
+  baseDmg: 3,
+  bonusAbilityDmg: () => 0,
+  direction: AttackDirection.AOE,
+  targetingRule: aoeTargetingRule,
 };
