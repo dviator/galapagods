@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import UnitCard from '../components/UnitCard';
 import { useGameState } from '../contexts/useGameState';
 import { applyEffect, EffectName } from '../utils/units/effects';
-import { SHOP_ITEMS, getTemporaryStatBoostItem } from '../data/shopItems';
+import { SHOP_ITEMS, getRandomHealthPotionItem, getRandomTemporaryStatBoostItem } from '../data/shopItems';
 import type { ShopItem } from '../types/shop';
 
 export const ShopControlPanelButton: React.FC<{ onStartNextCombat: () => void }> = ({ onStartNextCombat }) => (
@@ -35,9 +35,11 @@ const ShopScreen: React.FC = () => {
 
   // On mount (or when shop phase starts), generate a new temp stat boost item
   useEffect(() => {
-    const items = [...SHOP_ITEMS];
-    // Add a temporary stat boost item to the end of the list
-    items.push(getTemporaryStatBoostItem());
+    // Always add dynamic items in a unified way
+    const items: ShopItem[] = [];
+    items.push(getRandomHealthPotionItem());
+    items.push(getRandomTemporaryStatBoostItem());
+    items.push(...SHOP_ITEMS);
     setShopItems(items);
   }, []);
 

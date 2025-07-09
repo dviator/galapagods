@@ -2,6 +2,7 @@ import type { CombatState, InitiativeEntry } from '../types/combat';
 import type { Unit } from '../types/unit';
 import { TeamEnum } from '../types/unit';
 import cloneDeep from 'lodash.clonedeep';
+import { getEffectiveInitiative } from '../utils/units/leveling';
 
 // Private helper for damage assignment
 function calcDmg(attacker: Unit): number {
@@ -22,6 +23,10 @@ function assignDamage(attacker: Unit, target: Unit): string {
   return `${attacker.name} attacks ${target.name} for ${damage}. (${target.combatStatus.health} HP left)`;
 }
 
+function rollRandomInitVal(): number {
+  return Math.floor(Math.random() * 8) + 1;
+}
+
 // Roll initiative for all living units
 export function combatRollInitiative(state: CombatState): CombatState {
   const playerTeam = cloneDeep(state.playerTeam);
@@ -29,13 +34,13 @@ export function combatRollInitiative(state: CombatState): CombatState {
   const entries: InitiativeEntry[] = [];
   playerTeam.forEach((e, i) => {
     if (e.combatStatus.alive) {
-      e.combatStatus.initiative = Math.floor(Math.random() * 10) + 1 + e.baseInitiative;
+      e.combatStatus.initiative = Math.floor(rollRandomInitVal() + getEffectiveInitiative(e));
       entries.push({ team: TeamEnum.Player, index: i, initiative: e.combatStatus.initiative });
     }
   });
   enemyTeam.forEach((e, i) => {
     if (e.combatStatus.alive) {
-      e.combatStatus.initiative = Math.floor(Math.random() * 10) + 1 + e.baseInitiative;
+      e.combatStatus.initiative = Math.floor(rollRandomInitVal() + getEffectiveInitiative(e));
       entries.push({ team: TeamEnum.Enemy, index: i, initiative: e.combatStatus.initiative });
     }
   });

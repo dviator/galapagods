@@ -1,6 +1,8 @@
 import React from 'react';
 import type { Unit } from '../types';
 import HealthBar from './HealthBar';
+import { getEffectiveStat, getEffectiveInitiative, getTemporaryInitiativeBonus } from '../utils/units/leveling';
+import { StatEnum } from '../types/stats';
 
 export interface UnitCardProps {
   entity: Unit;
@@ -97,20 +99,34 @@ const UnitCard: React.FC<UnitCardProps> = ({
             <div className="flex items-center gap-2">
               <span className="text-base font-semibold text-gray-600">INIT</span>
               <span className="text-base font-bold text-black">
-                {entity.baseInitiative}
-                {typeof entity.combatStatus.initiative === 'number' && entity.combatStatus.initiative !== entity.baseInitiative && (
-                  <span className="text-gray-500 text-sm font-normal ml-2">→ {entity.combatStatus.initiative}</span>
-                )}
+                {(() => {
+                  const tmp = getTemporaryInitiativeBonus(entity);
+                  const effective = getEffectiveInitiative(entity);
+                  const rolled = typeof entity.combatStatus.initiative === 'number' ? entity.combatStatus.initiative - effective : null;
+                  const total = typeof entity.combatStatus.initiative === 'number' ? entity.combatStatus.initiative : effective;
+                  return (
+                    <>
+                      {effective}
+                      {tmp !== 0 && <span className="text-green-600"> (+{tmp})</span>}
+                      {rolled !== null && (
+                        <>
+                          <span className="text-blue-600"> + {rolled}</span>
+                          <span className="text-gray-500 ml-1">= {total}</span>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
               </span>
             </div>
           </div>
         </div>
         {/* Add horizontal stat row here */}
         <div className="w-full flex flex-row items-center justify-start gap-4 pl-4 mt-0">
-          <span className="text-xs font-bold text-black">FRCT: <span className="text-base font-extrabold text-black align-middle">{entity.character.characterSheet.ferocity}{entity.character.statModifiers.ferocity ? <span className='ml-1 text-green-600 font-bold text-xs align-middle'>+{entity.character.statModifiers.ferocity}</span> : null} <span className='font-extrabold text-black'>({entity.character.genome.ferocity})</span></span></span>
-          <span className="text-xs font-bold text-black">SRVL: <span className="text-base font-extrabold text-black align-middle">{entity.character.characterSheet.survival}{entity.character.statModifiers.survival ? <span className='ml-1 text-green-600 font-bold text-xs align-middle'>+{entity.character.statModifiers.survival}</span> : null} <span className='font-extrabold text-black'>({entity.character.genome.survival})</span></span></span>
-          <span className="text-xs font-bold text-black">ALCY: <span className="text-base font-extrabold text-black align-middle">{entity.character.characterSheet.alacrity}{entity.character.statModifiers.alacrity ? <span className='ml-1 text-green-600 font-bold text-xs align-middle'>+{entity.character.statModifiers.alacrity}</span> : null} <span className='font-extrabold text-black'>({entity.character.genome.alacrity})</span></span></span>
-          <span className="text-xs font-bold text-black">INST: <span className="text-base font-extrabold text-black align-middle">{entity.character.characterSheet.instinct}{entity.character.statModifiers.instinct ? <span className='ml-1 text-green-600 font-bold text-xs align-middle'>+{entity.character.statModifiers.instinct}</span> : null} <span className='font-extrabold text-black'>({entity.character.genome.instinct})</span></span></span>
+          <span className="text-xs font-bold text-black">FRCT: <span className="text-base font-extrabold text-black align-middle">{getEffectiveStat(entity, StatEnum.FEROCITY)}<span className='text-xs text-gray-500 ml-1'>({entity.character.characterSheet.ferocity}{entity.character.statModifiers.ferocity ? `+${entity.character.statModifiers.ferocity}` : ''})</span> <span className='font-extrabold text-black'>({entity.character.genome.ferocity})</span></span></span>
+          <span className="text-xs font-bold text-black">SRVL: <span className="text-base font-extrabold text-black align-middle">{getEffectiveStat(entity, StatEnum.SURVIVAL)}<span className='text-xs text-gray-500 ml-1'>({entity.character.characterSheet.survival}{entity.character.statModifiers.survival ? `+${entity.character.statModifiers.survival}` : ''})</span> <span className='font-extrabold text-black'>({entity.character.genome.survival})</span></span></span>
+          <span className="text-xs font-bold text-black">ALCY: <span className="text-base font-extrabold text-black align-middle">{getEffectiveStat(entity, StatEnum.ALACRITY)}<span className='text-xs text-gray-500 ml-1'>({entity.character.characterSheet.alacrity}{entity.character.statModifiers.alacrity ? `+${entity.character.statModifiers.alacrity}` : ''})</span> <span className='font-extrabold text-black'>({entity.character.genome.alacrity})</span></span></span>
+          <span className="text-xs font-bold text-black">INST: <span className="text-base font-extrabold text-black align-middle">{getEffectiveStat(entity, StatEnum.INSTINCT)}<span className='text-xs text-gray-500 ml-1'>({entity.character.characterSheet.instinct}{entity.character.statModifiers.instinct ? `+${entity.character.statModifiers.instinct}` : ''})</span> <span className='font-extrabold text-black'>({entity.character.genome.instinct})</span></span></span>
         </div>
         <div className="flex-1 flex flex-col justify-end gap-2 w-full pb-3 pl-4" style={{ height: '67%' }}>
           {/* Additional stats or info can go here */}

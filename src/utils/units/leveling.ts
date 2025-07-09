@@ -3,6 +3,8 @@ import type { Character, CharacterSheet, StatModifiers, LevelProgression } from 
 import { StatModifiersDefault, CharacterSheetDefault, LevelProgressionDefault, GenomeDefault } from '../../types/character';
 import type { Genome } from '../../types/stats';
 import { statScaling } from '../../config/statScaling';
+import type { StatName } from '../../types/stats';
+import { StatEnum } from '../../types/stats';
 
 // Returns stat growth value based on gene grade
 export function getStatGrowth(grade: import('../../types').GeneGrade): number {
@@ -42,11 +44,11 @@ export function gainLevel(unit: Unit): Unit {
   newUnit.character.characterSheet.instinct += getStatGrowth(newUnit.character.genome.instinct);
 
   // Calc Initiative based on alacrity and statScaling
-  newUnit.baseInitiative = Math.floor(newUnit.character.characterSheet.alacrity * statScaling.initiativePerAlacrity);
+  newUnit.baseInitiative = Math.floor(getEffectiveStat(newUnit, StatEnum.ALACRITY) * statScaling.initiativePerAlacrity);
 
   //Calc Health
   const prevMaxHealth = unit.maxHealth ?? statScaling.baseHealth;
-  const survival = newUnit.character.characterSheet.survival;
+  const survival = getEffectiveStat(newUnit, StatEnum.SURVIVAL);
   const newMaxHealth = Math.floor(statScaling.baseHealth + survival * statScaling.healthPerSurvival);
   const healthIncrease = newMaxHealth - prevMaxHealth;
   newUnit.maxHealth = newMaxHealth;
@@ -69,6 +71,36 @@ export function awardXPAndLevelUp(unit: Unit, xpAward: number): Unit {
     updatedUnit = gainLevel(updatedUnit);
   }
   return updatedUnit;
+}
+
+// Returns the effective value of a stat (base + modifiers)
+export function getEffectiveStat(unit: Unit, stat: StatName): number {
+  const base = unit.character.characterSheet[stat] ?? 0;
+  const mod = unit.character.statModifiers[stat] ?? 0;
+  return base + mod;
+}
+
+// Returns the effective initiative for a unit (using effective alacrity)
+export function getEffectiveInitiative(unit: Unit): number {
+  const alacrity = getEffectiveStat(unit, StatEnum.ALACRITY);
+  return unit.baseInitiative + Math.floor(alacrity * statScaling.initiativePerAlacrity);
+}
+
+// Returns the initiative bonus due to temporary stat modifiers only
+export function getTemporaryInitiativeBonus(unit: Unit): number {
+  // Calculate effective initiative with all modifiers
+  const effective = getEffectiveInitiative(unit);
+  // Calculate initiative with statModifiers set to zero
+  const baseStatModifiers = { ferocity: 0, alacrity: 0, survival: 0, instinct: 0 };
+  const unitNoTmp = {
+    ...unit,
+    character: {
+      ...unit.character,
+      statModifiers: baseStatModifiers,
+    },
+  };
+  const withoutTmp = getEffectiveInitiative(unitNoTmp);
+  return effective - withoutTmp;
 }
 
 export function getCharacter(

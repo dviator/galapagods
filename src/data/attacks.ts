@@ -2,9 +2,11 @@ import type { Attack } from '../types';
 import { frontTargetingRule, rightTargetingRule, aoeTargetingRule } from '../utils/units/attackTargeting';
 import { AttackDirection } from '../types';
 import type { Unit } from '../types/unit';
+import { getEffectiveStat } from '../utils/units/leveling';
+import { StatEnum } from '../types/stats';
 
 export function ferocityBonusDmg(unit: Unit) {
-  return Math.ceil(unit.character.characterSheet.ferocity * 0.33);
+  return Math.ceil(getEffectiveStat(unit, StatEnum.FEROCITY) * 0.33);
 }
 
 export const slashAttack: Attack = {
