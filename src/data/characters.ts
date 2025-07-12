@@ -1,5 +1,4 @@
 import { createUnit } from '../utils/units/createCharacter';
-import { tigerSheet, bearSheet, eagleSheet } from './characterSheets';
 import { pounceAttack, slashAttack, swoopAttack } from './attacks';
 import type { Unit } from '../types/unit';
 import tigerImg from '../assets/units/tiger.png';
@@ -18,7 +17,7 @@ export function createTiger(id?: string): Unit {
     attack: pounceAttack,
     character: {
       levelProgression: level1Progression(),
-      characterSheet: tigerSheet,
+      characterSheet: { ferocity: 4, alacrity: 4, survival: 3, instinct: 2 },
       statModifiers: { ferocity: 0, survival: 0, alacrity: 0, instinct: 0 },
       genome: rollRandomGenome(),
     },
@@ -36,7 +35,7 @@ export function createBear(id?: string): Unit {
     attack: slashAttack,
     character: {
       levelProgression: level1Progression(),
-      characterSheet: bearSheet,
+      characterSheet: { ferocity: 2, alacrity: 2, survival: 6, instinct: 3 },
       statModifiers: { ferocity: 0, survival: 0, alacrity: 0, instinct: 0 },
       genome: rollRandomGenome(),
     },
@@ -54,7 +53,7 @@ export function createEagle(id?: string): Unit {
     attack: swoopAttack,
     character: {
       levelProgression: level1Progression(),
-      characterSheet: eagleSheet,
+      characterSheet: { ferocity: 2, alacrity: 4, survival: 2, instinct: 5 },
       statModifiers: { ferocity: 0, survival: 0, alacrity: 0, instinct: 0 },
       genome: rollRandomGenome(),
     },

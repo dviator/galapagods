@@ -6,6 +6,7 @@ import { EffectName } from '../utils/units/effects';
 export type ShopItemTarget = 'character' | 'team' | 'global';
 
 export interface ShopItemConfig {
+  price: number;
   amount?: number;
   stat?: StatEnum;
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import UnitCard from '../components/UnitCard';
 import { useGameState } from '../contexts/useGameState';
 import { applyEffect, EffectName } from '../utils/units/effects';
-import { SHOP_ITEMS, getRandomHealthPotionItem, getRandomTemporaryStatBoostItem } from '../data/shopItems';
+import { InitializeShopItems, ItemTargetEnum } from '../data/items';
 import type { ShopItem } from '../types/shop';
 
 export const ShopControlPanelButton: React.FC<{ onStartNextCombat: () => void }> = ({ onStartNextCombat }) => (
@@ -28,19 +28,14 @@ const GeneticPopup: React.FC<{ stat: string; grade: string }> = ({ stat, grade }
 const ShopScreen: React.FC = () => {
   const { gold, setGold, playerTeam, setPlayerTeam, geneticPopup, showGeneticPopup } = useGameState();
   const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
-  const [shopItems, setShopItems] = useState<ShopItem[]>(SHOP_ITEMS);
+  const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [flashUnitId, setFlashUnitId] = useState<string | null>(null);
   const [healedUnitId, setHealedUnitId] = useState<string | null>(null);
 
-  // On mount (or when shop phase starts), generate a new temp stat boost item
+  // On mount (or when shop phase starts), generate a new shop inventory
   useEffect(() => {
-    // Always add dynamic items in a unified way
-    const items: ShopItem[] = [];
-    items.push(getRandomHealthPotionItem());
-    items.push(getRandomTemporaryStatBoostItem());
-    items.push(...SHOP_ITEMS);
-    setShopItems(items);
+    setShopItems(InitializeShopItems());
   }, []);
 
   const handleItemClick = (idx: number) => {
@@ -58,7 +53,7 @@ const ShopScreen: React.FC = () => {
   const handleUnitClick = (unitId: string) => {
     if (selectedItemIndex === null) return;
     const item = shopItems[selectedItemIndex];
-    if (!item.name || !item.target || item.target !== 'character' || typeof item.price !== 'number') return;
+    if (!item.name || !item.target || item.target !== ItemTargetEnum.Character || typeof item.price !== 'number') return;
     // Prepare context for effect UI triggers
     const context = {
       ...item.config,

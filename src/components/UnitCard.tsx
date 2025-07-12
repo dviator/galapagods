@@ -11,6 +11,7 @@ export interface UnitCardProps {
   xpGained?: number;
   leveledUp?: boolean;
   healed?: boolean;
+  dashed?: boolean; // NEW: for bench swap UI
 }
 
 const UnitCard: React.FC<UnitCardProps> = ({
@@ -20,6 +21,7 @@ const UnitCard: React.FC<UnitCardProps> = ({
   xpGained,
   leveledUp,
   healed,
+  dashed,
 }) => {
   return (
     <div
@@ -30,6 +32,8 @@ const UnitCard: React.FC<UnitCardProps> = ({
           ? 'border-8 border-red-500 shadow-2xl'
           : highlight
           ? 'border-8 border-yellow-400 shadow-xl'
+          : dashed
+          ? 'border-4 border-blue-400 border-dashed'
           : 'border-2 border-black'
       } rounded-lg bg-white flex overflow-hidden relative`}
       style={entity.combatStatus.alive ? {} : { filter: 'grayscale(1)', opacity: 0.5 }}

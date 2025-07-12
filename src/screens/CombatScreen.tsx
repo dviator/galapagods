@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import UnitCard from '../components/UnitCard';
 import XPSummary from '../components/XPSummary';
 import InitiativeDisplay from '../components/InitiativeDisplay';
@@ -10,6 +10,7 @@ import { Phase } from '../types';
 const CombatScreen: React.FC = () => {
   const {
     playerTeam,
+    setPlayerTeam,
     enemyTeam,
     round,
     initiativeOrder,
@@ -18,6 +19,11 @@ const CombatScreen: React.FC = () => {
     transitionToDeath,
     gold,
   } = useGameState();
+
+  // Bench swap state
+  const [selectedBenchIdx, setSelectedBenchIdx] = useState<number | null>(null);
+  // Lock bench after first attack
+  const benchLocked = phase !== Phase.Combat || currentTurn > 0;
 
   // XP summary state
   const { xpSummary } = useXPSummary();
@@ -71,22 +77,66 @@ const CombatScreen: React.FC = () => {
     }
   }, [phase, allPlayersDead, transitionToDeath]);
 
+  // Bench swap handler
+  const handleBenchClick = (idx: number) => {
+    if (benchLocked) return;
+    if (selectedBenchIdx === null) {
+      setSelectedBenchIdx(idx);
+    } else if (selectedBenchIdx !== idx) {
+      // Swap positions
+      const newTeam = [...playerTeam];
+      [newTeam[selectedBenchIdx], newTeam[idx]] = [newTeam[idx], newTeam[selectedBenchIdx]];
+      setPlayerTeam(newTeam);
+      setSelectedBenchIdx(null);
+    } else {
+      // Deselect if clicking same
+      setSelectedBenchIdx(null);
+    }
+  };
+
   return (
     <div className="p-4 font-mono">
       <h1 className="text-xl font-bold mb-2 text-center">Combat Simulator</h1>
       <div className="flex justify-center items-start gap-8 mt-2">
         {/* Player Team */}
         <div className="flex flex-col gap-4">
-          {playerTeam.map((e, i) => (
-            <UnitCard
-              key={e.id}
-              entity={e}
-              highlight={initiativeOrder[currentTurn]?.team === TeamEnum.Player && initiativeOrder[currentTurn]?.index === i}
-              targeted={currentTargetTeam === 'player' && currentTargetIndices.includes(i)}
-              xpGained={xpSummary[e.id]?.xp}
-              leveledUp={xpSummary[e.id]?.leveledUp}
-            />
-          ))}
+          {playerTeam.map((e, i) => {
+            // Bench swap highlight logic
+            let benchHighlight = false;
+            let benchDashed = false;
+            if (!benchLocked) {
+              if (selectedBenchIdx === null) {
+                // No selection, allow any to be selected
+                benchHighlight = false;
+                benchDashed = false;
+              } else if (selectedBenchIdx === i) {
+                benchHighlight = true;
+                benchDashed = false;
+              } else {
+                benchHighlight = false;
+                benchDashed = true;
+              }
+            }
+            return (
+              <div
+                key={e.id}
+                onClick={() => handleBenchClick(i)}
+                style={{ cursor: benchLocked ? 'default' : 'pointer' }}
+              >
+                <UnitCard
+                  entity={e}
+                  highlight={
+                    (initiativeOrder[currentTurn]?.team === TeamEnum.Player && initiativeOrder[currentTurn]?.index === i) || benchHighlight
+                  }
+                  targeted={currentTargetTeam === 'player' && currentTargetIndices.includes(i)}
+                  xpGained={xpSummary[e.id]?.xp}
+                  leveledUp={xpSummary[e.id]?.leveledUp}
+                  // Add dashed border for bench swap
+                  dashed={benchDashed}
+                />
+              </div>
+            );
+          })}
         </div>
         {/* Initiative Order and Round Indicator or XP Summary */}
         <div className="flex flex-col items-center w-64">
