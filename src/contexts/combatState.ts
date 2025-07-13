@@ -4,7 +4,6 @@ import { TeamEnum } from '../types/unit';
 import cloneDeep from 'lodash.clonedeep';
 import { getEffectiveInitiative } from '../utils/units/leveling';
 
-// Private helper for damage assignment
 function calcDmg(attacker: Unit): number {
   const base = attacker.attack?.baseDmg ?? 1;
   const bonus = attacker.attack?.bonusAbilityDmg ? attacker.attack.bonusAbilityDmg(attacker) : 0;

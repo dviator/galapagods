@@ -29,7 +29,7 @@ const tmpStatBoostConfig = [
 ]
 
 const geneticPotentialConfig = [
-  { price: 5, amount: 1}
+  { price: 5}
 ]
 
 export function InitializeShopItems(): Item[] {

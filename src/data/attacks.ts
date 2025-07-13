@@ -16,6 +16,7 @@ export const slashAttack: Attack = {
   direction: AttackDirection.Forward,
   targetingRule: aoeTargetingRule,
 };
+
 export const pounceAttack: Attack = {
   name: "Pounce",
   baseDmg: 3,
@@ -23,6 +24,7 @@ export const pounceAttack: Attack = {
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
 };
+
 export const swoopAttack: Attack = {
   name: "Swoop",
   baseDmg: 2,
@@ -30,6 +32,7 @@ export const swoopAttack: Attack = {
   direction: AttackDirection.Side,
   targetingRule: rightTargetingRule,
 };
+
 export const slamAttack: Attack = {
   name: "Slam",
   baseDmg: 2,

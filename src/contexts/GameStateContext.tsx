@@ -154,7 +154,6 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setTimeout(() => setGeneticPopup(null), 2500);
   };
 
-  // Context value now exposes combatState and setCombatState, plus other handlers
   return (
     <GameStateContext.Provider value={{
       playerTeam: combatState.playerTeam,

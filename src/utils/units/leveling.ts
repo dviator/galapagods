@@ -1,13 +1,13 @@
 import type { Unit } from '../../types';
 import type { Character, CharacterSheet, StatModifiers, LevelProgression } from '../../types/character';
 import { StatModifiersDefault, CharacterSheetDefault, LevelProgressionDefault, GenomeDefault } from '../../types/character';
-import type { Genome } from '../../types/stats';
-import { statScaling } from '../../config/statScaling';
+import type { GeneGrade, Genome } from '../../types/stats';
+import { statScaling } from '../../data/statScaling';
 import type { StatName } from '../../types/stats';
 import { StatEnum } from '../../types/stats';
 
 // Returns stat growth value based on gene grade
-export function getStatGrowth(grade: import('../../types').GeneGrade): number {
+export function getStatGrowth(grade: GeneGrade): number {
   switch (grade) {
     case 'S': return Math.floor(Math.random() * 3) + 8; // 8-10
     case 'A': return Math.floor(Math.random() * 3) + 6; // 6-8
