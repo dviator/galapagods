@@ -83,10 +83,7 @@ const ControlPanel: React.FC = () => {
     return <ShopControlPanelButton onStartNextCombat={transitionToCombat} />;
   }
   if (phase === Phase.Lab) {
-    return <LabControlPanelButton onStartNewRun={() => {
-      // TODO: Add logic to set up new player team if needed
-      transitionToCombat();
-    }} />;
+    return <LabControlPanelButton onStartNewRun={handleNewRun} />;
   }
   if (phase === Phase.Death) {
     return (

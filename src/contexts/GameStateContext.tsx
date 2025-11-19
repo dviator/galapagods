@@ -45,6 +45,7 @@ interface GameState {
   transitionToDeath: () => void;
   resetInitiativeOrder: () => void;
   transitionToCombat: () => void;
+  transitionToLab: () => void;
   phase: Phase;
   setPhase: React.Dispatch<React.SetStateAction<Phase>>;
   combatCount: number;
@@ -140,13 +141,16 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setPhase(Phase.Death);
   }, [resetWorldProgression]);
 
-  // Centralized transition to combat phase (no args)
   const transitionToCombat = useCallback(() => {
     const pTeam = cloneDeep(combatState.playerTeam);
     const eTeam = createEnemyTeamForCurrentLevel();
     setCombatState(combatReset(pTeam, eTeam));
     setPhase(Phase.Combat);
   }, [combatState.playerTeam, worldState.currentLevel, currentWorld]);
+
+  const transitionToLab = useCallback(() => {
+    setPhase(Phase.Lab);
+  }, []);
 
   // Genetic popup method
   const showGeneticPopup = (unitId: string, stat: StatName, grade: string) => {
@@ -186,6 +190,7 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       transitionToDeath,
       resetInitiativeOrder: () => setCombatState(prev => ({ ...prev, initiativeOrder: [] })),
       transitionToCombat,
+      transitionToLab,
       phase, setPhase,
       combatCount,
       gold,

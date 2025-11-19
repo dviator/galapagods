@@ -13,6 +13,7 @@ const AppContent: React.FC = () => {
   const {
     combatLog,
     phase,
+    transitionToLab,
   } = useGameState();
 
   return (
@@ -25,7 +26,7 @@ const AppContent: React.FC = () => {
       {phase === Phase.Shop && (
         <ShopScreen/>
       )}
-      {phase === Phase.Death && <DeathScreen />}
+      {phase === Phase.Death && <DeathScreen onContinue={transitionToLab} />}
       {phase === Phase.Lab && (
         <LabScreen/>
       )}
