@@ -8,7 +8,7 @@ export interface Genome {
 }
 
 // Enum for stat names
-export enum StatEnum {
+export enum GenomeStat {
   FEROCITY = 'ferocity',
   ALACRITY = 'alacrity',
   SURVIVAL = 'survival',
@@ -16,15 +16,15 @@ export enum StatEnum {
 }
 
 // Readonly array of all stat enums for iteration
-export const ALL_STATS: readonly StatEnum[] = [
-  StatEnum.FEROCITY,
-  StatEnum.ALACRITY,
-  StatEnum.SURVIVAL,
-  StatEnum.INSTINCT,
+export const ALL_STATS: readonly GenomeStat[] = [
+  GenomeStat.FEROCITY,
+  GenomeStat.ALACRITY,
+  GenomeStat.SURVIVAL,
+  GenomeStat.INSTINCT,
 ];
 
 // Stat value type for each stat (now based on enum)
-export type StatName = StatEnum;
+export type StatName = GenomeStat;
 export type StatBlock = Record<StatName, number>;
 
 // Stat scaling coefficients for each stat-to-mechanic relationship

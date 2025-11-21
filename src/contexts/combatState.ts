@@ -3,28 +3,9 @@ import type { Unit } from '../types/unit';
 import { TeamEnum } from '../types/unit';
 import cloneDeep from 'lodash.clonedeep';
 import { getEffectiveInitiative } from '../utils/units/leveling';
-
-function calcDmg(attacker: Unit): number {
-  const base = attacker.attack?.baseDmg ?? 1;
-  const bonus = attacker.attack?.bonusAbilityDmg ? attacker.attack.bonusAbilityDmg(attacker) : 0;
-  return base + bonus;
-}
-
-function assignDamage(attacker: Unit, target: Unit): string {
-  if (!attacker.combatStatus.alive || !target.combatStatus.alive) return '';
-  const damage = calcDmg(attacker);
-  target.combatStatus.health -= damage;
-  if (target.combatStatus.health <= 0) {
-    target.combatStatus.health = 0;
-    target.combatStatus.alive = false;
-    return `${attacker.name} attacks ${target.name} for ${damage} and defeats them!`;
-  }
-  return `${attacker.name} attacks ${target.name} for ${damage}. (${target.combatStatus.health} HP left)`;
-}
-
-function rollRandomInitVal(): number {
-  return Math.floor(Math.random() * 8) + 1;
-}
+import { assignDamage } from '../utils/combat/damage';
+import { advanceToNextLivingUnitIndex } from '../utils/combat/initiative';
+import { rollD8 } from '../utils/random';
 
 // Roll initiative for all living units
 export function combatRollInitiative(state: CombatState): CombatState {
@@ -33,13 +14,13 @@ export function combatRollInitiative(state: CombatState): CombatState {
   const entries: InitiativeEntry[] = [];
   playerTeam.forEach((e, i) => {
     if (e.combatStatus.alive) {
-      e.combatStatus.initiative = Math.floor(rollRandomInitVal() + getEffectiveInitiative(e));
+      e.combatStatus.initiative = Math.floor(rollD8() + getEffectiveInitiative(e));
       entries.push({ team: TeamEnum.Player, index: i, initiative: e.combatStatus.initiative });
     }
   });
   enemyTeam.forEach((e, i) => {
     if (e.combatStatus.alive) {
-      e.combatStatus.initiative = Math.floor(rollRandomInitVal() + getEffectiveInitiative(e));
+      e.combatStatus.initiative = Math.floor(rollD8() + getEffectiveInitiative(e));
       entries.push({ team: TeamEnum.Enemy, index: i, initiative: e.combatStatus.initiative });
     }
   });
@@ -70,19 +51,6 @@ export function combatReset(playerTeam: Unit[], enemyTeam: Unit[]): CombatState 
     isRoundComplete: false,
   };
   return combatRollInitiative(initialState);
-}
-
-// Advance to the next living unit index after a given index
-function advanceToNextLivingUnitIndex(initiativeOrder: InitiativeEntry[], playerTeam: Unit[], enemyTeam: Unit[], startIdx: number): number {
-  let idx = startIdx + 1;
-  while (idx < initiativeOrder.length) {
-    const entry = initiativeOrder[idx];
-    const team = entry.team === TeamEnum.Player ? playerTeam : enemyTeam;
-    const unit = team[entry.index];
-    if (unit.combatStatus.alive) break;
-    idx++;
-  }
-  return idx;
 }
 
 // Perform the next attack in the initiative order

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import UnitCard from '../components/UnitCard';
+import UnitCard from '../components/unit/UnitCard';
 import XPSummary from '../components/XPSummary';
 import InitiativeDisplay from '../components/InitiativeDisplay';
 import { useXPSummary } from '../hooks/useXPSummary';
 import { useGameState } from '../contexts/useGameState';
+import { useTeam } from '../contexts/teamContext';
 import { TeamEnum } from '../types/unit';
 import { Phase } from '../types';
 
 const CombatScreen: React.FC = () => {
   const {
     playerTeam,
-    setPlayerTeam,
     enemyTeam,
     round,
     initiativeOrder,
@@ -19,6 +19,8 @@ const CombatScreen: React.FC = () => {
     transitionToDeath,
     gold,
   } = useGameState();
+
+  const { updateActiveTeam } = useTeam();
 
   // Bench swap state
   const [selectedBenchIdx, setSelectedBenchIdx] = useState<number | null>(null);
@@ -77,19 +79,16 @@ const CombatScreen: React.FC = () => {
     }
   }, [phase, allPlayersDead, transitionToDeath]);
 
-  // Bench swap handler
   const handleBenchClick = (idx: number) => {
     if (benchLocked) return;
     if (selectedBenchIdx === null) {
       setSelectedBenchIdx(idx);
     } else if (selectedBenchIdx !== idx) {
-      // Swap positions
       const newTeam = [...playerTeam];
       [newTeam[selectedBenchIdx], newTeam[idx]] = [newTeam[idx], newTeam[selectedBenchIdx]];
-      setPlayerTeam(newTeam);
+      updateActiveTeam(() => newTeam);
       setSelectedBenchIdx(null);
     } else {
-      // Deselect if clicking same
       setSelectedBenchIdx(null);
     }
   };

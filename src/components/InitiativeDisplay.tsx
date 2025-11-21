@@ -20,6 +20,9 @@ const InitiativeDisplay: React.FC<InitiativeDisplayProps> = ({ initiativeOrder, 
     {initiativeOrder.map((entry, i) => {
       const team = entry.team === TeamEnum.Player ? playerTeam : enemyTeam;
       const char = team[entry.index];
+
+      if (!char) return null;
+
       const isActive = i === currentTurn;
       const isDead = !char.combatStatus.alive;
       return (

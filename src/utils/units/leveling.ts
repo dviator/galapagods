@@ -4,7 +4,7 @@ import { StatModifiersDefault, CharacterSheetDefault, LevelProgressionDefault, G
 import type { GeneGrade, Genome } from '../../types/stats';
 import { statScaling } from '../../data/statScaling';
 import type { StatName } from '../../types/stats';
-import { StatEnum } from '../../types/stats';
+import { GenomeStat } from '../../types/stats';
 
 // Returns stat growth value based on gene grade
 export function getStatGrowth(grade: GeneGrade): number {
@@ -44,11 +44,11 @@ export function gainLevel(unit: Unit): Unit {
   newUnit.character.characterSheet.instinct += getStatGrowth(newUnit.character.genome.instinct);
 
   // Calc Initiative based on alacrity and statScaling
-  newUnit.baseInitiative = Math.floor(getEffectiveStat(newUnit, StatEnum.ALACRITY) * statScaling.initiativePerAlacrity);
+  newUnit.baseInitiative = Math.floor(getEffectiveStat(newUnit, GenomeStat.ALACRITY) * statScaling.initiativePerAlacrity);
 
   //Calc Health
   const prevMaxHealth = unit.maxHealth ?? statScaling.baseHealth;
-  const survival = getEffectiveStat(newUnit, StatEnum.SURVIVAL);
+  const survival = getEffectiveStat(newUnit, GenomeStat.SURVIVAL);
   const newMaxHealth = Math.floor(statScaling.baseHealth + survival * statScaling.healthPerSurvival);
   const healthIncrease = newMaxHealth - prevMaxHealth;
   newUnit.maxHealth = newMaxHealth;
@@ -82,7 +82,7 @@ export function getEffectiveStat(unit: Unit, stat: StatName): number {
 
 // Returns the effective initiative for a unit (using effective alacrity)
 export function getEffectiveInitiative(unit: Unit): number {
-  const alacrity = getEffectiveStat(unit, StatEnum.ALACRITY);
+  const alacrity = getEffectiveStat(unit, GenomeStat.ALACRITY);
   return unit.baseInitiative + Math.floor(alacrity * statScaling.initiativePerAlacrity);
 }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import UnitCard from '../components/UnitCard';
+import UnitCard from '../components/unit/UnitCard';
 import { useGameState } from '../contexts/useGameState';
+import { useTeam } from '../contexts/teamContext';
 import { applyEffect, EffectName } from '../utils/units/effects';
 import { InitializeShopItems, ItemTargetEnum } from '../data/items';
 import type { ShopItem } from '../types/shop';
@@ -15,7 +16,6 @@ export const ShopControlPanelButton: React.FC<{ onStartNextCombat: () => void }>
   </button>
 );
 
-// GeneticPopup component for stat/grade popup
 const GeneticPopup: React.FC<{ stat: string; grade: string }> = ({ stat, grade }) => (
   <div
     className="absolute left-1/2 top-2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl font-extrabold text-2xl text-white bg-gradient-to-br from-pink-500 to-yellow-400 shadow-2xl animate-bounce border-4 border-white drop-shadow-lg"
@@ -26,7 +26,8 @@ const GeneticPopup: React.FC<{ stat: string; grade: string }> = ({ stat, grade }
 );
 
 const ShopScreen: React.FC = () => {
-  const { gold, setGold, playerTeam, setPlayerTeam, geneticPopup, showGeneticPopup } = useGameState();
+  const { gold, setGold, playerTeam, geneticPopup, showGeneticPopup } = useGameState();
+  const { updateActiveTeam } = useTeam();
   const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -62,9 +63,8 @@ const ShopScreen: React.FC = () => {
       showGeneticPopup,
       unitId,
     };
-    // Apply effect and update team
     const updatedTeam = playerTeam.map((u) => u.id === unitId ? applyEffect(u, item.effect, context) : u);
-    setPlayerTeam(updatedTeam);
+    updateActiveTeam(() => updatedTeam);
     setGold((g: number) => g - item.price);
     setSelectedItemIndex(null);
     setErrorMsg(null);

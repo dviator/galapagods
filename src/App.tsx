@@ -4,12 +4,14 @@ import ShopScreen from "./screens/ShopScreen";
 import DeathScreen from "./screens/DeathScreen";
 import LabScreen from "./screens/LabScreen";
 import GameLayout from './components/GameLayout';
-import { GameStateProvider } from './contexts/GameStateContext';
+import { GameStateProvider } from './contexts/gameStateContext';
 import { useGameState } from './contexts/useGameState';
+import { TeamProvider } from './contexts/teamContext';
 import CombatLog from './components/CombatLog';
 import { Phase } from './types';
+import { createTiger, createBear, createEagle } from './data/characters';
 
-const AppContent: React.FC = () => {
+const GameContent: React.FC = () => {
   const {
     combatLog,
     phase,
@@ -34,10 +36,16 @@ const AppContent: React.FC = () => {
   );
 };
 
-const App: React.FC = () => (
-  <GameStateProvider>
-    <AppContent />
-  </GameStateProvider>
-);
+const App: React.FC = () => {
+  const initialActiveTeam = [createTiger(), createBear(), createEagle()];
+
+  return (
+    <TeamProvider initialActiveTeam={initialActiveTeam}>
+      <GameStateProvider>
+        <GameContent />
+      </GameStateProvider>
+    </TeamProvider>
+  );
+};
 
 export default App;

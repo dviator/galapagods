@@ -481,7 +481,7 @@
         "description": "Create a comprehensive world progression system with modular architecture supporting sequential world advancement, level-based progression, and configurable enemy encounters including minibosses and bosses.",
         "details": "Create src/types/world.ts with core interfaces: World { id: number, name: string, levels: Level[], unlocked: boolean }, Level { id: number, type: 'normal' | 'miniboss' | 'boss', enemies: EnemyConfig[], completed: boolean }, EnemyConfig { type: string, position: Position, stats: Stats }. Implement WorldProgressionManager class in src/utils/worldProgression.ts with methods: getCurrentWorld(), getCurrentLevel(), completeLevel(), advanceWorld(), resetProgression(), isWorldUnlocked(worldId). Design World 1 structure: 9 levels with minibosses on levels 3,6 (Supergoob: { hp: 18, attack: { type: 'aoe', damage: 3 }, position: 'center' }) and boss on level 9 (Goober Supreme: { hp: 24, attack: { type: 'directional', damage: 5, targets: ['left', 'right'] }, position: 'center', minions: [{ type: 'basic_goob', positions: ['left', 'right'] }] }). Create WorldConfig system for easy expansion with JSON-like configuration objects. Implement progression persistence using localStorage with keys: currentWorld, currentLevel, worldsUnlocked, levelProgress. Integrate with existing phase system to trigger world progression on combat completion. Create hooks: useWorldProgression(), useCurrentWorld(), useLevelProgress() for React components. Ensure clean separation: WorldData (static configs), WorldState (current progress), WorldLogic (progression rules). Include validation for world unlocking sequence and level completion requirements.",
         "testStrategy": "Unit tests for WorldProgressionManager methods including world advancement, level completion tracking, and reset functionality. Test world unlocking logic ensures sequential progression (world 2 only unlocks after world 1 completion). Verify level generation produces correct enemy configurations for normal/miniboss/boss levels. Test persistence layer with localStorage mock to ensure progression survives page refresh. Integration tests with phase system to verify world progression triggers correctly after combat completion. Test edge cases: completing final level of world, death resetting to world 1, attempting to access locked worlds. Validate World 1 specific configuration: miniboss spawning on levels 3,6 with correct stats, boss level 9 with Goober Supreme and minion positioning. Performance tests for world data loading and progression calculations. Test React hooks for proper state updates and re-rendering when world/level changes.",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [
           54,
           63,
@@ -540,7 +540,7 @@
               2
             ],
             "details": "Design a robust persistence layer that serializes and deserializes progression state, handling data integrity and versioning as needed.",
-            "status": "deferred",
+            "status": "done",
             "testStrategy": "Test saving, loading, and clearing progression data in localStorage, including edge cases such as corrupted or missing data."
           },
           {
@@ -593,7 +593,7 @@
         "description": "Create a comprehensive bench system that allows units to be moved on/off the active team, tracks locked units, supports drag-and-drop or point-and-click movement, and integrates with Lab and Death phases for persistent team management.",
         "details": "Create src/components/BenchSystem.tsx with drag-and-drop functionality using react-beautiful-dnd or native HTML5 drag API. Implement bench state management with interfaces: BenchState { activeTeam: Character[], bench: Character[], lockedUnits: string[] }, BenchActions { moveToTeam, moveToBench, lockUnit, unlockUnit }. Create BenchManager class in src/utils/benchManager.ts with methods: addToBench(), removeFromBench(), swapPositions(), isUnitLocked(), validateTeamSize(). Design UI with two sections: Active Team (max 4 units) and Bench (unlimited storage) using grid layouts. Implement drag zones with visual feedback: drag-over states, drop indicators, and invalid drop prevention. Add point-and-click alternative: click unit to select, click destination to move. Integrate with Lab phase for post-run team management and Death phase for unit recovery. Implement persistence using localStorage or game state context. Add locked unit indicators (lock icon, grayed out appearance) and prevent locked units from being moved. Include team validation: ensure at least 1 active unit, respect position constraints. Style with Tailwind: bg-blue-100 for active team area, bg-gray-100 for bench, hover:bg-blue-200 for interactive elements.",
         "testStrategy": "Unit tests for BenchManager methods including move operations, lock/unlock functionality, and team validation. Component tests for drag-and-drop interactions using @testing-library/react with drag simulation. Test point-and-click movement as fallback option. Verify locked unit restrictions prevent unauthorized moves. Integration tests with Lab and Death phases to ensure proper bench state persistence. Test localStorage persistence across browser sessions. Validate team size constraints and position management. Test UI responsiveness and visual feedback during drag operations.",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           54,
           58
@@ -604,7 +604,7 @@
     ],
     "metadata": {
       "created": "2025-06-29T03:01:22.079Z",
-      "updated": "2025-08-11T14:35:08.442Z",
+      "updated": "2025-11-21T04:32:05.178Z",
       "description": "Tasks for master context"
     }
   }

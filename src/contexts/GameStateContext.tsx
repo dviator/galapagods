@@ -1,30 +1,24 @@
 import React, { createContext, useState, useCallback } from 'react';
-import type { Unit, Team } from '../types';
+import type { Unit } from '../types';
 import { Phase } from '../types';
-import { createTiger, createBear, createEagle } from '../data/characters';
-import { createGoober, } from '../data/enemies';
-import cloneDeep from 'lodash.clonedeep';
+import { createGoober } from '../data/enemies';
 import {
   combatReset,
   combatNextAttack,
   combatNextRound,
   combatRollInitiative
 } from './combatState';
-import type { CombatState } from '../types/combat';
+import type { CombatState, InitiativeEntry } from '../types/combat';
 import type { StatName } from '../types/stats';
 import { worlds } from '../data/worlds';
 import { useWorldProgressionManager } from './worldProgressionHooks';
 import type { World, WorldState } from '../types/world';
+import { useTeam } from './teamContext';
+import { healAndReviveTeam } from '../utils/units/healing';
+import { calculateGoldReward } from '../utils/rewards';
+import { getEnemiesForLevel } from '../utils/world/spawning';
 
-interface InitiativeEntry {
-  team: Team;
-  index: number;
-  initiative: number;
-}
-
-interface GameState {
-  playerTeam: Unit[];
-  setPlayerTeam: React.Dispatch<React.SetStateAction<Unit[]>>;
+export interface GameState {
   enemyTeam: Unit[];
   setEnemyTeam: React.Dispatch<React.SetStateAction<Unit[]>>;
   round: number;
@@ -55,13 +49,9 @@ interface GameState {
   showGeneticPopup: (unitId: string, stat: StatName, grade: string) => void;
   worldState: WorldState;
   currentWorld: World;
+  playerTeam: Unit[];
 }
 
-const initialPlayerTeam: Unit[] = [
-  createTiger(),
-  createBear(),
-  createEagle(),
-];
 const initialEnemyTeam: Unit[] = [
   createGoober(),
   createGoober(),
@@ -71,9 +61,10 @@ const initialEnemyTeam: Unit[] = [
 const GameStateContext = createContext<GameState | undefined>(undefined);
 
 export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Replace individual combat state pieces with a single combatState
+  const { activeTeam, updateActiveTeam } = useTeam();
+
   const [combatState, setCombatState] = useState<CombatState>(() =>
-    combatReset(initialPlayerTeam, initialEnemyTeam)
+    combatReset(activeTeam, initialEnemyTeam)
   );
   const [runNumber, setRunNumber] = useState(1);
   const [phase, setPhase] = useState<Phase>(Phase.Combat);
@@ -100,31 +91,28 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const handleReset = useCallback(() => {
-    setCombatState(combatReset(initialPlayerTeam, initialEnemyTeam));
+    setCombatState(combatReset(activeTeam, initialEnemyTeam));
     setPhase(Phase.Combat);
-  }, []);
+  }, [activeTeam]);
 
-  // Helper to create enemy team for the current level
-  const createEnemyTeamForCurrentLevel = () => {
-    const world = currentWorld;
-    const level = world.levels.find(l => l.id === worldState.currentLevel);
-    if (!level) return [];
-    return level.enemies;
-  };
+  const createEnemyTeamForCurrentLevel = useCallback(() => {
+    return getEnemiesForLevel(currentWorld, worldState.currentLevel);
+  }, [currentWorld, worldState.currentLevel]);
 
-  // On new run, reset world progression state in memory (not localStorage)
   const handleNewRun = useCallback(() => {
+    const healedTeam = healAndReviveTeam(activeTeam);
+    updateActiveTeam(() => healedTeam);
     setRunNumber(prev => prev + 1);
     resetWorldProgression();
-    setCombatState(combatReset(initialPlayerTeam, createEnemyTeamForCurrentLevel()));
+    setCombatState(combatReset(healedTeam, createEnemyTeamForCurrentLevel()));
     setPhase(Phase.Combat);
     setCombatCount(0);
-  }, [resetWorldProgression]);
+  }, [resetWorldProgression, activeTeam, updateActiveTeam, createEnemyTeamForCurrentLevel]);
 
   // Award gold after combat: 1 gold per level of enemy defeated
   const awardGoldAfterCombat = useCallback(() => {
     const defeatedEnemies = combatState.enemyTeam.filter(e => !e.combatStatus.alive);
-    const goldEarned = defeatedEnemies.reduce((sum, enemy) => sum + (enemy.character?.levelProgression?.level || 1), 0);
+    const goldEarned = calculateGoldReward(defeatedEnemies);
     setGold(prev => prev + goldEarned);
   }, [combatState.enemyTeam]);
 
@@ -132,8 +120,9 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCombatCount(prev => prev + 1);
     awardGoldAfterCombat();
     completeWorldLevel();
+    updateActiveTeam(() => combatState.playerTeam);
     setPhase(Phase.Shop);
-  }, [awardGoldAfterCombat, completeWorldLevel]);
+  }, [awardGoldAfterCombat, completeWorldLevel, updateActiveTeam, combatState.playerTeam]);
 
   const transitionToDeath = useCallback(() => {
     setCombatCount(prev => prev + 1);
@@ -142,15 +131,16 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [resetWorldProgression]);
 
   const transitionToCombat = useCallback(() => {
-    const pTeam = cloneDeep(combatState.playerTeam);
     const eTeam = createEnemyTeamForCurrentLevel();
-    setCombatState(combatReset(pTeam, eTeam));
+    setCombatState(combatReset(activeTeam, eTeam));
     setPhase(Phase.Combat);
-  }, [combatState.playerTeam, worldState.currentLevel, currentWorld]);
+  }, [activeTeam, createEnemyTeamForCurrentLevel]);
 
   const transitionToLab = useCallback(() => {
+    const healedTeam = healAndReviveTeam(activeTeam);
+    updateActiveTeam(() => healedTeam);
     setPhase(Phase.Lab);
-  }, []);
+  }, [activeTeam, updateActiveTeam]);
 
   // Genetic popup method
   const showGeneticPopup = (unitId: string, stat: StatName, grade: string) => {
@@ -161,7 +151,6 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   return (
     <GameStateContext.Provider value={{
       playerTeam: combatState.playerTeam,
-      setPlayerTeam: (fn) => setCombatState(prev => ({ ...prev, playerTeam: typeof fn === 'function' ? fn(prev.playerTeam) : fn })),
       enemyTeam: combatState.enemyTeam,
       setEnemyTeam: (fn) => setCombatState(prev => ({ ...prev, enemyTeam: typeof fn === 'function' ? fn(prev.enemyTeam) : fn })),
       round: combatState.round,
@@ -177,7 +166,6 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       handleReset,
       handleNewRun,
       startNextRound: (playerTeam, enemyTeam, prevLog, round) => {
-        // For compatibility, re-roll initiative and update round
         setCombatState(prev => combatRollInitiative({
           ...prev,
           playerTeam,

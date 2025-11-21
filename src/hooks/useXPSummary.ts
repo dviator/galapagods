@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { awardXPAndLevelUp } from '../utils/units/leveling';
 import { useGameState } from '../contexts/useGameState';
+import { useTeam } from '../contexts/teamContext';
 
 export function useXPSummary() {
   const [xpSummary, setXpSummary] = useState<{ [unitId: string]: { xp: number; leveledUp: boolean } }>({});
   const [pendingXP, setPendingXP] = useState(false);
-  const { playerTeam, setPlayerTeam, enemyTeam }  = useGameState()
+  const { playerTeam, enemyTeam }  = useGameState();
+  const { updateActiveTeam } = useTeam();
   const playerTeamRef = useRef(playerTeam);
   playerTeamRef.current = playerTeam;
 
@@ -28,7 +30,7 @@ export function useXPSummary() {
         }
         return unit;
       });
-      setPlayerTeam(updatedTeam);
+      updateActiveTeam(() => updatedTeam);
       setXpSummary(summary);
       setPendingXP(true);
     }
@@ -36,7 +38,7 @@ export function useXPSummary() {
       setXpSummary({});
       setPendingXP(false);
     }
-  }, [enemyTeam, pendingXP, xpSummary, setPlayerTeam]);
+  }, [enemyTeam, pendingXP, xpSummary, updateActiveTeam]);
 
   const resetXPSummary = () => {
     setXpSummary({});

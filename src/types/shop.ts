@@ -1,5 +1,5 @@
 // Shared types for the shop system
-import { StatEnum } from './stats';
+import { GenomeStat } from './stats';
 import type { Effect } from '../utils/units/effects';
 import { EffectName } from '../utils/units/effects';
 
@@ -8,7 +8,7 @@ export type ShopItemTarget = 'character' | 'team' | 'global';
 export interface ShopItemConfig {
   price: number;
   amount?: number;
-  stat?: StatEnum;
+  stat?: GenomeStat;
 }
 
 export interface ShopItem {

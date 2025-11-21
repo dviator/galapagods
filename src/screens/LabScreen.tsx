@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useGameState } from '../contexts/useGameState';
+import BenchSystem from '../components/bench/BenchSystem';
 
 export const LabControlPanelButton: React.FC<{ onStartNewRun: () => void }> = ({ onStartNewRun }) => (
   <button
@@ -68,10 +69,8 @@ const LabScreen: React.FC = () => {
         );
       case LabStation.Bench:
         return (
-          <div className="space-y-3">
-            <h3 className="text-xl font-semibold">Bench</h3>
-            <p className="text-gray-700">Manage active team and bench slots. (Placeholder UI)</p>
-            <div className="rounded border border-dashed p-4 text-gray-500">Bench system pending implementation.</div>
+          <div className="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <BenchSystem />
           </div>
         );
       case LabStation.Reposition:
