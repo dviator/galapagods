@@ -14,6 +14,8 @@ export interface UnitCardProps {
   leveledUp?: boolean;
   healed?: boolean;
   dashed?: boolean;
+  currentCountdown?: number;
+  willActThisRound?: boolean;
 }
 
 const UnitCard: React.FC<UnitCardProps> = ({
@@ -24,6 +26,8 @@ const UnitCard: React.FC<UnitCardProps> = ({
   leveledUp,
   healed,
   dashed,
+  currentCountdown,
+  willActThisRound,
 }) => {
   // Determine border state from props
   const getBorderState = (): BorderState => {
@@ -45,7 +49,7 @@ const UnitCard: React.FC<UnitCardProps> = ({
           <HealthBar hp={entity.combatStatus.health} maxHp={entity.maxHealth} />
         </div>
         {/* Stats panel: Level, XP progress, and either ATK/INIT or XP notification */}
-        <UnitStatsPanel unit={entity} xpGained={xpGained} leveledUp={leveledUp} />
+        <UnitStatsPanel unit={entity} xpGained={xpGained} leveledUp={leveledUp} currentCountdown={currentCountdown} willActThisRound={willActThisRound} />
         {/* Genome stats display */}
         <UnitGenomeDisplay unit={entity} />
       </div>

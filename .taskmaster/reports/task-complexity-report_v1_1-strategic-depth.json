@@ -1,0 +1,101 @@
+{
+	"meta": {
+		"generatedAt": "2025-11-22T17:59:01.339Z",
+		"tasksAnalyzed": 11,
+		"totalTasks": 11,
+		"analysisCount": 11,
+		"thresholdScore": 5,
+		"projectName": "Task Master",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Implement Variable Attack Countdown System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 0,
+			"expansionPrompt": "Task already has 6 well-defined subtasks covering data structures, calculation logic, refactoring, multi-attack support, compatibility testing, and unit tests.",
+			"reasoning": "Already expanded with 6 comprehensive subtasks. Core combat system refactor touching action resolution, timing mechanics, and multiple independent countdown tracking. High complexity due to backward compatibility requirements and need to maintain existing combat balance while fundamentally changing turn resolution."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Add Visual Countdown Displays",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down into UI component creation, visual indicator design (progress bars/animations), highlighting system for imminent actions, and testing with various combat speeds and scenarios.",
+			"reasoning": "Moderate complexity UI task dependent on Task 1. Requires creating new visual components, integrating with countdown system state, handling animation timing, and ensuring clarity during fast-paced sequences. Not trivial but more straightforward than core combat logic."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Implement Genetic Weaknesses System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide into weakness type definitions and data structures, inheritance mechanics implementation, combat integration for applying weakness effects, UI display system, and comprehensive testing with breeding system.",
+			"reasoning": "Complex genetic system requiring new data structures, inheritance logic, combat integration, and balancing. Must integrate with existing breeding/Lab system and affect combat calculations. Moderate-high complexity due to multi-system integration and balance considerations."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement Mid-Run Perk/Talent System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Split into perk data structure design, level-up trigger system, perk selection UI, perk effect application engine, active perk display, and balance testing with existing abilities.",
+			"reasoning": "High complexity progression system requiring UI, state management, effect application logic, and extensive balancing. Must integrate with level-up system, combat mechanics, and unit stats. 10-15 perks with meaningful choices requires significant design and testing effort."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement Joker-Style Item Modifiers",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break into joker item data structure, global bonus application system, item acquisition/shop integration, active joker UI display, and interaction testing with various attack types and hybrid creatures.",
+			"reasoning": "Complex modifier system requiring global effect tracking, type-based filtering logic, and careful balance. Must integrate with shop system, run state, and combat calculations. Hybrid creature interactions add additional complexity."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Implement Limited Shop Stock System",
+			"complexityScore": 4,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide into stock data structure and persistence, stock depletion mechanics, shop UI updates to display stock levels, and randomization system for run-based shop inventory.",
+			"reasoning": "Moderate-low complexity feature. Primarily involves adding stock tracking to existing shop system, updating UI, and implementing randomization. Less complex than combat or genetic systems but requires careful balance testing."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Implement Variable Reward System Based on Enemy Level",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Split into reward calculation formula, achievement definition system, achievement detection logic, post-combat reward UI, and balance testing across enemy levels.",
+			"reasoning": "Moderate complexity involving calculation logic, new achievement system, and UI updates. Requires defining 5-8 achievements with detection logic and balancing reward scaling. Multi-faceted but each component is relatively straightforward."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement Hybrid Creature Combinations",
+			"complexityScore": 9,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break into hybrid combination rules and data structures, unique ability system for hybrids, stat calculation/blending logic, breeding mechanics integration, hybrid-specific perks, UI/visual updates, and combat viability testing.",
+			"reasoning": "Very high complexity feature touching breeding, combat, stats, abilities, and UI. Creating 3-5 hybrids with unique mechanics, stat blending, special abilities, and ensuring balance requires significant design and implementation effort across multiple systems."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Integrate New Species Abilities Transfer System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Divide into transfer rule engine, gene editing UI in Lab, ability copying mechanics, mutation system for transferred abilities, compatibility checking system, and transfer chain testing.",
+			"reasoning": "High complexity genetic engineering system requiring new UI, transfer rules, compatibility logic, and mutation mechanics. Must integrate deeply with Lab breeding system and maintain balance. Transfer chains and mutation add significant complexity."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Combat Redesign Testing & Balance",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break into countdown system testing, action ordering verification, attack speed balancing, inheritance exploit prevention, perk/weakness/joker interaction testing, full run playtesting, and iterative balance adjustments.",
+			"reasoning": "High complexity comprehensive testing task dependent on 5 other major features. Requires testing multiple complex systems in combination, identifying edge cases, balancing attack speeds, and conducting multiple full playthroughs. Iterative nature makes estimation challenging."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Integration Testing: Evolution + Combat Systems",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Split into stat grade combat impact testing, weakness inheritance strategy verification, hybrid viability testing, perk differentiation testing, multi-generational breeding effects testing, and dominant strategy prevention analysis.",
+			"reasoning": "High-moderate complexity integration testing dependent on 4 major features. Requires verifying deep integration between evolution and combat systems, testing multi-generational effects, and ensuring no exploits or dominant strategies emerge. Less implementation but significant testing breadth."
+		}
+	]
+}

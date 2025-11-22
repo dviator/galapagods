@@ -4,9 +4,8 @@ import { Phase } from '../types';
 import { createGoober } from '../data/enemies';
 import {
   combatReset,
-  combatNextAttack,
   combatNextRound,
-  combatRollInitiative
+  skipToNextAction,
 } from './combatState';
 import type { CombatState, InitiativeEntry } from '../types/combat';
 import type { StatName } from '../types/stats';
@@ -28,16 +27,13 @@ export interface GameState {
   combatLog: string[];
   setCombatLog: React.Dispatch<React.SetStateAction<string[]>>;
   initiativeOrder: InitiativeEntry[];
-  currentTurn: number;
-  isRoundComplete: boolean;
-  handleNextAttack: () => void;
+  activeCountdowns: import('../types/combat').ActionCountdown[];
   handleNextRound: () => void;
+  handleSkipToNextAction: () => void;
   handleReset: () => void;
   handleNewRun: () => void;
-  startNextRound: (playerTeam: Unit[], enemyTeam: Unit[], prevLog: string[], round: number) => void;
   transitionToShop: () => void;
   transitionToDeath: () => void;
-  resetInitiativeOrder: () => void;
   transitionToCombat: () => void;
   transitionToLab: () => void;
   phase: Phase;
@@ -82,12 +78,12 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   } = useWorldProgressionManager(worlds);
 
   // Handlers using the new combat state helpers
-  const handleNextAttack = useCallback(() => {
-    setCombatState(prev => combatNextAttack(prev));
-  }, []);
-
   const handleNextRound = useCallback(() => {
     setCombatState(prev => combatNextRound(prev));
+  }, []);
+
+  const handleSkipToNextAction = useCallback(() => {
+    setCombatState(prev => skipToNextAction(prev));
   }, []);
 
   const handleReset = useCallback(() => {
@@ -159,24 +155,13 @@ export const GameStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       combatLog: combatState.combatLog,
       setCombatLog: (fn) => setCombatState(prev => ({ ...prev, combatLog: typeof fn === 'function' ? fn(prev.combatLog) : fn })),
       initiativeOrder: combatState.initiativeOrder,
-      currentTurn: combatState.currentTurn,
-      isRoundComplete: combatState.isRoundComplete,
-      handleNextAttack,
+      activeCountdowns: combatState.countdownTracker.activeCountdowns,
       handleNextRound,
+      handleSkipToNextAction,
       handleReset,
       handleNewRun,
-      startNextRound: (playerTeam, enemyTeam, prevLog, round) => {
-        setCombatState(prev => combatRollInitiative({
-          ...prev,
-          playerTeam,
-          enemyTeam,
-          combatLog: prevLog,
-          round,
-        }));
-      },
       transitionToShop,
       transitionToDeath,
-      resetInitiativeOrder: () => setCombatState(prev => ({ ...prev, initiativeOrder: [] })),
       transitionToCombat,
       transitionToLab,
       phase, setPhase,

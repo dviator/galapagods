@@ -67,6 +67,7 @@ export function createEmptyUnit(): Unit {
       bonusAbilityDmg: () => 0,
       targetingRule: { name: '', getTargets: () => [] },
       direction: AttackDirection.AOE,
+      countdown: 0,
     },
     combatStatus: {
       alive: false,

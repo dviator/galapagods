@@ -2,610 +2,188 @@
   "master": {
     "tasks": [
       {
-        "id": 54,
-        "title": "Implement Phase Management System",
-        "description": "Create a centralized phase state management system with possible values: combat, shop, death, lab. Implement automatic phase transitions based on game state.",
-        "details": "Create a React context provider for phase management with state: type Phase = 'combat' | 'shop' | 'death' | 'lab'. Implement transition logic: Combat → Shop (when all enemies dead), Shop → Combat (on continue), Combat → Death (when all players dead), Death → Lab (after delay/click), Lab → Combat (new run). Use useReducer for state management with actions like TRANSITION_TO_SHOP, TRANSITION_TO_DEATH, etc. Include validation to prevent invalid transitions.",
-        "testStrategy": "Unit tests for phase transition logic, integration tests for automatic transitions, verify all valid phase combinations work correctly",
+        "id": 1,
+        "title": "Implement Variable Attack Countdown System",
+        "description": "Redesign combat to use turn-based with variable attack countdowns instead of fixed rounds. Each unit has an attack speed stat that determines countdown timer. Actions resolve in countdown completion order (asynchronous turn order).",
+        "details": "- Replace fixed round system with countdown-based action queue\n- Attack speed stat determines countdown duration\n- Implement countdown tracker for each unit and ability\n- Support multiple active attacks per character with independent counters\n- Ensure backwards compatibility with existing combat logic\n- Add tests for countdown calculation and action ordering",
         "priority": "high",
         "dependencies": [],
         "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Design the Phase State Model",
-            "description": "Define the complete phase state structure including all possible phases, their properties, and the data model that will be managed throughout the application lifecycle.",
-            "dependencies": [],
-            "details": "Create TypeScript interfaces/types for: phase enumeration (e.g., SETUP, ACTIVE, PAUSED, COMPLETED), phase state object with properties like currentPhase, previousPhase, phaseData, timestamps, and metadata. Define the shape of data that each phase will contain and any phase-specific configurations or settings.",
+            "title": "Design Countdown Data Structures",
+            "description": "Define TypeScript interfaces and types for the countdown system. Create data structures to track countdown state for units and abilities.",
+            "details": "- Create CountdownTracker interface for units\\n- Define AbilityCountdown type\\n- Create ActionQueue interface\\n- Define AttackSpeed stat integration\\n- Create types for countdown resolution order\\n- Document countdown calculation formula",
             "status": "done",
-            "testStrategy": ""
+            "dependencies": [],
+            "parentTaskId": 1
           },
           {
             "id": 2,
-            "title": "Create the React Context Provider",
-            "description": "Implement the React Context provider component that will wrap the application and provide phase state and dispatch functions to child components.",
-            "dependencies": [
-              1
-            ],
-            "details": "Create PhaseContext using React.createContext, implement PhaseProvider component that initializes the phase state, provides context value with state and dispatch, and handles context consumer error boundaries. Include proper TypeScript typing for context value and ensure the provider can be easily integrated into the app component tree.",
+            "title": "Implement Countdown Calculation Logic",
+            "description": "Create the core countdown calculation system that determines when units act based on attack speed stats.",
+            "details": "- Implement countdown calculation from attack speed\\n- Create countdown decrement/tick system\\n- Implement action queue ordering by countdown\\n- Handle multiple abilities per unit\\n- Test countdown edge cases (speed 0, very high speed)\\n- Ensure fair turn ordering with ties",
             "status": "done",
-            "testStrategy": ""
+            "dependencies": [],
+            "parentTaskId": 1
           },
           {
             "id": 3,
-            "title": "Implement Transition Logic for Each Phase",
-            "description": "Create the core transition logic that handles moving between different phases, including the business rules and conditions for each transition.",
-            "dependencies": [
-              1
-            ],
-            "details": "Implement transition functions for each phase change (e.g., setupToActive, activeTopaused, pausedToActive, activeToCompleted). Define transition conditions, side effects, and data transformations that occur during each phase change. Create helper functions to determine valid next phases from current phase and handle any cleanup or initialization required during transitions.",
+            "title": "Replace Fixed Round System",
+            "description": "Refactor existing combat loop to use countdown-based action queue instead of fixed rounds.",
+            "details": "- Update combat state management\\n- Replace round counter with countdown tracker\\n- Modify combat loop to process by countdown\\n- Update combat phase logic\\n- Test compatibility with existing combat features\\n- Ensure no regression in damage/ability resolution",
             "status": "done",
-            "testStrategy": ""
+            "dependencies": [],
+            "parentTaskId": 1
           },
           {
             "id": 4,
-            "title": "Add Validation for Transitions",
-            "description": "Implement comprehensive validation logic to ensure phase transitions are valid and prevent invalid state changes.",
-            "dependencies": [
-              1,
-              3
-            ],
-            "details": "Create validation functions that check: if a transition from current phase to target phase is allowed, if required data/conditions are met before transition, if user permissions allow the transition, and if system state supports the transition. Implement error handling for invalid transitions with descriptive error messages and logging.",
+            "title": "Support Multiple Active Attacks Per Character",
+            "description": "Implement system for characters to have multiple attacks with independent countdown timers.",
+            "details": "- Define multi-attack data structure\\n- Create independent countdown tracking for each attack\\n- Implement attack selection/rotation logic\\n- Handle attack conflicts (same unit, multiple attacks)\\n- Test multi-attack scenarios in combat\\n- Balance multi-attack units fairly",
             "status": "done",
-            "testStrategy": ""
+            "dependencies": [],
+            "parentTaskId": 1
           },
           {
             "id": 5,
-            "title": "Integrate useReducer with Actions",
-            "description": "Implement the useReducer hook with action creators and reducer function to manage phase state updates in a predictable way.",
-            "dependencies": [
-              1,
-              3,
-              4
-            ],
-            "details": "Create action types and action creators for all phase operations (TRANSITION_PHASE, UPDATE_PHASE_DATA, RESET_PHASE, etc.). Implement the phase reducer function that handles each action type, applies validation, executes transitions, and returns new state. Integrate the reducer with the context provider and ensure all state updates go through the reducer pattern.",
+            "title": "Backwards Compatibility Testing",
+            "description": "Verify countdown system doesn't break existing combat mechanics and features.",
+            "details": "- Test existing unit abilities with countdown\\n- Verify damage calculations work correctly\\n- Test passive abilities trigger properly\\n- Ensure targeting system still works\\n- Test death detection and end conditions\\n- Run full combat sequences",
             "status": "done",
-            "testStrategy": ""
+            "dependencies": [],
+            "parentTaskId": 1
           },
           {
             "id": 6,
-            "title": "Write Unit and Integration Tests",
-            "description": "Create comprehensive test suites covering all aspects of the phase management system including unit tests for individual functions and integration tests for the complete system.",
-            "dependencies": [
-              1,
-              2,
-              3,
-              4,
-              5
-            ],
-            "details": "Write unit tests for: phase state model validation, individual transition functions, validation logic, reducer actions and state updates. Create integration tests for: context provider functionality, complete phase transition flows, error handling scenarios, and edge cases. Include tests for React component integration, mock scenarios, and performance testing for state updates.",
+            "title": "Add Unit Tests for Countdown System",
+            "description": "Create comprehensive unit tests for countdown calculation and action ordering logic.",
+            "details": "- Test countdown calculation accuracy\\n- Test action queue ordering\\n- Test edge cases (speed 0, max speed)\\n- Test multi-ability countdown independence\\n- Test countdown reset after actions\\n- Test action ordering consistency\\n- Achieve >90% code coverage",
             "status": "done",
-            "testStrategy": ""
+            "dependencies": [],
+            "parentTaskId": 1
           }
         ]
       },
       {
-        "id": 55,
-        "title": "Create Phase Tracker UI Component",
-        "description": "Build a persistent phase tracker component that displays on the left side of the screen, showing current phase and overall game loop progress.",
-        "details": "Create PhaseTracker component using Tailwind CSS with fixed positioning on left side. Display current phase with visual indicators (icons, colors). Show game loop progression with visual breadcrumbs or progress bar. Use React context to subscribe to phase changes. Style with consistent design: bg-gray-800 text-white p-4 fixed left-0 top-0 h-full w-64. Include phase icons and transition animations.",
-        "testStrategy": "Visual regression tests, verify tracker updates correctly on phase changes, test responsive design on different screen sizes",
-        "priority": "medium",
-        "dependencies": [
-          54
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 56,
-        "title": "Refactor Combat System into Separate Module",
-        "description": "Extract existing combat simulator logic into a dedicated Combat component and module, maintaining current functionality while preparing for phase integration.",
-        "details": "Create src/components/Combat.tsx and src/utils/combatLogic.ts. Move combat state management, enemy generation, and battle logic into separate files. Implement Combat component that integrates with phase system - automatically transitions to Shop when all enemies defeated. Keep Reset button for development that only resets current combat. Export combat utilities: generateEnemies(), processCombatRound(), checkVictoryCondition(). Use TypeScript interfaces for all combat entities.",
-        "testStrategy": "Unit tests for combat logic functions, integration tests for phase transitions, verify Reset button only affects current combat",
+        "id": 2,
+        "title": "Add Visual Countdown Displays",
+        "description": "Create clear visual displays of attack countdowns so players can anticipate upcoming actions. Display countdown progress for each unit's next attack.",
+        "details": "- Add countdown UI components for each unit\n- Show remaining turns/actions until next attack\n- Visual indicators (progress bars, numbers, animations)\n- Highlight when unit is about to act\n- Ensure clarity during rapid action sequences\n- Test with varying combat speeds",
         "priority": "high",
         "dependencies": [
-          54
+          1
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 57,
-        "title": "Implement Shop Phase Component",
-        "description": "Create Shop screen component with placeholder upgrades for characters and Lab, including purchase simulation and continue functionality.",
-        "details": "Create src/components/Shop.tsx with placeholder upgrade items. Display upgrades in grid layout using Tailwind: grid grid-cols-2 gap-4. Include character upgrades (health boost, damage boost) and Lab upgrades (facility improvements). Implement mock purchase logic - no real currency yet, just simulate buying. Add Continue button that triggers transition to next Combat phase with increased difficulty. Style with consistent UI: bg-gray-100 p-6 rounded-lg shadow-md for upgrade cards.",
-        "testStrategy": "Component tests for Shop rendering, test purchase simulation, verify Continue button triggers correct phase transition",
-        "priority": "medium",
-        "dependencies": [
-          54,
-          56
-        ],
-        "status": "done",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Implement Gold/Income System",
-            "description": "Create the core economic system for the shop phase including gold tracking, income calculation, and currency management",
-            "dependencies": [],
-            "details": "Develop gold state management, income calculation based on previous battle performance, gold display components, and currency validation logic. Include methods for adding/subtracting gold and persisting gold state across phases.",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 2,
-            "title": "Build Shop UI Layout and Item Display",
-            "description": "Create the visual shop interface with item grid, categories, and responsive layout",
-            "dependencies": [
-              1
-            ],
-            "details": "Design and implement shop container, item grid layout, item cards with images/descriptions/prices, category filters, and responsive design. Include hover effects and visual feedback for interactive elements.",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 3,
-            "title": "Implement Purchase Logic and Validation",
-            "description": "Create the core purchase mechanics including item selection, price validation, and transaction processing",
-            "dependencies": [
-              1,
-              2
-            ],
-            "details": "Develop purchase validation (sufficient gold, item availability), transaction processing, purchase confirmation dialogs, error handling for failed purchases, and update gold balance after successful purchases.",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 4,
-            "title": "Create Inventory Management System",
-            "description": "Implement inventory storage, item tracking, and inventory UI components",
-            "dependencies": [
-              3
-            ],
-            "details": "Build inventory data structure, purchased items storage, inventory display panel, item stacking logic for consumables, and inventory capacity management. Include visual indicators for inventory status.",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Implement Drag-and-Drop for Item Application",
-            "description": "Create drag-and-drop functionality to apply items from inventory to character cards",
-            "dependencies": [
-              4
-            ],
-            "details": "Implement draggable inventory items, drop zones on character cards, drag preview components, item application logic, visual feedback during drag operations, and validation for item-character compatibility.",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 6,
-            "title": "Handle Shop Phase Transition and Continue Logic",
-            "description": "Implement phase transition mechanics and continue button functionality to exit shop phase",
-            "dependencies": [
-              5
-            ],
-            "details": "Create continue button with proper state validation, save shop state before transition, implement phase transition logic to next game phase, handle cleanup of shop-specific UI elements, and ensure proper state persistence.",
-            "status": "done",
-            "testStrategy": ""
-          }
-        ]
-      },
-      {
-        "id": 58,
-        "title": "Create Death Phase Component",
-        "description": "Implement comprehensive Death and Lab phase system that handles game over state, transitions to Lab interface, and provides evolution mechanics including cloning, combining, bench management, and team repositioning.",
-        "status": "in-progress",
-        "dependencies": [
-          54
-        ],
+        "id": 3,
+        "title": "Implement Genetic Weaknesses System",
+        "description": "Add heritable genetic 'weaknesses' that provide drawbacks as strategic tradeoffs. Weaknesses should be passed down to offspring and create interesting team-building decisions.",
+        "details": "- Define weakness types (reduced damage, slower speed, fragility, etc.)\n- Implement inheritance mechanics for weaknesses across generations\n- Balance drawbacks with potential stat benefits\n- Display weakness information in UI\n- Create 3-5 initial weakness types for testing\n- Test inheritance in Lab breeding system",
         "priority": "high",
-        "details": "Multi-phase implementation: (1) Death screen displays when all player characters die with 'Your team has fallen...' message and automatic/manual transition to Lab after 3 seconds, (2) Lab screen with point-and-click interface for unit management across different stations, (3) Cloning station generates new units to bench, (4) Combining station takes 2 characters to create new one and locks them for next run, (5) Bench system for moving units on/off with locked unit tracking, (6) Team repositioning interface to change positional indexes for combat targeting. Style Death with dark theme (bg-red-900 text-white) and Lab with appropriate station-based UI.",
-        "testStrategy": "Component tests for Death screen rendering and transitions, Lab interface interactions, cloning/combining mechanics, bench management operations, team repositioning functionality, and integration between all phases",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Death Screen Component",
-            "description": "Implement Death.tsx with game over messaging, automatic transition timer, and manual transition button",
-            "status": "done",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 2,
-            "title": "Create Lab Screen Component",
-            "description": "Implement Lab.tsx with main interface layout and navigation between different stations",
-            "status": "in-progress",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 3,
-            "title": "Implement Cloning Station",
-            "description": "Create cloning interface that generates new units and adds them to the bench system",
-            "status": "pending",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 4,
-            "title": "Implement Combining Station",
-            "description": "Create combining interface that takes 2 characters, creates new combined unit, and locks source units for next run",
-            "status": "pending",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Create Bench Management System",
-            "description": "Implement bench interface for moving units on/off bench and tracking locked units from previous combinations",
-            "status": "pending",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 6,
-            "title": "Implement Team Repositioning Interface",
-            "description": "Create drag-and-drop or click-based system for changing unit positional indexes before combat",
-            "status": "pending",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 7,
-            "title": "Add Point-and-Click Navigation",
-            "description": "Implement intuitive point-and-click interface for moving between Lab stations and managing units",
-            "status": "pending",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 8,
-            "title": "Integrate Death-to-Lab Transition",
-            "description": "Connect Death screen to Lab screen with proper state management and data persistence",
-            "status": "pending",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 9,
-            "title": "Add Lab-to-Combat Transition",
-            "description": "Implement transition from Lab back to combat with updated team composition and positioning",
-            "status": "pending",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          },
-          {
-            "id": 10,
-            "title": "Style Lab Interface Components",
-            "description": "Apply consistent styling to all Lab stations and ensure responsive design across different screen sizes",
-            "status": "pending",
-            "dependencies": [],
-            "details": "",
-            "testStrategy": ""
-          }
-        ]
-      },
-      {
-        "id": 59,
-        "title": "Create Lab Phase Placeholder Component",
-        "description": "Build placeholder Lab screen component with future evolution system messaging and new run initialization.",
-        "details": "Create src/components/Lab.tsx with placeholder content. Display message: 'Lab/Evolution phase coming soon.' with futuristic styling. Include 'Start New Run' button that resets upgrades, generates new team, and transitions to Combat phase. Style with sci-fi theme: bg-blue-900 text-cyan-300 with glowing effects. Prepare component structure for future evolution mechanics with placeholder sections for breeding, genetic engineering, etc.",
-        "testStrategy": "Component tests for Lab rendering, verify new run button resets game state correctly, test transition to Combat phase",
-        "priority": "low",
-        "dependencies": [
-          54
-        ],
-        "status": "done",
+        "dependencies": [],
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 60,
-        "title": "Create Main App Layout and Routing System",
-        "description": "Implement main application layout that renders appropriate phase components based on current phase state, with persistent phase tracker.",
-        "details": "Refactor main.tsx to focus on high-level app structure. Create layout with phase tracker on left and main content area on right. Implement phase routing: switch statement or component mapping to render Combat, Shop, Death, or Lab based on current phase. Use CSS Grid or Flexbox: grid-template-columns: 256px 1fr. Ensure overlay UI elements can be rendered above phase screens. Structure: <PhaseProvider><Layout><PhaseTracker /><MainContent /></Layout></PhaseProvider>",
-        "testStrategy": "Integration tests for phase routing, verify layout responsiveness, test overlay rendering capabilities",
+        "id": 4,
+        "title": "Implement Mid-Run Perk/Talent System",
+        "description": "Add perk/talent choices at new levels during runs to differentiate monsters in-run. Players should get meaningful choices that affect combat strategy.",
+        "details": "- Create perk/talent selection UI shown on level up\n- Design 10-15 initial perks (stat boosts, new abilities, passive modifiers)\n- Implement perk application to units\n- Display active perks in unit info\n- Balance perks to create meaningful choices\n- Ensure perks don't break game balance\n- Test perk interactions with existing abilities",
         "priority": "high",
-        "dependencies": [
-          54,
-          55,
-          56,
-          57,
-          58,
-          59
-        ],
-        "status": "done",
+        "dependencies": [],
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 61,
-        "title": "Create Types and Interfaces Module",
-        "description": "Extract all TypeScript types and interfaces into dedicated types module for better code organization and reusability.",
-        "details": "Create src/types/index.ts with all game-related interfaces: Character, Enemy, Phase, GameState, ShopItem, LabUpgrade, CombatResult, etc. Define union types for phases: type Phase = 'combat' | 'shop' | 'death' | 'lab'. Include utility types for state management and component props. Export all types from single index file. Use strict TypeScript configuration with proper type definitions for all game entities and state structures.",
-        "testStrategy": "TypeScript compilation tests, verify all components use proper types, test type safety across modules",
+        "id": 5,
+        "title": "Implement Joker-Style Item Modifiers",
+        "description": "Create \"Joker\" style modifiers that apply global bonuses to specific attack or ability types. These should provide powerful run-altering effects.",
+        "details": "- Define joker item structure (ability type, bonus effect, rarity)\n- Implement 5-10 initial joker items for testing\n- Create mechanics for applying global bonuses\n- Ensure jokers affect all applicable attacks in the run\n- Balance joker power to avoid breaking strategy\n- Display active jokers in run info\n- Test joker interactions with hybrid creatures",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Limited Shop Stock System",
+        "description": "Redesign shop to have limited stock instead of infinite purchases. Create scarcity-based strategic choices for item purchasing.",
+        "details": "- Add stock counter to each shop item\n- Limit health potions, jokers, and other items per shop\n- Randomize available items and quantities per run\n- Ensure items run out when stock reaches 0\n- Update shop UI to show stock levels\n- Test with various stock configurations\n- Balance availability to avoid extreme scarcity",
         "priority": "medium",
         "dependencies": [],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 62,
-        "title": "Create Utility Functions Module",
-        "description": "Extract remaining combat logic, enemy generation, and other utility functions into dedicated utils module for better code organization. This is a polish task that can be completed after the main game loop is functional.",
         "status": "pending",
-        "dependencies": [
-          61
-        ],
-        "priority": "low",
-        "details": "Create src/utils/index.ts with remaining combat utilities that haven't been extracted yet: calculateDamage(), generateEnemyWave(), processInitiative(), checkGameOver(). Include helper functions for phase transitions, difficulty scaling, and game state management that aren't already implemented elsewhere. Implement pure functions with no side effects for easy testing. Export functions: { combatUtils, gameUtils, mathUtils }. Use functional programming patterns where appropriate and include JSDoc comments for all functions. This is a refactoring task that can be done incrementally as the codebase stabilizes.",
-        "testStrategy": "Comprehensive unit tests for all utility functions, test edge cases and error handling, verify pure function behavior. Focus on testing newly extracted functions rather than duplicating existing tests.",
         "subtasks": []
       },
       {
-        "id": 63,
-        "title": "Implement Extensible Architecture Foundation",
-        "description": "Design and implement extensible architecture patterns to support future features like evolution mechanics, new enemy types, and advanced combat systems.",
-        "details": "Implement plugin-like architecture for abilities, upgrades, and game mechanics. Create base classes/interfaces for extensibility: BaseAbility, BaseUpgrade, BaseEnemy. Use composition over inheritance patterns. Implement event system for game actions using custom hooks or context. Create configuration objects for easy feature toggling. Structure code with clear separation of concerns: data layer, business logic, UI components. Include comprehensive documentation and examples for extending the system.",
-        "testStrategy": "Architecture tests for extensibility patterns, verify new features can be added without breaking existing code, test plugin system",
+        "id": 7,
+        "title": "Implement Variable Reward System Based on Enemy Level",
+        "description": "Make coin rewards scale with enemy level and difficulty. Add bonus achievement rewards for combat performance.",
+        "details": "- Calculate coin rewards based on enemy level/difficulty\n- Implement achievement system (flawless victory, quick kill, etc.)\n- Add bonus coins for achievement completion\n- Display earned coins and achievements after combat\n- Test reward scaling across enemy levels\n- Balance rewards to incentivize interesting play\n- Create 5-8 initial achievements",
         "priority": "medium",
-        "dependencies": [
-          61,
-          62
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Design base classes and interfaces for effect system",
-            "description": "Create abstract base classes and interfaces that define the contract for all item effects, including IEffect interface with methods for apply(), getTargetingMechanics(), getUIElements(), and base Effect class with common properties like id, name, description, and validation logic.",
-            "dependencies": [],
-            "details": "Define TypeScript interfaces and abstract classes that establish the foundation for the plugin architecture. Include methods for effect application, targeting validation, UI state management, and configuration handling.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 2,
-            "title": "Implement plugin architecture for effect registration",
-            "description": "Create an EffectRegistry system that allows effects to be dynamically registered and retrieved, with factory patterns for effect instantiation and dependency injection for shared services like UI state management.",
-            "dependencies": [
-              1
-            ],
-            "details": "Build a centralized registry that manages effect lifecycle, handles effect discovery, and provides a clean API for registering new effects without modifying core system code.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 3,
-            "title": "Create global event system and UI state management",
-            "description": "Implement a global event bus and state management system for UI elements like popups and highlights that can be accessed across UnitCard, shop, and combat screens. Include helper functions for showGeneticPopup, setHealedUnitId, and setFlashUnitId.",
-            "dependencies": [
-              1
-            ],
-            "details": "Design a reactive state management system that allows effects to trigger UI changes globally without tight coupling. Create exported helper functions that effects can use to manage UI state consistently.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 4,
-            "title": "Refactor existing effects and implement configuration system",
-            "description": "Migrate genetic potential effect to use the new architecture with global state for popup display, simplify ShopScreen item handling to single-line team state updates, and create configuration objects for effect properties including targeting mechanics and UI behavior.",
-            "dependencies": [
-              2,
-              3
-            ],
-            "details": "Convert existing effects to the new plugin system, ensuring genetic potential effect demonstrates the global popup functionality. Streamline shop interactions and embed effect-specific logic within configuration objects.",
-            "status": "pending",
-            "testStrategy": ""
-          },
-          {
-            "id": 5,
-            "title": "Separate concerns and write extensibility documentation",
-            "description": "Restructure code to separate effect logic from UI handling and business logic, then create comprehensive documentation covering how to create new effects, register them with the system, and utilize the available UI helpers and targeting mechanics.",
-            "dependencies": [
-              4
-            ],
-            "details": "Ensure clean separation between effect implementation, UI management, and core game logic. Provide detailed guides, code examples, and API documentation for developers adding new effects to the system.",
-            "status": "pending",
-            "testStrategy": ""
-          }
-        ]
-      },
-      {
-        "id": 64,
-        "title": "Implement Efficient State Management with Immer",
-        "description": "Integrate Immer library for efficient immutable state updates to handle complex game state changes without performance issues.",
-        "details": "Install Immer: npm install immer @types/immer. Create state management hooks using Immer's produce function for immutable updates. Implement useImmerReducer for complex state transitions. Example: const [gameState, updateGameState] = useImmerReducer(gameReducer, initialState). Use Immer for character updates, combat state changes, and shop transactions. Create helper functions: updateCharacterStats(), processShopPurchase(), advanceGamePhase(). Ensure all state updates are immutable and efficient.",
-        "testStrategy": "Performance tests comparing Immer vs deep cloning, verify state immutability, test complex state update scenarios",
-        "priority": "low",
-        "dependencies": [
-          54,
-          61
-        ],
+        "dependencies": [],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 65,
-        "title": "Polish UI and Implement Consistent Design System",
-        "description": "Create consistent UI design system using Tailwind CSS, implement responsive design, and ensure clean modern interface across all phases.",
-        "status": "pending",
-        "dependencies": [
-          60
-        ],
-        "priority": "low",
-        "details": "Create design system with consistent color palette, typography, and spacing using Tailwind CSS custom configuration. Implement responsive design for mobile and desktop. Create reusable UI components: Button, Card, Modal, ProgressBar. Use consistent styling patterns: primary colors (blue-600, blue-700), secondary (gray-600), success (green-600), danger (red-600). Implement smooth transitions between phases with CSS animations. Create loading states and error handling UI. Ensure accessibility with proper ARIA labels and keyboard navigation.",
-        "testStrategy": "Visual regression tests, accessibility testing with screen readers, responsive design testing across devices, user experience testing",
-        "subtasks": []
-      },
-      {
-        "id": 66,
-        "title": "Implement Enemy Level Scaling System",
-        "description": "Create a comprehensive enemy scaling system that generates progressively stronger enemies with increased experience rewards as players advance through missions, with unique enemy sets and scaling logic per world.",
-        "details": "Create src/utils/enemyScaling.ts with world-specific enemy generation functions. Implement base enemy types with scaling formulas: health = baseHealth * (1 + level * 0.2), damage = baseDamage * (1 + level * 0.15), experience = baseExp * (1 + level * 0.3). Design world system with unique enemy pools: World1 (basic creatures), World2 (elemental beings), World3 (mechanical units). Create EnemyScalingConfig interface with properties: worldId, baseEnemies[], scalingMultipliers, bossThreshold. Implement generateScaledEnemies(worldId, missionLevel) function that selects appropriate enemies and applies scaling. Add boss generation logic: when missionLevel % 5 === 0, spawn boss with 3x health/damage multipliers. Create enemy progression system that tracks player advancement and adjusts difficulty curves. Include enemy variant system where higher levels unlock elite versions with special abilities. Implement world transition logic that unlocks new worlds based on boss defeats. Use composition pattern for enemy abilities and traits to support extensibility.",
-        "testStrategy": "Unit tests for scaling formulas with various level inputs, verify world-specific enemy generation produces correct types, test boss spawning at appropriate intervals, validate experience scaling calculations, integration tests for enemy progression through multiple missions, test world transition triggers, verify elite enemy variants appear at correct levels",
-        "status": "pending",
-        "dependencies": [
-          56,
-          62,
-          63
-        ],
-        "priority": "medium",
-        "subtasks": []
-      },
-      {
-        "id": 67,
-        "title": "Implement Modular World System with Roguelike Progression",
-        "description": "Create a modular world system with sequential stages where players progress through World 1 (9 levels with minibosses and boss), advance to subsequent worlds on completion, and return to World 1 on death.",
-        "details": "Create src/types/world.ts with interfaces: World, Level, Boss, Miniboss. Implement WorldManager class in src/utils/worldManager.ts with methods: getCurrentWorld(), advanceToNextWorld(), resetToWorld1(), generateLevelEnemies(). Design World 1 structure: levels 1-2 (normal enemies), level 3 (Supergoob miniboss: AOE attack, 18 HP, center position), levels 4-5 (normal), level 6 (Supergoob), levels 7-8 (normal), level 9 (Goober Supreme boss: left/right attacks for 5 damage, 24 HP, center with goob sidekicks). Create world configuration objects with enemy spawn patterns, level progression rules, and boss definitions. Implement world state persistence and progression tracking. Integrate with existing phase system to handle world transitions. Design extensible architecture for adding new worlds with different enemy types, level counts, and boss mechanics. Include world-specific scaling formulas and reward multipliers. Create world selection/display UI components showing current world and level progress.",
-        "testStrategy": "Unit tests for WorldManager methods including world progression, level generation, and reset functionality. Test world state persistence across game sessions. Verify correct enemy spawning for each level type (normal, miniboss, boss). Integration tests for world transitions with phase system. Test boss and miniboss mechanics (AOE attacks, positioning, HP values). Validate world reset on player death returns to World 1 level 1. Test extensibility by creating a mock World 2 configuration.",
-        "status": "done",
-        "dependencies": [
-          54,
-          56,
-          66
-        ],
-        "priority": "medium",
-        "subtasks": []
-      },
-      {
-        "id": 68,
-        "title": "Design and Implement Modular World Progression System",
-        "description": "Create a comprehensive world progression system with modular architecture supporting sequential world advancement, level-based progression, and configurable enemy encounters including minibosses and bosses.",
-        "details": "Create src/types/world.ts with core interfaces: World { id: number, name: string, levels: Level[], unlocked: boolean }, Level { id: number, type: 'normal' | 'miniboss' | 'boss', enemies: EnemyConfig[], completed: boolean }, EnemyConfig { type: string, position: Position, stats: Stats }. Implement WorldProgressionManager class in src/utils/worldProgression.ts with methods: getCurrentWorld(), getCurrentLevel(), completeLevel(), advanceWorld(), resetProgression(), isWorldUnlocked(worldId). Design World 1 structure: 9 levels with minibosses on levels 3,6 (Supergoob: { hp: 18, attack: { type: 'aoe', damage: 3 }, position: 'center' }) and boss on level 9 (Goober Supreme: { hp: 24, attack: { type: 'directional', damage: 5, targets: ['left', 'right'] }, position: 'center', minions: [{ type: 'basic_goob', positions: ['left', 'right'] }] }). Create WorldConfig system for easy expansion with JSON-like configuration objects. Implement progression persistence using localStorage with keys: currentWorld, currentLevel, worldsUnlocked, levelProgress. Integrate with existing phase system to trigger world progression on combat completion. Create hooks: useWorldProgression(), useCurrentWorld(), useLevelProgress() for React components. Ensure clean separation: WorldData (static configs), WorldState (current progress), WorldLogic (progression rules). Include validation for world unlocking sequence and level completion requirements.",
-        "testStrategy": "Unit tests for WorldProgressionManager methods including world advancement, level completion tracking, and reset functionality. Test world unlocking logic ensures sequential progression (world 2 only unlocks after world 1 completion). Verify level generation produces correct enemy configurations for normal/miniboss/boss levels. Test persistence layer with localStorage mock to ensure progression survives page refresh. Integration tests with phase system to verify world progression triggers correctly after combat completion. Test edge cases: completing final level of world, death resetting to world 1, attempting to access locked worlds. Validate World 1 specific configuration: miniboss spawning on levels 3,6 with correct stats, boss level 9 with Goober Supreme and minion positioning. Performance tests for world data loading and progression calculations. Test React hooks for proper state updates and re-rendering when world/level changes.",
-        "status": "done",
-        "dependencies": [
-          54,
-          63,
-          67
-        ],
+        "id": 8,
+        "title": "Implement Hybrid Creature Combinations",
+        "description": "Create hybrid creature combinations that merge two species into mythical creatures with unique abilities. Examples: Tiger+Eagle=Gryphon, Lizard+Bird=Dragon.",
+        "details": "- Define 3-5 hybrid combinations with mechanics\n- Create unique attack types (fire breath, laser eyes, etc.)\n- Implement hybrid stats calculation (blend of parents)\n- Add hybrid visuals/naming in UI\n- Create hybrid-specific perks/talents\n- Implement hybrid breeding in Lab\n- Test hybrid viability in combat\n- Ensure hybrids feel unique and powerful",
         "priority": "high",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Design Core Data Structures for Worlds and Levels",
-            "description": "Define TypeScript interfaces for World, Level, and EnemyConfig in src/types/world.ts to establish the foundational data schema for modular world and level representation.",
-            "dependencies": [],
-            "details": "Create interfaces that support extensibility, including fields for world identification, level types (normal, miniboss, boss), enemy configurations, and completion/unlock states.",
-            "status": "done",
-            "testStrategy": "Write unit tests to validate type correctness and ensure that sample world/level objects conform to the defined interfaces."
-          },
-          {
-            "id": 2,
-            "title": "Implement Sequential World and Level Progression Logic",
-            "description": "Develop the WorldProgressionManager class in src/utils/worldProgression.ts to manage progression, including advancing levels/worlds, unlocking logic, and progression resets.",
-            "dependencies": [
-              1
-            ],
-            "details": "Include methods for getting/setting current world and level, completing levels, advancing worlds, resetting progression, and checking unlock status. Ensure logic enforces sequential progression and validates unlock/completion requirements.",
-            "status": "done",
-            "testStrategy": "Create unit tests for each method, simulating progression scenarios and edge cases (e.g., attempting to skip levels or worlds)."
-          },
-          {
-            "id": 3,
-            "title": "Define World 1 Structure and Enemy Configurations",
-            "description": "Design the configuration for World 1, specifying 9 levels with minibosses on levels 3 and 6, and a boss with minions on level 9, using the established data structures.",
-            "dependencies": [
-              1
-            ],
-            "details": "Populate World 1 with detailed enemy stats and behaviors for minibosses (Supergoob) and boss (Goober Supreme), including attack types, positions, and minion arrangements.",
-            "status": "done",
-            "testStrategy": "Validate that the World 1 configuration loads correctly and that enemy data is accessible and accurate for each level."
-          },
-          {
-            "id": 4,
-            "title": "Integrate Progression System with Game State and Phase Logic",
-            "description": "Connect the progression system to the existing game phase system so that world and level advancement triggers appropriately upon combat completion.",
-            "dependencies": [
-              2,
-              3
-            ],
-            "details": "Ensure that progression updates are synchronized with game events, and that state changes (e.g., level completion) are reflected in both the progression manager and the overall game state.",
-            "status": "done",
-            "testStrategy": "Perform integration tests simulating combat completion and verify correct progression updates and state transitions."
-          },
-          {
-            "id": 5,
-            "title": "Implement Persistence for Progression State",
-            "description": "Enable saving and loading of progression data (currentWorld, currentLevel, worldsUnlocked, levelProgress) using localStorage to maintain player progress across sessions.",
-            "dependencies": [
-              2
-            ],
-            "details": "Design a robust persistence layer that serializes and deserializes progression state, handling data integrity and versioning as needed.",
-            "status": "done",
-            "testStrategy": "Test saving, loading, and clearing progression data in localStorage, including edge cases such as corrupted or missing data."
-          },
-          {
-            "id": 6,
-            "title": "Develop React Hooks for Progression State Access",
-            "description": "Create custom React hooks (useWorldProgression, useCurrentWorld, useLevelProgress) to provide components with easy access to progression data and updates.",
-            "dependencies": [
-              2,
-              5
-            ],
-            "details": "Ensure hooks encapsulate logic for subscribing to progression changes and expose relevant data and actions for UI components.",
-            "status": "done",
-            "testStrategy": "Write component tests to verify that hooks provide accurate, up-to-date progression information and trigger re-renders on state changes."
-          },
-          {
-            "id": 7,
-            "title": "Document System Architecture and Extensibility Guidelines",
-            "description": "Produce comprehensive documentation covering the modular architecture, data structures, progression logic, integration points, and best practices for extending worlds, levels, and enemy types.",
-            "dependencies": [
-              1,
-              2,
-              3,
-              4,
-              5,
-              6
-            ],
-            "details": "Include diagrams and examples illustrating clean separation of WorldData, WorldState, and WorldLogic, as well as instructions for adding new worlds or enemy types.",
-            "status": "done",
-            "testStrategy": "Peer review documentation for clarity and completeness; validate by having a developer follow the guide to add a new world or enemy."
-          }
-        ]
-      },
-      {
-        "id": 69,
-        "title": "Refactor Enemy Unit Definitions into Dedicated Data Module",
-        "description": "Extract all enemy unit definitions including XP awards into a centralized enemies.ts data file and update all world and level definitions to reference these constants for improved maintainability and extensibility.",
-        "details": "Create src/data/enemies.ts with comprehensive enemy definitions using TypeScript interfaces. Define EnemyType interface with properties: id: string, name: string, baseHealth: number, baseDamage: number, baseExperience: number, description?: string, specialAbilities?: string[]. Export enemy constants: BASIC_GOOB = { id: 'basic_goob', name: 'Goob', baseHealth: 8, baseDamage: 2, baseExperience: 10 }, SUPERGOOB = { id: 'supergoob', name: 'Supergoob', baseHealth: 18, baseDamage: 3, baseExperience: 25, specialAbilities: ['aoe_attack'] }, GOOBER_SUPREME = { id: 'goober_supreme', name: 'Goober Supreme', baseHealth: 24, baseDamage: 5, baseExperience: 50, specialAbilities: ['left_right_attack'] }. Create enemy collections by world: WORLD_1_ENEMIES, WORLD_2_ENEMIES, etc. Update src/utils/enemyScaling.ts to import and use these definitions instead of hardcoded values. Modify world and level generation logic in src/utils/worldProgression.ts to reference enemy constants. Ensure all XP calculations use the baseExperience values from enemy definitions. Create helper functions: getEnemyById(id: string), getEnemiesByWorld(worldId: number), calculateScaledStats(enemy: EnemyType, level: number).",
-        "testStrategy": "Unit tests for enemy data integrity including validation of all required properties and consistent naming conventions. Test helper functions getEnemyById() and getEnemiesByWorld() return correct enemy definitions. Verify all world and level definitions correctly reference enemy constants instead of hardcoded values. Integration tests ensuring enemy scaling system uses centralized definitions and XP calculations are consistent. Test that removing or modifying enemy definitions doesn't break existing world configurations. Validate that all enemy types have appropriate baseExperience values for balanced progression.",
-        "status": "done",
-        "dependencies": [
-          66,
-          68
-        ],
-        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 70,
-        "title": "Implement Flexible Bench System for Team Management",
-        "description": "Create a comprehensive bench system that allows units to be moved on/off the active team, tracks locked units, supports drag-and-drop or point-and-click movement, and integrates with Lab and Death phases for persistent team management.",
-        "details": "Create src/components/BenchSystem.tsx with drag-and-drop functionality using react-beautiful-dnd or native HTML5 drag API. Implement bench state management with interfaces: BenchState { activeTeam: Character[], bench: Character[], lockedUnits: string[] }, BenchActions { moveToTeam, moveToBench, lockUnit, unlockUnit }. Create BenchManager class in src/utils/benchManager.ts with methods: addToBench(), removeFromBench(), swapPositions(), isUnitLocked(), validateTeamSize(). Design UI with two sections: Active Team (max 4 units) and Bench (unlimited storage) using grid layouts. Implement drag zones with visual feedback: drag-over states, drop indicators, and invalid drop prevention. Add point-and-click alternative: click unit to select, click destination to move. Integrate with Lab phase for post-run team management and Death phase for unit recovery. Implement persistence using localStorage or game state context. Add locked unit indicators (lock icon, grayed out appearance) and prevent locked units from being moved. Include team validation: ensure at least 1 active unit, respect position constraints. Style with Tailwind: bg-blue-100 for active team area, bg-gray-100 for bench, hover:bg-blue-200 for interactive elements.",
-        "testStrategy": "Unit tests for BenchManager methods including move operations, lock/unlock functionality, and team validation. Component tests for drag-and-drop interactions using @testing-library/react with drag simulation. Test point-and-click movement as fallback option. Verify locked unit restrictions prevent unauthorized moves. Integration tests with Lab and Death phases to ensure proper bench state persistence. Test localStorage persistence across browser sessions. Validate team size constraints and position management. Test UI responsiveness and visual feedback during drag operations.",
-        "status": "done",
-        "dependencies": [
-          54,
-          58
-        ],
+        "id": 9,
+        "title": "Integrate New Species Abilities Transfer System",
+        "description": "Allow new species to unlock unique abilities and traits that can be copied/edited/cloned into other units. Create ability inheritance mechanics for run-long progression.",
+        "details": "- Design ability transfer rules and limitations\n- Implement gene editing UI in Lab\n- Allow copying abilities between compatible units\n- Create mutation mechanics for transferred abilities\n- Display transferable abilities in unit info\n- Test transfer chains (A→B→C)\n- Balance transfer power to maintain challenge\n- Create documentation for ability transfer system",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Combat Redesign Testing & Balance",
+        "description": "Comprehensive testing and balance pass on all new combat features. Ensure combat is engaging without real-time reflexes required.",
+        "details": "- Test variable countdown against fixed round system\n- Verify countdown math is correct and fair\n- Test action ordering edge cases\n- Balance attack speeds to create varied pacing\n- Verify inheritance systems don't create exploits\n- Test all perk/weakness/joker interactions\n- Playtest multiple full runs\n- Gather feedback on combat pacing and engagement\n- Make balance adjustments based on testing",
         "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Integration Testing: Evolution + Combat Systems",
+        "description": "Verify that evolution system (breeding, genetic traits, stat growth) deeply integrates with combat mechanics. Ensure team composition decisions matter.",
+        "details": "- Test that stat grades affect combat viability\n- Verify weakness inheritance impacts strategy\n- Test hybrid creature viability in combat\n- Ensure perk choices create meaningful team differences\n- Verify item choices interact well with unit stats\n- Test multi-generational breeding effects\n- Ensure no dominant strategies emerge\n- Balance felt by players in playtests",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          3,
+          4,
+          8
+        ],
+        "status": "pending",
         "subtasks": []
       }
     ],
     "metadata": {
-      "created": "2025-06-29T03:01:22.079Z",
-      "updated": "2025-11-21T04:32:05.178Z",
-      "description": "Tasks for master context"
+      "created": "2025-11-22T16:56:26.984Z",
+      "updated": "2025-11-22T18:27:31.226Z",
+      "description": "Phase 4: V1.1 Combat Redesign - Enhanced combat with variable countdowns, evolution integration, joker items, and hybrid creatures"
     }
   }
 }

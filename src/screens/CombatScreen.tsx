@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import UnitCard from '../components/unit/UnitCard';
 import XPSummary from '../components/XPSummary';
 import InitiativeDisplay from '../components/InitiativeDisplay';
+import ActionQueueList from '../components/ActionQueueList';
 import { useXPSummary } from '../hooks/useXPSummary';
 import { useGameState } from '../contexts/useGameState';
 import { useTeam } from '../contexts/teamContext';
-import { TeamEnum } from '../types/unit';
 import { Phase } from '../types';
+import { isTeamDefeated } from '../utils/game';
 
 const CombatScreen: React.FC = () => {
   const {
@@ -14,63 +15,60 @@ const CombatScreen: React.FC = () => {
     enemyTeam,
     round,
     initiativeOrder,
-    currentTurn,
     phase,
     transitionToDeath,
     gold,
+    activeCountdowns,
   } = useGameState();
 
   const { updateActiveTeam } = useTeam();
 
   // Bench swap state
   const [selectedBenchIdx, setSelectedBenchIdx] = useState<number | null>(null);
-  // Lock bench after first attack
-  const benchLocked = phase !== Phase.Combat || currentTurn > 0;
+  // Lock bench during combat
+  const benchLocked = phase !== Phase.Combat;
 
   // XP summary state
   const { xpSummary } = useXPSummary();
-  const allEnemiesDead = enemyTeam.every(e => !e.combatStatus.alive);
-  const allPlayersDead = playerTeam.every(e => !e.combatStatus.alive);
+  const allEnemiesDead = isTeamDefeated(enemyTeam);
+  const allPlayersDead = isTeamDefeated(playerTeam);
 
   // Calculate gold earned this level (after combat)
   const goldEarned = enemyTeam
     .filter(e => !e.combatStatus.alive)
     .reduce((sum, enemy) => sum + (enemy.character?.levelProgression?.level || 1), 0);
 
+  // Helper to determine which units will act this round (countdown = 0)
+  const getUnitsActingThisRound = (): Set<string> => {
+    const actingUnitIds = new Set<string>();
+    playerTeam.forEach((unit, idx) => {
+      const countdown = activeCountdowns.find(c => c.unitIndex === idx && c.team === 'Player');
+      if (countdown && countdown.currentCountdown === 0) {
+        actingUnitIds.add(unit.id);
+      }
+    });
+    enemyTeam.forEach((unit, idx) => {
+      const countdown = activeCountdowns.find(c => c.unitIndex === idx && c.team === 'Enemy');
+      if (countdown && countdown.currentCountdown === 0) {
+        actingUnitIds.add(unit.id);
+      }
+    });
+    return actingUnitIds;
+  };
+
+  const unitsActingThisRound = getUnitsActingThisRound();
+
   // Compute highlight/targeted logic
   let currentTargetIndices: number[] = [];
   let currentTargetTeam: 'player' | 'enemy' | null = null;
-  const currentEntry = initiativeOrder[currentTurn];
 
   // Debug logs for initiative and teams
   console.debug('--- CombatScreen Render ---');
   console.debug('Round:', round);
   console.debug('Current Phase:', phase);
-  console.debug('Current Turn:', currentTurn);
   console.debug('Initiative Order:', initiativeOrder);
-  console.debug('Current Entry:', currentEntry);
   console.debug('Player Team:', playerTeam);
   console.debug('Enemy Team:', enemyTeam);
-
-  if (currentEntry) {
-    const attackerTeam = currentEntry.team === TeamEnum.Player ? playerTeam : enemyTeam;
-    const defenderTeam = currentEntry.team === TeamEnum.Player ? enemyTeam : playerTeam;
-    const attacker = attackerTeam[currentEntry.index];
-    console.debug('Attacker Team:', currentEntry.team, attackerTeam);
-    console.debug('Defender Team:', currentEntry.team === TeamEnum.Player ? TeamEnum.Enemy : TeamEnum.Player, defenderTeam);
-    console.debug('Attacker:', attacker);
-    if (attacker && attacker.attack && attacker.attack.targetingRule) {
-      currentTargetIndices = attacker.attack.targetingRule.getTargets(attacker, attackerTeam, defenderTeam);
-      console.debug('Targeting Rule:', attacker.attack.targetingRule.name);
-      console.debug('Target Indices:', currentTargetIndices);
-      console.debug('Defender Team Length:', defenderTeam.length);
-      if (currentTargetIndices.some(idx => idx < 0 || idx >= defenderTeam.length)) {
-        console.warn('Target index out of bounds:', currentTargetIndices, 'Defender team length:', defenderTeam.length);
-      }
-    }
-    currentTargetTeam = currentEntry.team === TeamEnum.Player ? 'enemy' : 'player';
-    console.debug('Current Target Team:', currentTargetTeam);
-  }
 
   // Automatic phase transitions
   useEffect(() => {
@@ -116,6 +114,7 @@ const CombatScreen: React.FC = () => {
                 benchDashed = true;
               }
             }
+            const countdown = activeCountdowns.find(c => c.unitIndex === i && c.team === 'Player');
             return (
               <div
                 key={e.id}
@@ -124,33 +123,37 @@ const CombatScreen: React.FC = () => {
               >
                 <UnitCard
                   entity={e}
-                  highlight={
-                    (initiativeOrder[currentTurn]?.team === TeamEnum.Player && initiativeOrder[currentTurn]?.index === i) || benchHighlight
-                  }
+                  highlight={benchHighlight}
                   targeted={currentTargetTeam === 'player' && currentTargetIndices.includes(i)}
                   xpGained={xpSummary[e.id]?.xp}
                   leveledUp={xpSummary[e.id]?.leveledUp}
-                  // Add dashed border for bench swap
                   dashed={benchDashed}
+                  currentCountdown={countdown?.currentCountdown}
+                  willActThisRound={unitsActingThisRound.has(e.id)}
                 />
               </div>
             );
           })}
         </div>
-        {/* Initiative Order and Round Indicator or XP Summary */}
-        <div className="flex flex-col items-center w-64">
+        {/* Center: Round, Action Queue, and Initiative */}
+        <div className="flex flex-col items-center w-80">
           <div className="text-lg font-bold mb-2">Round {round}</div>
           {allEnemiesDead ? (
             <XPSummary playerTeam={playerTeam} xpSummary={xpSummary} goldEarned={goldEarned} totalGold={gold + goldEarned} />
           ) : (
             <>
-              <div className="text-2xl font-bold mb-2">Initiative</div>
-              <div className="flex flex-col gap-1 mb-4 w-full border-2 border-blue-400 rounded-xl p-3 items-center bg-white shadow-sm">
+              <ActionQueueList
+                activeCountdowns={activeCountdowns}
+                playerTeam={playerTeam}
+                enemyTeam={enemyTeam}
+                maxActions={5}
+              />
+              <div className="text-sm font-bold mb-2 mt-3">Initiative (Tiebreak)</div>
+              <div className="flex flex-col gap-0.5 w-full border border-gray-300 rounded p-2 items-center bg-white shadow-sm">
                 <InitiativeDisplay
                   initiativeOrder={initiativeOrder}
                   playerTeam={playerTeam}
                   enemyTeam={enemyTeam}
-                  currentTurn={currentTurn}
                 />
               </div>
             </>
@@ -158,14 +161,19 @@ const CombatScreen: React.FC = () => {
         </div>
         {/* Enemy Team */}
         <div className="flex flex-col gap-4">
-          {enemyTeam.map((e, i) => (
-            <UnitCard
-              key={e.id}
-              entity={e}
-              highlight={initiativeOrder[currentTurn]?.team === TeamEnum.Enemy && initiativeOrder[currentTurn]?.index === i}
-              targeted={currentTargetTeam === 'enemy' && currentTargetIndices.includes(i)}
-            />
-          ))}
+          {enemyTeam.map((e, i) => {
+            const countdown = activeCountdowns.find(c => c.unitIndex === i && c.team === 'Enemy');
+            return (
+              <UnitCard
+                key={e.id}
+                entity={e}
+                highlight={false}
+                targeted={currentTargetTeam === 'enemy' && currentTargetIndices.includes(i)}
+                currentCountdown={countdown?.currentCountdown}
+                willActThisRound={unitsActingThisRound.has(e.id)}
+              />
+            );
+          })}
         </div>
       </div>
       {/* Control Panel handled by context, combat log handled by parent */}

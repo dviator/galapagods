@@ -4,13 +4,19 @@ import { TeamEnum } from '../types/unit';
 import cloneDeep from 'lodash.clonedeep';
 import { getEffectiveInitiative } from '../utils/units/leveling';
 import { assignDamage } from '../utils/combat/damage';
-import { advanceToNextLivingUnitIndex } from '../utils/combat/initiative';
 import { rollD8 } from '../utils/random';
+import {
+  initializeCountdownTracker,
+  decrementCountdowns,
+  getReadyActions,
+  sortByInitiativeOrder,
+  resetCountdown,
+  getUnit,
+  isCombatOver,
+} from '../utils/combat/countdown';
 
-// Roll initiative for all living units
-export function combatRollInitiative(state: CombatState): CombatState {
-  const playerTeam = cloneDeep(state.playerTeam);
-  const enemyTeam = cloneDeep(state.enemyTeam);
+// Roll initiative for all living units (used for tie-breaking in countdown system)
+function rollInitiativeOrder(playerTeam: Unit[], enemyTeam: Unit[]): InitiativeEntry[] {
   const entries: InitiativeEntry[] = [];
   playerTeam.forEach((e, i) => {
     if (e.combatStatus.alive) {
@@ -25,87 +31,125 @@ export function combatRollInitiative(state: CombatState): CombatState {
     }
   });
   entries.sort((a, b) => b.initiative - a.initiative);
-  return {
-    ...state,
-    playerTeam,
-    enemyTeam,
-    initiativeOrder: entries,
-    currentTurn: 0,
-    isRoundComplete: false,
-    combatLog: [
-      ...state.combatLog,
-      `--- Round ${state.round} (Initiative rolled) ---`
-    ],
-  };
+  return entries;
 }
 
-// Reset combat to initial state
+// Reset combat to initial state with countdown system
 export function combatReset(playerTeam: Unit[], enemyTeam: Unit[]): CombatState {
-  const initialState: CombatState = {
-    playerTeam: cloneDeep(playerTeam),
-    enemyTeam: cloneDeep(enemyTeam),
-    initiativeOrder: [],
-    currentTurn: 0,
+  const clonedPlayerTeam = cloneDeep(playerTeam);
+  const clonedEnemyTeam = cloneDeep(enemyTeam);
+
+  return {
+    playerTeam: clonedPlayerTeam,
+    enemyTeam: clonedEnemyTeam,
+    initiativeOrder: rollInitiativeOrder(clonedPlayerTeam, clonedEnemyTeam),
+    countdownTracker: {
+      activeCountdowns: initializeCountdownTracker(clonedPlayerTeam, clonedEnemyTeam),
+    },
     round: 1,
-    combatLog: [],
-    isRoundComplete: false,
+    combatLog: ['--- Combat Start ---'],
   };
-  return combatRollInitiative(initialState);
 }
 
-// Perform the next attack in the initiative order
-export function combatNextAttack(state: CombatState): CombatState {
-  const { playerTeam, enemyTeam, initiativeOrder, currentTurn, combatLog } = state;
-  const updatedPlayerTeam = cloneDeep(playerTeam);
-  const updatedEnemyTeam = cloneDeep(enemyTeam);
-  const log = [...combatLog];
-  let nextTurn = currentTurn;
-  if (nextTurn < initiativeOrder.length) {
-    const entry = initiativeOrder[nextTurn];
-    const attackerTeam = entry.team === TeamEnum.Player ? updatedPlayerTeam : updatedEnemyTeam;
-    const defenderTeam = entry.team === TeamEnum.Player ? updatedEnemyTeam : updatedPlayerTeam;
-    const attacker = attackerTeam[entry.index];
-    if (attacker.combatStatus.alive) {
-      const targetIndices = attacker.attack.targetingRule.getTargets(attacker, attackerTeam, defenderTeam);
-      let logMsg = '';
-      if (targetIndices.length > 0) {
-        const logs: string[] = [];
-        targetIndices.forEach(idx => {
-          const target = defenderTeam[idx];
-          logs.push(assignDamage(attacker, target));
-        });
-        logMsg = logs.join(' | ');
-      } else {
-        logMsg = `${attacker.name} has no valid targets.`;
-      }
-      log.push(logMsg);
+// Execute a single countdown-based round
+export function combatNextRound(state: CombatState): CombatState {
+  let updatedPlayerTeam = cloneDeep(state.playerTeam);
+  let updatedEnemyTeam = cloneDeep(state.enemyTeam);
+  let activeCountdowns = cloneDeep(state.countdownTracker.activeCountdowns);
+  const log = [...state.combatLog];
+
+  // Decrement all active countdowns
+  activeCountdowns = decrementCountdowns(activeCountdowns);
+
+  // Get all units ready to act (countdown = 0)
+  const readyActions = getReadyActions(activeCountdowns);
+
+  // Sort by initiative order for deterministic tie-breaking
+  const sortedActions = sortByInitiativeOrder(readyActions, state.initiativeOrder);
+
+  // Execute each ready action in order
+  for (const action of sortedActions) {
+    const attacker = getUnit(action.team, action.unitIndex, updatedPlayerTeam, updatedEnemyTeam);
+
+    if (!attacker || !attacker.combatStatus.alive) {
+      continue; // Skip if dead or not found
+    }
+
+    const attackerTeam = action.team === TeamEnum.Player ? updatedPlayerTeam : updatedEnemyTeam;
+    const defenderTeam = action.team === TeamEnum.Player ? updatedEnemyTeam : updatedPlayerTeam;
+
+    // Get targets and apply damage
+    const targetIndices = attacker.attack.targetingRule.getTargets(
+      attacker,
+      attackerTeam,
+      defenderTeam
+    );
+
+    let logMsg = '';
+    if (targetIndices.length > 0) {
+      const logs: string[] = [];
+      targetIndices.forEach((idx) => {
+        const target = defenderTeam[idx];
+        logs.push(assignDamage(attacker, target));
+      });
+      logMsg = logs.join(' | ');
+    } else {
+      logMsg = `${attacker.name} has no valid targets.`;
+    }
+    log.push(logMsg);
+
+    // Reset this unit's countdown to attack again
+    const countdownIndex = activeCountdowns.findIndex(
+      (c) => c.team === action.team && c.unitIndex === action.unitIndex
+    );
+    if (countdownIndex >= 0) {
+      activeCountdowns[countdownIndex] = resetCountdown(
+        activeCountdowns[countdownIndex],
+        attacker
+      );
     }
   }
-  // Advance to the next living unit for the next turn, using updated teams
-  nextTurn = advanceToNextLivingUnitIndex(initiativeOrder, updatedPlayerTeam, updatedEnemyTeam, nextTurn);
-  const isRoundComplete = nextTurn >= initiativeOrder.length;
+
+  // Remove dead units from countdown tracking
+  const updatedCountdowns = activeCountdowns.filter((countdown) => {
+    const unit = getUnit(countdown.team, countdown.unitIndex, updatedPlayerTeam, updatedEnemyTeam);
+    return unit && unit.combatStatus.alive;
+  });
+
   return {
-    ...state,
     playerTeam: updatedPlayerTeam,
     enemyTeam: updatedEnemyTeam,
-    currentTurn: nextTurn,
-    isRoundComplete,
+    initiativeOrder: state.initiativeOrder,
+    countdownTracker: {
+      activeCountdowns: updatedCountdowns,
+    },
+    round: state.round + 1,
     combatLog: log,
   };
 }
 
-// Complete the rest of the round (auto-play all remaining attacks)
-export function combatNextRound(state: CombatState): CombatState {
+// Skip to next round where actions will execute
+export function skipToNextAction(state: CombatState): CombatState {
   let nextState = state;
-  while (!nextState.isRoundComplete) {
-    nextState = combatNextAttack(nextState);
+  let actionsExecuted = false;
+
+  while (!actionsExecuted && !isCombatOver(nextState.playerTeam, nextState.enemyTeam)) {
+    const prevLogLength = nextState.combatLog.length;
+    nextState = combatNextRound(nextState);
+    // If log entries were added, actions were executed
+    if (nextState.combatLog.length > prevLogLength) {
+      actionsExecuted = true;
+    }
   }
-  // Start new round
-  nextState = {
-    ...nextState,
-    round: nextState.round + 1,
-    currentTurn: 0,
-    isRoundComplete: false,
-  };
-  return combatRollInitiative(nextState);
+
+  return nextState;
+}
+
+// Auto-play combat until completion
+export function combatComplete(state: CombatState): CombatState {
+  let nextState = state;
+  while (!isCombatOver(nextState.playerTeam, nextState.enemyTeam)) {
+    nextState = combatNextRound(nextState);
+  }
+  return nextState;
 }

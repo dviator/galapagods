@@ -7,25 +7,36 @@ export interface UnitStatsPanelProps {
   compact?: boolean;
   xpGained?: number;
   leveledUp?: boolean;
+  currentCountdown?: number;
+  willActThisRound?: boolean;
 }
 
-const UnitStatsPanel: React.FC<UnitStatsPanelProps> = ({ unit, compact = false, xpGained, leveledUp }) => {
+const UnitStatsPanel: React.FC<UnitStatsPanelProps> = ({ unit, compact = false, xpGained, leveledUp, currentCountdown, willActThisRound }) => {
   const renderAttackInfo = () => {
     const base = unit.attack.baseDmg;
     const bonus = unit.attack.bonusAbilityDmg ? unit.attack.bonusAbilityDmg(unit) : 0;
     const total = base + bonus;
 
     return (
-      <div className="flex items-center gap-2">
-        <span className="text-base font-semibold text-gray-600">ATK</span>
-        <span className="text-base font-bold text-black">
+      <div className="flex items-center gap-2 flex-nowrap">
+        <span className="text-base font-semibold text-gray-600 flex-shrink-0">ATK</span>
+        <span className="text-base font-bold text-black flex-shrink-0">
           {unit.attack.name}
           {!compact && (
             <span className="text-sm text-gray-500 ml-1">
-              Total {total} ({base} + {bonus})
+              {total} ({base} + {bonus})
             </span>
           )}
         </span>
+        {currentCountdown !== undefined && (
+          <div className={`px-1.5 py-0.5 rounded font-bold text-xs border border-2 flex-shrink-0 whitespace-nowrap ${
+            willActThisRound
+              ? 'bg-yellow-300 border-yellow-500 text-yellow-900'
+              : 'bg-blue-100 border-blue-400 text-blue-900'
+          }`}>
+            ⏱{currentCountdown}
+          </div>
+        )}
       </div>
     );
   };
@@ -41,9 +52,9 @@ const UnitStatsPanel: React.FC<UnitStatsPanelProps> = ({ unit, compact = false, 
       : effective;
 
     return (
-      <div className="flex items-center gap-2">
-        <span className="text-base font-semibold text-gray-600">INIT</span>
-        <span className="text-base font-bold text-black">
+      <div className="flex items-center gap-2 flex-nowrap">
+        <span className="text-base font-semibold text-gray-600 flex-shrink-0">INIT</span>
+        <span className="text-base font-bold text-black flex-shrink-0">
           {effective}
           {tmp !== 0 && <span className="text-green-600"> (+{tmp})</span>}
           {!compact && rolled !== null && (

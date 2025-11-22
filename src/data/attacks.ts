@@ -15,6 +15,7 @@ export const slashAttack: Attack = {
   bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Forward,
   targetingRule: aoeTargetingRule,
+  countdown: 8, // Slow attack
 };
 
 export const pounceAttack: Attack = {
@@ -23,6 +24,7 @@ export const pounceAttack: Attack = {
   bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
+  countdown: 6, // Medium-fast attack
 };
 
 export const swoopAttack: Attack = {
@@ -31,6 +33,7 @@ export const swoopAttack: Attack = {
   bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Side,
   targetingRule: rightTargetingRule,
+  countdown: 5, // Fast attack
 };
 
 export const slamAttack: Attack = {
@@ -39,6 +42,7 @@ export const slamAttack: Attack = {
   bonusAbilityDmg: ferocityBonusDmg,
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
+  countdown: 7, // Medium-slow attack
 };
 
 export const goobSlapAttack: Attack = {
@@ -47,6 +51,7 @@ export const goobSlapAttack: Attack = {
   bonusAbilityDmg: () => 0,
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
+  countdown: 6, // Enemy attack
 };
 
 export const goobSlamAttack: Attack = {
@@ -55,6 +60,7 @@ export const goobSlamAttack: Attack = {
   bonusAbilityDmg: () => 0,
   direction: AttackDirection.Forward,
   targetingRule: frontTargetingRule,
+  countdown: 8, // Enemy attack
 };
 
 export const superAoeAttack: Attack = {
@@ -63,4 +69,5 @@ export const superAoeAttack: Attack = {
   bonusAbilityDmg: () => 0,
   direction: AttackDirection.AOE,
   targetingRule: aoeTargetingRule,
+  countdown: 7, // Enemy AOE attack
 };

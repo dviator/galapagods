@@ -24,6 +24,7 @@ export interface Attack {
   dmgRange?: [number, number]; // Optional random total damage range [min, max]
   direction: AttackDirection; // Directional icon for attack targeting
   targetingRule: TargetingRule;
+  countdown: number; // Countdown value (rounds until this attack triggers)
 }
 
 export interface CombatStatus {
@@ -41,6 +42,17 @@ export type InitiativeEntry = {
 export interface BattleState {
   initiativeOrder: InitiativeEntry[];
   currentTurn: number;
+}
+
+// Countdown-based action tracking
+export interface ActionCountdown {
+  unitIndex: number;
+  team: Team;
+  currentCountdown: number; // Current countdown value (decrements each round)
+}
+
+export interface CountdownTracker {
+  activeCountdowns: ActionCountdown[];
 }
 
 // Ability types grouped here
@@ -63,9 +75,8 @@ export interface PassiveAbility {
 export interface CombatState {
   playerTeam: Unit[];
   enemyTeam: Unit[];
-  initiativeOrder: InitiativeEntry[];
-  currentTurn: number;
+  initiativeOrder: InitiativeEntry[]; // Used for tie-breaking when multiple units countdown to 0
+  countdownTracker: CountdownTracker; // Tracks all active action countdowns
   round: number;
   combatLog: string[];
-  isRoundComplete: boolean;
 }

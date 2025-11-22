@@ -349,14 +349,105 @@ Phase 3 delivers the first fully playable prototype of Galapagods, integrating a
 - The UI is clean and consistent.
 - The Reset button resets only the current combat, not the whole run.
 
-# Phase 4: Future Roadmap (V2 and Beyond)
+# Phase 4: Enhanced Combat & Strategic Depth (V1.1)
+
+## Overview
+Phase 4 (V1.1) introduces a major overhaul to the combat system, evolution mechanics, and item progression based on 7/25 design review. The focus is on creating deeper strategic choices, more variable runs, and a tighter integration between evolution and combat mechanics.
+
+## Goals
+- Redesign combat system with real-time mechanics (running timer, clickable ability buttons)
+- Make evolution system directly impact combat strategy and choices
+- Introduce Balatro-style "joker" modifiers for global run bonuses
+- Add heritable genetic weaknesses as strategic tradeoffs
+- Implement hybrid creature combinations with unique abilities
+- Expand item system with limited shop stock and variable rewards
+- Add mid-run perk/talent choices for in-run unit differentiation
+- Create more engaging and varied run experiences
+
+## Key Features
+
+### Combat System Redesign
+- Implement turn-based combat with variable attack countdowns instead of fixed rounds
+- Each unit has an attack speed stat that determines countdown timer to next action
+- Attack resolution proceeds in order of countdown completion (asynchronous turn order)
+- Clear visual display of attack countdowns so players can anticipate next actions
+- Supports multiple active attacks per character (each with independent counters)
+- Enables interesting choices during run (speed items, stat allocation) that affect combat pacing
+
+### Evolution & Genetics Enhancements
+- Heritable genetic 'weaknesses' that provide drawbacks as strategic tradeoffs
+- Perk/Talent choices at new levels during runs to differentiate monsters in-run
+- New species unlock unique abilities and traits that can be copied/edited/cloned into other units
+- Hybrid creature combinations (Tiger/Eagle → Gryphon, Lizard/Bird → Dragon)
+- Mythical creatures have unique/fantastical attack types (fire breath, laser beam eyes)
+
+### Item & Progression System
+- "Joker" style modifiers that apply powerful global bonuses to specific attack/ability types
+- Limited shop item stock - no infinite purchasing (strategic scarcity)
+- Variable coin rewards based on enemy level with potential bonus achievements
+- Items that impact evolution and stat growth
+
+### Run Variety & Replayability
+- Each run is more variable and full of strategic choices
+- Multiple viable strategies per run based on items and perks available
+- Genetic traits create diverse team possibilities across runs
+- Hybrid combinations unlock new strategies and playstyles
+
+## Functional Requirements
+
+### 1. Combat System
+- Turn-based combat with variable attack countdowns
+- Attack speed stat determines countdown duration to next action
+- Actions resolve in countdown completion order (not fixed turn order)
+- Multiple active abilities per character, each with independent countdowns
+- Clear visual countdown displays for player anticipation
+- Combat speed varies based on team composition and stat choices
+
+### 2. Evolution System Integration
+- Genetic weaknesses appear as heritable traits with drawbacks
+- Perk/Talent system for mid-run unit differentiation
+- New species unlock transferable abilities
+- Gene visibility shows which traits are heritable
+
+### 3. Item System
+- Joker modifiers with global attack/ability type bonuses
+- Limited shop stock per run (limited potions, items, etc.)
+- Variable rewards: gold scales with enemy level
+- Bonus achievement rewards for combat performance
+
+### 4. Hybrid Combinations
+- Tiger + Eagle = Gryphon with combined abilities
+- Lizard + Bird = Dragon with fire breath
+- New mythical attack types (laser eyes, elemental effects, etc.)
+- Hybrids unlock in Lab for future generations
+
+## Out of Scope (for this phase)
+- Complex enemy variety (focus on player systems)
+- Persistent save/load
+- Aging system (defer to V2)
+
+## Acceptance Criteria
+- Turn-based combat with variable attack countdowns is fully functional
+- Attack speed stat meaningfully affects combat pacing and strategy
+- Countdown displays are clear and help players anticipate actions
+- Evolution and combat systems feel deeply integrated
+- Joker items provide meaningful run-altering choices
+- Each run feels significantly different based on team composition and items
+- Hybrid creatures are visually distinct and mechanically unique
+- Combat is engaging without requiring real-time reflexes
+
+---
+
+# Phase 5: Future Roadmap (V2 and Beyond)
 
 ## Planned Major Features
-- Aging system
-- Advanced gene editing (cross-species, passives transfer)
-- Variety/randomized enemies
-- Win state
+- Aging system and creature lifecycle management
+- Advanced gene editing (cross-species passives transfer)
+- Variety/randomized enemies with difficulty scaling
+- Win state and end-game conditions
 - Persistent save/load
-- Major UI redesign
-- Move unit, attack, and item definitions to data/config files for data-driven design.
-- Design state for future save/load and persistence features.
+- Major UI redesign and visual overhaul
+- Move unit, attack, and item definitions to data/config files for data-driven design
+- Design state for future save/load and persistence features
+- Story progression and narrative elements
+- Leaderboards and achievement system
